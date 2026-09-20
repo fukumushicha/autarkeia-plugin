@@ -1,0 +1,35 @@
+{
+  "name": "autarkeia-plugin",
+  "owner": {
+    "name": "Roman"
+  },
+  "metadata": {
+    "description": "Autarkeia v0.3 — a working copy of a file-based way to work with Claude Code. Trusted-circle test, not a public product.",
+    "version": "0.3.0"
+  },
+  "plugins": [
+    {
+      "name": "autarkeia",
+      "source": "./autarkeia",
+      "description": "A file-based way of working with Claude Code, rewritten for your own vault.",
+      "version": "0.3.0",
+      "author": {
+        "name": "Roman"
+      },
+      "keywords": [
+        "distill",
+        "daily-debrief",
+        "weekly-debrief",
+        "checkpoint",
+        "librarian",
+        "email",
+        "realign",
+        "health-check",
+        "brainstorm",
+        "improve",
+        "outbound-writing",
+        "sparring"
+      ]
+    }
+  ]
+}
