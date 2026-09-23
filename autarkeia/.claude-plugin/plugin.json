@@ -1,7 +1,7 @@
 {
   "name": "autarkeia",
-  "version": "0.3.0",
-  "description": "File-based way to work with Claude Code: distill, debriefs, librarian, email intake, realign, health check, brainstorm, improve, drafts, sparring.",
+  "version": "0.4.0",
+  "description": "File-based way to work with Claude Code: setup, distill, debriefs, librarian, email intake, realign, health check, brainstorm, improve, drafts, sparring.",
   "author": {
     "name": "Roman"
   }

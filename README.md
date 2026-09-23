@@ -1,4 +1,4 @@
-# Autarkeia v0.3 — trusted-circle test
+# Autarkeia v0.4 — trusted-circle test
 
 A working copy of a way of using Claude Code: files are the memory, the chat is not.
 
@@ -10,6 +10,7 @@ This is not a public product.
 
 | Skill | What it does |
 |---|---|
+| `setup` | First session: who this is for, what comes first, one job, one cycle |
 | `distill` | Write what this session changed |
 | `daily-debrief` | Close the day with a few questions |
 | `weekly-debrief` | See the week |
@@ -42,7 +43,7 @@ claude plugin install autarkeia@autarkeia-plugin
 5. Restart Claude Code if the commands do not appear.
 
 Skills from a plugin carry its name. Type `/autarkeia:distill`, or just say **distill** in a sentence — both work.
-6. Say: "Read CLAUDE.md, then look at tasks." Name the job this vault is for.
+6. Say: **setup**. It asks who this is for, what comes first, and the one job this vault should hold, then runs one real cycle and stops. One question at a time. If it stops early, say **setup** again next time and it continues.
 
 If install complains, copy `autarkeia/skills/` into `your-vault/.claude/skills/` and open the vault anyway.
 
@@ -50,6 +51,6 @@ If install complains, copy `autarkeia/skills/` into `your-vault/.claude/skills/`
 
 Do real work in that vault folder. End of a session: **distill**. End of a day: **daily debrief**. End of a week: **weekly debrief**. A document: **librarian**. Emails you dropped in `inbox/`: **email**.
 
-It runs on your own Claude account. Twelve skills against a vault that grows for a month is real usage. If you start hitting limits, say so — that is a result, not a failure.
+It runs on your own Claude account. Thirteen skills against a vault that grows for a month is real usage. If you start hitting limits, say so — that is a result, not a failure.
 
 The test is whether this is useful and meaningful for you after weeks of actual work.

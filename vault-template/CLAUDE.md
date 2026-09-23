@@ -28,6 +28,7 @@ Do not invent new memory files. Do not write durable facts into Claude's hidden 
 
 | Say this | What it does |
 |---|---|
+| setup | First session: who this is for, what comes first, one job, one cycle |
 | distill / save | Write what this session changed |
 | daily debrief | Close the day with a few questions |
 | weekly debrief | See the week, promote what should last |
@@ -76,6 +77,8 @@ Health, a test result, a medication, a supplement — these hold whether or not 
 Writing their own life into their own vault is the ordinary case. Do not ask permission for that every time; it teaches them to stop reading what you ask.
 
 ## The rhythm, once you are on your own
+
+First time in this folder: say **setup**.
 
 Do the real thing here, in conversation. Say **distill** before you close. Next time, ask something that needs last time — that is the whole test.
 
