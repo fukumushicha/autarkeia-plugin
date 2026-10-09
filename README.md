@@ -1,10 +1,6 @@
-# Autarkeia v0.4.1 — trusted-circle test
+# Autarkeia v0.4.1
 
-A working copy of a way of using Claude Code: files are the memory, the chat is not.
-
-Same skill names as the system this was taken from. None of that person's life, projects, or private rules.
-
-This is not a public product.
+A file-based way of using Claude Code: files are the memory, the chat is not.
 
 ## Skills
 
@@ -24,9 +20,9 @@ This is not a public product.
 | `outbound-writing` | Draft a message — never send |
 | `sparring` | Think out loud with push-back |
 
-What was stripped: someone else's biography, their email machine, their therapy notes, their other products. The moves are here. The life is yours.
+The skills are the method. What goes into the vault is yours.
 
-## Setup (once, together)
+## Setup
 
 On the machine that already has Claude Code:
 
@@ -56,6 +52,6 @@ Fallback, if the two commands in step 1 fail: download this repository (green **
 
 Do real work in that vault folder. End of a session: **distill**. End of a day: **daily debrief**. End of a week: **weekly debrief**. A document: **librarian**. Emails you dropped in `inbox/`: **email**.
 
-It runs on your own Claude account. Thirteen skills against a vault that grows for a month is real usage. If you start hitting limits, say so — that is a result, not a failure.
+It runs on your own Claude account. Thirteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
 
-The test is whether this is useful and meaningful for you after weeks of actual work.
+It earns its place after weeks of real work, not on day one.

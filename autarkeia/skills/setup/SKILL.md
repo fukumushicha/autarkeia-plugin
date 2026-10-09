@@ -40,7 +40,7 @@ The block, one line per answer, added as each answer arrives:
 - **Setup**: done / stopped before the cycle
 ```
 
-If someone else is on the call (the person who gave them this), the answers still come from the vault's owner.
+If someone else is helping with setup, the answers still come from the vault's owner.
 
 ## 1. Who
 

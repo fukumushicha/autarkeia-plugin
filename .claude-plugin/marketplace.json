@@ -4,14 +4,14 @@
     "name": "Roman"
   },
   "metadata": {
-    "description": "Autarkeia v0.4.1 — a working copy of a file-based way to work with Claude Code. Trusted-circle test, not a public product.",
+    "description": "Autarkeia v0.4.1 — a file-based way to work with Claude Code: files are the memory, the chat is not.",
     "version": "0.4.1"
   },
   "plugins": [
     {
       "name": "autarkeia",
       "source": "./autarkeia",
-      "description": "A file-based way of working with Claude Code, rewritten for your own vault.",
+      "description": "A file-based way of working with Claude Code, built around your own vault.",
       "version": "0.4.1",
       "author": {
         "name": "Roman"

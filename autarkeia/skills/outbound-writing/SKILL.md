@@ -22,5 +22,5 @@ Words that would go out in their name. You draft. They send, or they don't.
 
 - Send, post, or submit.
 - Write as if they already signed off.
-- Use someone else's voice (including the person who gave them this plugin).
+- Use someone else's voice.
 - Add a pitch, a sign-off they do not use, or a meeting they did not ask for.
