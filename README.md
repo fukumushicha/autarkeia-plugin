@@ -1,4 +1,4 @@
-# Autarkeia v0.4 — trusted-circle test
+# Autarkeia v0.4.1 — trusted-circle test
 
 A working copy of a way of using Claude Code: files are the memory, the chat is not.
 
@@ -30,22 +30,27 @@ What was stripped: someone else's biography, their email machine, their therapy 
 
 On the machine that already has Claude Code:
 
-1. Put this folder somewhere ordinary, for example `Documents/autarkeia-plugin`.
-2. In Terminal:
+1. Nothing to download. In Terminal:
 
 ```bash
-claude plugin marketplace add /absolute/path/to/autarkeia-plugin
+claude plugin marketplace add fukumushicha/autarkeia-plugin
 claude plugin install autarkeia@autarkeia-plugin
 ```
 
-3. Copy `vault-template` to a new folder with your name on it, for example `Documents/my-os`.
-4. Open **that** folder in Claude Code. Not this plugin folder — the vault.
-5. Restart Claude Code if the commands do not appear.
+2. Make your vault: a copy of `vault-template` in a new folder with your name on it, for example `Documents/my-os`. The install left a copy of this repository on your Mac, so this works in the same Terminal:
+
+```bash
+cp -R ~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template ~/Documents/my-os
+```
+
+3. Open **that** folder in Claude Code. Not the plugin — the vault.
+4. Restart Claude Code if the commands do not appear.
 
 Skills from a plugin carry its name. Type `/autarkeia:distill`, or just say **distill** in a sentence — both work.
-6. Say: **setup**. It asks who this is for, what comes first, and the one job this vault should hold, then runs one real cycle and stops. One question at a time. If it stops early, say **setup** again next time and it continues.
 
-If install complains, copy `autarkeia/skills/` into `your-vault/.claude/skills/` and open the vault anyway.
+5. Say: **setup**. It asks who this is for, what comes first, and the one job this vault should hold, then runs one real cycle and stops. One question at a time. If it stops early, say **setup** again next time and it continues.
+
+Fallback, if the two commands in step 1 fail: download this repository (green **Code** button, then **Download ZIP**), put the unzipped folder somewhere ordinary, for example `Documents/autarkeia-plugin`, and run `claude plugin marketplace add /absolute/path/to/autarkeia-plugin` followed by the same install command. If that complains too, copy `autarkeia/skills/` into `your-vault/.claude/skills/` and open the vault anyway.
 
 ## How to use it
 
