@@ -2,6 +2,25 @@
 
 A file-based way of using Claude Code: files are the memory, the chat is not.
 
+## Why this exists
+
+A life runs on many fronts at once: work, money, health, family, the things you are building. Each AI chat sees one conversation and forgets it. Nothing connects what you decided in March to what you are asking today.
+
+Autarkeia keeps that context in a folder of plain text files on your own computer. Every session reads it and writes back what changed, so the next session starts from what you already know, not from zero.
+
+The ideas behind it:
+
+- **Models come and go; your memory should not.** AI models are replaced every few months. The files stay. Any capable model can read them, so a better model inherits everything instead of starting over.
+- **Use the best model for the job, with everything it needs to know.** The vault belongs to no vendor. Claude runs it day to day; Codex and Grok can read the same files for a second opinion.
+- **Plain files over databases.** You can open, read, back up and move every file yourself. Nothing is locked in an app, and you can see exactly what the AI knows about you.
+- **Keep the original next to the summary.** Documents stay as they arrived. A future model can re-read them and pull out what today's missed.
+- **Questions instead of blank pages.** The daily and weekly debriefs ask you a few questions and write down the answers. Nobody has to keep a journal.
+- **Your priorities, written down.** `PRIORITIES.md` holds what matters to you, in order, and the weekly review checks your week against it.
+- **No structure built in advance.** Folders and projects appear when real use needs them, not because a template said so.
+- **You decide; it operates.** It writes your notes without asking every time. It never sends, posts, pays or deletes without your yes.
+
+The name comes from the Greek *autarkeia*: self-sufficiency, having what you need within your own reach.
+
 ## Skills
 
 | Skill | What it does |
