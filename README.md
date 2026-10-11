@@ -15,7 +15,7 @@ A file-based way of using Claude Code: files are the memory, the chat is not.
 | `email` | Intake from `inbox/` — never send |
 | `realign` | Rebuild the open-work picture |
 | `health-check` | Is the vault still a system |
-| `brainstorm` | Structured second opinion |
+| `brainstorm` | Second opinion: Claude, or Codex and Grok if you install them |
 | `improve` | Capture friction — propose only |
 | `outbound-writing` | Draft a message — never send |
 | `sparring` | Think out loud with push-back |
@@ -51,6 +51,8 @@ Fallback, if the two commands in step 1 fail: download this repository (green **
 ## How to use it
 
 Do real work in that vault folder. End of a session: **distill**. End of a day: **daily debrief**. End of a week: **weekly debrief**. A document: **librarian**. Emails you dropped in `inbox/`: **email**.
+
+Second opinions from Codex or Grok, not only Claude: [docs/second-opinion.md](docs/second-opinion.md) says what to install and how to ask for them.
 
 It runs on your own Claude account. Thirteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
 
