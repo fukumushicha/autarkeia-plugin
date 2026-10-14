@@ -14,7 +14,7 @@ If this vault will hold things you would not want read by someone else, where yo
 
 | File | What belongs here |
 |---|---|
-| `memory/daily/YYYY-MM-DD.md` | What happened, as it happens. Everything lands here first. |
+| `memory/daily/YYYY-MM-DD.md` | What happened, as it happens. Everything lands here first, except what a project's rules keep inside the project (see Projects). |
 | `memory/facts.md` | What is currently true. |
 | `memory/decisions.md` | What was chosen, and why. |
 | `memory/tasks.md` | What is still to do. |
@@ -25,6 +25,24 @@ If this vault will hold things you would not want read by someone else, where yo
 | `reviews/` | Second-opinion writeups. |
 
 Do not invent new memory files. Do not write durable facts into Claude's hidden project memory.
+
+## Projects
+
+Everything starts here, in this vault. When one piece of work or life grows a shape of its own, it becomes a project: `projects/<name>/`. Make one only when the user asks ("new project ..."), never in advance.
+
+A project has its own memory: `projects/<name>/memory/` with `facts.md`, `decisions.md` and `tasks.md`. Sooner or later it should also have its own rules: `projects/<name>/AGENTS.md`, with a `CLAUDE.md` next to it that holds only the line `@AGENTS.md`. A project needs its own rules when other people are involved, when it is private in its own way, or when it needs its own tone, its own deadlines to watch, or things that never leave it.
+
+A project's rules add to this file. They never loosen **When you must ask** or the clause about a body.
+
+**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, checkpoints, reviews) get a pointer at most, for example "Cassilhaus: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
+
+When the user asks for a new project:
+
+1. Create `projects/<name>/memory/` with the three files, each with a one-line heading.
+2. Ask one question: does this project need its own rules yet? Who else is involved, what stays inside it, what should I watch?
+3. If they want rules now, show the rules in their words, then write `projects/<name>/AGENTS.md` and its `CLAUDE.md` after yes. If not, skip it; do not create an empty rules file. Ask again when the project shows it needs them.
+
+Before working on a project or writing to it, read its `AGENTS.md` if it has one. Always open this vault folder in Claude Code, not a project folder.
 
 ## Commands
 
@@ -42,6 +60,7 @@ Do not invent new memory files. Do not write durable facts into Claude's hidden 
 | brainstorm | Structured second opinion |
 | improve | Capture friction — propose only |
 | outbound / draft | Draft a message — never send |
+| new project | Give one piece of work its own folder, and its own rules when it needs them |
 | sparring | Think out loud with push-back |
 
 ## How to talk
@@ -73,7 +92,7 @@ Health, a test result, a medication, a supplement — these hold whether or not 
 - Anything they said was off the record.
 - Deleting a file.
 - Sending a message, posting, or paying.
-- Changing this contract.
+- Changing this contract or a project's rules.
 - Promoting something from a debrief into lasting facts.
 
 Writing their own life into their own vault is the ordinary case. Do not ask permission for that every time; it teaches them to stop reading what you ask.
@@ -88,4 +107,4 @@ A document arrives: drop it in `inbox/` and say **librarian**. Do not build fold
 
 ## Session rhythm
 
-Read `facts.md`, `tasks.md`, and `PRIORITIES.md` at the start if the question needs history. If they stop without saving, ask once: "Save this before we stop?"
+Read `memory/facts.md`, `memory/tasks.md`, and `PRIORITIES.md` at the start if the question needs history. Read `NEXT-ACTIONS.md` at the start if it exists: it carries the open work and due dates of every project, so a deadline inside a project is not missed. Suggest **realign** once if it says `Generated: never`, is more than a week old, or any `memory/tasks.md` or `projects/*/memory/tasks.md` changed after it (compare with `ls -lt`). If they stop without saving, ask once: "Save this before we stop?"

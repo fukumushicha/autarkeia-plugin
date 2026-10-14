@@ -1,4 +1,4 @@
-# Autarkeia v0.4.2
+# Autarkeia v0.4.3
 
 A file-based way of using Claude Code: files are the memory, the chat is not.
 
@@ -70,6 +70,8 @@ Fallback, if the two commands in step 1 fail: download this repository (green **
 ## How to use it
 
 Do real work in that vault folder. End of a session: **distill**. End of a day: **daily debrief**. End of a week: **weekly debrief**. A document: **librarian**. Emails you dropped in `inbox/`: **email**.
+
+Everything starts in the vault. When one piece of work or life grows a shape of its own, say **new project** and name it. It gets its own folder and memory, and, sooner or later, its own rules: who else is involved, what stays inside it, what to watch. The vault's rules always hold; a project's rules add to them. Keep opening the vault folder, not the project.
 
 Second opinions from Codex or Grok, not only Claude: [docs/second-opinion.md](docs/second-opinion.md) says what to install and how to ask for them.
 

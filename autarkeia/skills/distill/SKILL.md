@@ -41,7 +41,9 @@ If nothing is worth saving, say so and stop.
 
 ## Write
 
-Everything goes to `memory/daily/YYYY-MM-DD.md` first (create if needed; add at the end) under `### Session (HH:MM)`.
+First decide where each item belongs. An item that belongs to a project whose `AGENTS.md` keeps its content inside goes only into the project's files; the daily log gets a pointer at most ("Cassilhaus: two items saved in the project"), or nothing if the rules forbid even that.
+
+Everything else goes to `memory/daily/YYYY-MM-DD.md` first (create if needed; add at the end) under `### Session (HH:MM)`.
 
 Then also:
 
@@ -52,7 +54,9 @@ Then also:
 | Task | `memory/tasks.md` as `- [ ] **title** -- one line. *(added: YYYY-MM-DD)*` |
 | Observation | daily log only |
 
-If `projects/<name>/memory/` exists and the item is clearly that project, write there instead of the vault facts/decisions/tasks, and leave a one-line pointer in the daily log.
+If `projects/<name>/memory/` exists and the item is clearly that project, read `projects/<name>/AGENTS.md` first if it exists and follow it, then write there instead of the vault facts/decisions/tasks, and leave a one-line pointer in the daily log (the content itself too, if the project's rules allow it).
+
+A new rule for a project (who may see it, what never leaves it, how to talk about it, what to watch) goes into that project's `AGENTS.md`, not into its facts. It is a change to the project's rules: show it, write after yes. If the project has no `AGENTS.md` yet, create it with a `CLAUDE.md` next to it that holds only `@AGENTS.md`.
 
 Before each append, re-read the live insertion point. If the same claim is already there, skip it. Never replace a whole memory file.
 

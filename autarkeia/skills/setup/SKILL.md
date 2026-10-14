@@ -71,7 +71,7 @@ If they name several, ask which one they would be sorry to lose track of next we
 
 Block line, then replace the task **Name one job this vault is for** in `memory/tasks.md` with the job: `- [ ] **[job, their words]** -- [one line]. *(added: YYYY-MM-DD)*`.
 
-Do not create a `projects/` folder. One vault is enough to start. If the job is about a body, the health clause in the contract holds from the first sentence.
+Do not create projects during setup. One vault is enough to start; later, a "new project" request follows the contract's Projects section. If the job is about a body, the health clause in the contract holds from the first sentence.
 
 ## 4. One cycle
 
