@@ -27,7 +27,9 @@ Longer version, if the plugin's `references/health.md` is reachable: read it.
 
 Confirm `memory/facts.md` exists. If not, stop: open the vault folder in Claude Code.
 
-Read `CLAUDE.md` in this folder. Routing lives there and in the plugin file `references/layers.md`.
+**The contract** is `AGENTS.md`. Only if there is no `AGENTS.md` and `CLAUDE.md` holds more than the line `@AGENTS.md` (a vault made before v0.4.2), the contract is that `CLAUDE.md`; do not move or rename it.
+
+Read the contract. Routing lives there and in the plugin file `references/layers.md`.
 
 Run `date "+%Y-%m-%d"` and `date "+%H:%M"`. Do not guess the date.
 

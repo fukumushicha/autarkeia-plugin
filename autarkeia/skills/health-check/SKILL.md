@@ -14,7 +14,7 @@ Confirm the vault. Run `date "+%Y-%m-%d"`.
 
 Check, in order:
 
-1. **Shape.** These exist: `CLAUDE.md`, `memory/facts.md`, `memory/decisions.md`, `memory/tasks.md`, `memory/daily/`, `inbox/`, `docs/`. Missing empty folders may be created. Missing contract (`CLAUDE.md`) is a finding, not auto-created.
+1. **Shape.** These exist: the contract, `memory/facts.md`, `memory/decisions.md`, `memory/tasks.md`, `memory/daily/`, `inbox/`, `docs/`. Missing empty folders may be created. Contract, one of three cases: (a) `AGENTS.md` exists: it is the contract; `CLAUDE.md` should hold only the line `@AGENTS.md`, and anything more there is a finding (rules added there are invisible to Codex and Grok). (b) No `AGENTS.md`, and `CLAUDE.md` holds the whole contract: a vault made before v0.4.2, not broken; say it uses the older layout and offer the move (rename `CLAUDE.md` to `AGENTS.md`, new `CLAUDE.md` with `@AGENTS.md`); do it only after yes. (c) Neither: missing contract is a finding, not auto-created.
 2. **Freshness.** Is there a daily log in the last 7 days? If the user has been using the vault and the newest log is older, say so.
 3. **Tasks.** Open tasks with no date. Tasks older than 30 days still unchecked. Checked-off items still in `tasks.md`.
 4. **Inbox.** Files sitting in `inbox/` more than 7 days.

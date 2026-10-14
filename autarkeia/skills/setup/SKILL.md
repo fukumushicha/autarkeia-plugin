@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 The first session. Four steps, in order, then stop. This is not a questionnaire and it does not build a system. It puts one real thing in the vault and shows that the next session will see it.
 
-**Mode: ask, then act.** Each step is a question. Their answer is the approval: write it, with no second round. Their own life into their own vault is the ordinary case. Two exceptions: the contract change in step 1 is shown first and written after yes; and everything `CLAUDE.md` lists under **When you must ask** (another person, anything off the record, anything that would leave this vault) is asked before it is written.
+**Mode: ask, then act.** Each step is a question. Their answer is the approval: write it, with no second round. Their own life into their own vault is the ordinary case. Two exceptions: the contract change in step 1 is shown first and written after yes; and everything the contract lists under **When you must ask** (another person, anything off the record, anything that would leave this vault) is asked before it is written.
 
 **One question at a time.** Ask, wait, write, next. Never show the whole list. Never put two questions in one message.
 
@@ -16,9 +16,11 @@ The first session. Four steps, in order, then stop. This is not a questionnaire 
 
 ## Before starting
 
-Confirm `CLAUDE.md` and `memory/facts.md` exist here. If not, stop and say so: this folder is not a vault. Tell them to copy `vault-template` from the plugin folder they downloaded (it sits next to `autarkeia/`) to a folder of their own, open that folder in Claude Code, and say setup again. Do not create the vault for them.
+**The contract** is `AGENTS.md`. Only if there is no `AGENTS.md` and `CLAUDE.md` holds more than the line `@AGENTS.md` (a vault made before v0.4.2), the contract is that `CLAUDE.md`; do not move or rename it.
 
-Read `CLAUDE.md`. Run `date "+%Y-%m-%d"` and `date "+%H:%M"`. Do not guess the date.
+Confirm the contract and `memory/facts.md` exist here. If not, stop and say so: this folder is not a vault. Tell them to copy `vault-template` to a folder of their own as step 2 of the plugin's README says (after a GitHub install it sits at `~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template`), open that folder in Claude Code, and say setup again. Do not create the vault for them.
+
+Read the contract. Run `date "+%Y-%m-%d"` and `date "+%H:%M"`. Do not guess the date.
 
 Search `memory/daily/` for the line `**Setup**: done`. If it exists, this vault is set up. Say so, say the rhythm (distill before closing a session, daily debrief at the end of a day), and stop. Projects and patterns come from use, not from setup.
 
@@ -53,7 +55,7 @@ Four questions, one at a time. After each answer, add its line to the block.
 
 After question 3, write to `memory/facts.md`, newest at top: `- **fact**: [name], works in [language]. This vault is for [their sentence]. (YYYY-MM-DD)`.
 
-The answer to question 4 goes into the block in full. It also belongs in `CLAUDE.md` under **How to talk**, because every session reads it. That is a change to the contract: show the two or three lines you would add, in their words, and write them only after yes. Then add `. Contract: written` to the block line; if they say no, leave the contract as it is and add `. Contract: declined`. Until they answer, the line carries neither.
+The answer to question 4 goes into the block in full. It also belongs in the contract under **How to talk**, because every session reads it. That is a change to the contract: show the two or three lines you would add, in their words, and write them only after yes. Then add `. Contract: written` to the block line; if they say no, leave the contract as it is and add `. Contract: declined`. Until they answer, the line carries neither.
 
 ## 2. What comes first
 
@@ -69,7 +71,7 @@ If they name several, ask which one they would be sorry to lose track of next we
 
 Block line, then replace the task **Name one job this vault is for** in `memory/tasks.md` with the job: `- [ ] **[job, their words]** -- [one line]. *(added: YYYY-MM-DD)*`.
 
-Do not create a `projects/` folder. One vault is enough to start. If the job is about a body, the health clause in `CLAUDE.md` holds from the first sentence.
+Do not create a `projects/` folder. One vault is enough to start. If the job is about a body, the health clause in the contract holds from the first sentence.
 
 ## 4. One cycle
 

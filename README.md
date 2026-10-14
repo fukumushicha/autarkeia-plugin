@@ -1,4 +1,4 @@
-# Autarkeia v0.4.1
+# Autarkeia v0.4.2
 
 A file-based way of using Claude Code: files are the memory, the chat is not.
 
