@@ -16,7 +16,7 @@ The ideas behind it:
 - **Keep the original next to the summary.** Documents stay as they arrived. A future model can re-read them and pull out what today's missed.
 - **Questions instead of blank pages.** The daily and weekly debriefs ask you a few questions and write down the answers. Nobody has to keep a journal.
 - **Your priorities, written down.** `PRIORITIES.md` holds what matters to you, in order, and the weekly review checks your week against it.
-- **No structure built in advance.** Folders and projects appear when real use needs them, not because a template said so.
+- **No structure built in advance.** Folders and projects appear when real use needs them, not because a template said so. A project gets its own rules when it needs them, not before.
 - **You decide; it operates.** It writes your notes without asking every time. It never sends, posts, pays or deletes without your yes.
 
 The name comes from the Greek *autarkeia*: self-sufficiency, having what you need within your own reach.
@@ -73,7 +73,30 @@ Do real work in that vault folder. End of a session: **distill**. End of a day: 
 
 Everything starts in the vault. When one piece of work or life grows a shape of its own, say **new project** and name it. It gets its own folder and memory, and, sooner or later, its own rules: who else is involved, what stays inside it, what to watch. The vault's rules always hold; a project's rules add to them. Keep opening the vault folder, not the project.
 
+## What is in your vault
+
+| Path | What it is |
+|---|---|
+| `AGENTS.md` | The vault's rules: how to talk to you, what needs your yes, what never leaves. Every session reads it: Codex and Grok directly, Claude through `CLAUDE.md`. Change rules here, or ask Claude to. |
+| `CLAUDE.md` | One line, `@AGENTS.md`. It points Claude at the rules. Leave it alone. |
+| `PRIORITIES.md` | What comes first in your life, in order. You write it; the weekly debrief checks your week against it. |
+| `NEXT-ACTIONS.md` | Open work across the vault and every project. **realign** rebuilds it; do not edit it by hand. |
+| `memory/daily/` | One file per day. Everything lands here first, except the details of a project whose rules keep them inside it. |
+| `memory/facts.md`, `decisions.md`, `tasks.md` | What is true, what was chosen and why, what is still to do. |
+| `docs/` | Copies of documents you filed, listed in `docs/register.md`. |
+| `inbox/` | Drop a file or an email here, then say **librarian** or **email**. |
+| `reviews/` | Second opinions and health-check reports. |
+| `projects/<name>/` | A project, once you have one: its own `memory/`, and its own `AGENTS.md` and `CLAUDE.md` once it has its own rules. |
+
+Everything is plain text. You can open, read and edit any of it yourself.
+
+A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It keeps working. Say **health check** and it offers to move the rules to the new layout.
+
+## Second opinions
+
 Second opinions from Codex or Grok, not only Claude: [docs/second-opinion.md](docs/second-opinion.md) says what to install and how to ask for them.
+
+## Cost
 
 It runs on your own Claude account. Thirteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
 
