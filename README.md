@@ -6,7 +6,21 @@ A file-based way of using Claude Code: files are the memory, the chat is not.
 
 A life runs on many fronts at once: work, money, health, family, the things you are building. Each AI chat sees one conversation and forgets it. Nothing connects what you decided in March to what you are asking today.
 
-Autarkeia keeps that context in a folder of plain text files on your own computer. Every session reads it and writes back what changed, so the next session starts from what you already know, not from zero.
+**What this is.** Not the AI. The AI is hired help, replaced every few months by something better. This is the part that does not change: everything written down about you, plus the rules for how any AI works with you. Separate yourself from your tools, and the tools can keep improving without you starting over.
+
+It does three things. It remembers your past: documents as they arrived, what was true, what you decided and why. It works your present: the open work across every part of your life, checked against what you said comes first. And it carries you forward: whatever model is best next year reads the same files and picks up where the last one left off.
+
+Two layers keep it honest. The record is the originals, untouched. The story is what the system builds from them: facts, decisions, the patterns it notices. A record without the story is a pile of files; a story without the record flatters. You get both.
+
+**The goal is your whole life, available to whatever AI you work with**, in files you own: what is true now, what you decided and why, what is still open, and the originals themselves, kept as they arrived, so a better model later can read them again and find what today's missed. Memory is the summary; the archive is the evidence. One without the other is half a system. The archive is organised the way a person looks for things: first the part of life (official documents, money and tax, health, homes, travel, companies and projects, photos and memories), then the person or thing, then the document type. Nothing is created until a document arrives.
+
+**How this differs from a personal agent.** The personal agents you have heard of, Instinct, Meta's Muse and the ones that will follow, learn you inside their own service. The memory sits on the company's computer. You usually cannot open it, correct it or take it with you; what you tell the agent may be used to train the next version unless you opt out; and when the company changes direction, or a better model appears somewhere else, the years of context stay behind.
+
+Here the memory is a folder on your own disk. You can open every file and see exactly what the AI knows about you. The model is only the reader: Claude today, something else when something else is better, and the folder does not care. Nothing in it is sent anywhere unless you say so, and nothing is deleted, sent, posted or paid without your yes.
+
+The two are not enemies. You can keep a personal agent for errands and keep your life here. The question is only where the record of you lives: on their side or yours.
+
+The test for every line in this README: when a friend asks what you are building, should they remember that AI works for you, or that something of you lasts?
 
 The ideas behind it:
 
