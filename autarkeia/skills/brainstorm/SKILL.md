@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: "Get a structured second opinion on a decision, a document, or something an agent just did, from an independent Claude sub-agent or, when installed, from Codex or Grok reading the vault themselves. Use when the user says brainstorm, second opinion, audit this, review this, send to codex, ask grok, or all reviewers."
+description: "Get a structured second opinion on a decision, a document, or something an agent just did, from an independent sub-agent or, when installed, from Codex or Grok reading the vault themselves. Use when the user says brainstorm, second opinion, audit this, review this, send to codex, ask grok, or all reviewers."
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 ---
 
@@ -18,14 +18,14 @@ The file, decision, or output they pointed at. Read it. If it is a claim about t
 
 | Reviewer | When | What it is |
 |---|---|---|
-| Claude sub-agent | always available | Same family as you. Independent context, not an independent mind. |
+| Sub-agent | always available | A fresh copy of the model you are running on: a Claude sub-agent in Claude Code, a Codex sub-agent in Codex. Same family as you. Independent context, not an independent mind. |
 | Codex | they said codex, or all reviewers | OpenAI's agent, run on their own ChatGPT sign-in. Reads the vault itself. |
 | Grok | they said grok, or all reviewers | xAI's agent, run on their own xAI sign-in. Reads the vault itself. |
 
 Run `command -v codex` and `command -v grok` to see what is installed.
 
 - **They named an outside reviewer** (codex, grok, all reviewers): that is their yes to send it out. Use what they named, if installed. If it is not installed, say so and give them the setup guide: https://github.com/fukumushicha/autarkeia-plugin/blob/master/docs/second-opinion.md. Do not fake the run.
-- **They asked for a second opinion without naming one:** use the Claude sub-agent. At the close, say in one line which outside reviewers are installed and that "send to codex" or "send to grok" would get one. Do not send anything outside on your own.
+- **They asked for a second opinion without naming one:** use the sub-agent. At the close, say in one line which outside reviewers are installed and that "send to codex" or "send to grok" would get one. Do not send anything outside on your own.
 - **The thing is about their health, another person, or anything they said was off the record:** even when they named an outside reviewer, confirm once before writing the packet, because that company will read it.
 - Their yes covers what you put in the packet. The read-only flags stop changes, not reading: a reviewer may open other files in the vault. Say this once the first time they send something out.
 
@@ -44,9 +44,11 @@ Put this at the top of the packet:
 
 > You are an independent reviewer. You can read files but not change them. Read the files named below yourself; do not trust this packet's summary of them. Disagree where you can. List findings, most serious first, each with the file and the line or passage it rests on. End with your verdict in one paragraph.
 
-### Claude sub-agent
+### Sub-agent
 
-Spawn **one** sub-agent with the packet only. Ask it to disagree where it can.
+Spawn **one** sub-agent with the packet only. Ask it to disagree where it can. If your runtime cannot start a sub-agent, say so and offer an outside reviewer instead; do not review it yourself and call that a second opinion.
+
+When you are Codex, "send to codex" is your own family: say so once and use the sub-agent. Grok stays an outside reviewer.
 
 ### Codex
 
@@ -70,7 +72,7 @@ Grok sometimes stops on its first step. If that happens, run it once more into `
 
 ### Is the answer complete?
 
-Before you use a reviewer's answer, check: it finished normally (for Codex and Grok, the command exited with 0; for the Claude sub-agent, it returned its answer); it says it read every file named in the packet and reports no failed reads; it ends with a verdict. If not, it is incomplete. Retry once into a new file (`-2`). If the second try is also incomplete, say the review did not finish, keep both files, and do not count that reviewer in the synthesis.
+Before you use a reviewer's answer, check: it finished normally (for Codex and Grok, the command exited with 0; for the sub-agent, it returned its answer); it says it read every file named in the packet and reports no failed reads; it ends with a verdict. If not, it is incomplete. Retry once into a new file (`-2`). If the second try is also incomplete, say the review did not finish, keep both files, and do not count that reviewer in the synthesis.
 
 ### When a reviewer fails
 

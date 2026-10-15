@@ -25,7 +25,7 @@ Longer version, if the plugin's `references/health.md` is reachable: read it.
 
 ## Before writing
 
-Confirm `memory/facts.md` exists. If not, stop: open the vault folder in Claude Code.
+Confirm `memory/facts.md` exists. If not, stop: open the vault folder in Claude Code or Codex.
 
 **The contract** is `AGENTS.md`. Only if there is no `AGENTS.md` and `CLAUDE.md` holds more than the line `@AGENTS.md` (a vault made before v0.4.2), the contract is that `CLAUDE.md`; do not move or rename it.
 

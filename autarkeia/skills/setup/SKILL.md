@@ -18,7 +18,7 @@ The first session. Four steps, in order, then stop. This is not a questionnaire 
 
 **The contract** is `AGENTS.md`. Only if there is no `AGENTS.md` and `CLAUDE.md` holds more than the line `@AGENTS.md` (a vault made before v0.4.2), the contract is that `CLAUDE.md`; do not move or rename it.
 
-Confirm the contract and `memory/facts.md` exist here. If not, stop and say so: this folder is not a vault. Tell them to copy `vault-template` to a folder of their own as step 2 of the plugin's README says (after a GitHub install it sits at `~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template`), open that folder in Claude Code, and say setup again. Do not create the vault for them.
+Confirm the contract and `memory/facts.md` exist here. If not, stop and say so: this folder is not a vault. Tell them to copy `vault-template` to a folder of their own as step 2 of the plugin's README says (after a GitHub install it sits at `~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template` for Claude Code, or `~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template` for Codex), open that folder in Claude Code or Codex, and say setup again. Do not create the vault for them.
 
 Read the contract. Run `date "+%Y-%m-%d"` and `date "+%H:%M"`. Do not guess the date.
 

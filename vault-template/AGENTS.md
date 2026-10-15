@@ -49,7 +49,7 @@ When the user asks for a new project:
 2. Ask one question: does this project need its own rules yet? Who else is involved, what stays inside it, what should I watch?
 3. If they want rules now, show the rules in their words, then write `projects/<name>/AGENTS.md` and its `CLAUDE.md` after yes. If not, skip it; do not create an empty rules file. Ask again when the project shows it needs them.
 
-Before working on a project or writing to it, read its `AGENTS.md` if it has one. Always open this vault folder in Claude Code, not a project folder.
+Before working on a project or writing to it, read its `AGENTS.md` if it has one. Always open this vault folder in Claude Code or Codex, not a project folder.
 
 ## Commands
 

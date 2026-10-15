@@ -1,0 +1,44 @@
+{
+  "name": "autarkeia",
+  "version": "0.4.6",
+  "description": "A living record of you, in files you own. Skills: setup, distill, debriefs, librarian, email intake, realign, health check, brainstorm, improve, drafts, sparring.",
+  "author": {
+    "name": "Roman",
+    "url": "https://github.com/fukumushicha"
+  },
+  "homepage": "https://github.com/fukumushicha/autarkeia-plugin",
+  "repository": "https://github.com/fukumushicha/autarkeia-plugin",
+  "keywords": [
+    "setup",
+    "distill",
+    "daily-debrief",
+    "weekly-debrief",
+    "checkpoint",
+    "handover",
+    "librarian",
+    "email",
+    "realign",
+    "health-check",
+    "brainstorm",
+    "improve",
+    "outbound-writing",
+    "sparring"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Autarkeia",
+    "shortDescription": "A living record of you, in files you own.",
+    "longDescription": "Autarkeia keeps your life in a folder of plain files you own: what is true, what you decided and why, what is still open, and the originals as they arrived. The same vault and the same skills work in Claude Code and in Codex.",
+    "developerName": "Roman",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "setup",
+      "distill",
+      "daily debrief"
+    ]
+  }
+}

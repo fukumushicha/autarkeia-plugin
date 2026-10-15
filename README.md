@@ -1,4 +1,4 @@
-# Autarkeia v0.4.5
+# Autarkeia v0.4.6
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -16,7 +16,7 @@ Two layers keep it honest. The record is the originals, untouched. The story is 
 
 **How this differs from a personal agent.** The personal agents you have heard of, Instinct, Meta's Muse and the ones that will follow, learn you inside their own service. The memory sits on the company's computer. You usually cannot open it, correct it or take it with you; what you tell the agent may be used to train the next version unless you opt out; and when the company changes direction, or a better model appears somewhere else, the years of context stay behind.
 
-Here the memory is a folder on your own disk. You can open every file and see exactly what the AI knows about you. The model is only the reader: Claude today, something else when something else is better, and the folder does not care. The AI reads what it needs from it, and what it reads goes to the company that runs that AI (Anthropic, for Claude), the same as your chats. Nothing is handed to anyone else, deleted, sent, posted or paid without your yes. Those are rules the AI follows, not a lock; how much it may do without asking is set in the app (see [Getting started](docs/getting-started.md), permission modes).
+Here the memory is a folder on your own disk. You can open every file and see exactly what the AI knows about you. The model is only the reader: Claude today, something else when something else is better, and the folder does not care. The AI reads what it needs from it, and what it reads goes to the company that runs that AI (Anthropic for Claude, OpenAI for Codex), the same as your chats. Nothing is handed to anyone else, deleted, sent, posted or paid without your yes. Those are rules the AI follows, not a lock; how much it may do without asking is set in the app (see [Getting started](docs/getting-started.md), permission modes).
 
 The two are not enemies. You can keep a personal agent for errands and keep your life here. The question is only where the record of you lives: on their side or yours.
 
@@ -25,7 +25,7 @@ The test for every line in this README: when a friend asks what you are building
 The ideas behind it:
 
 - **Models come and go; your memory should not.** AI models are replaced every few months. The files stay. Any capable model can read them, so a better model inherits everything instead of starting over.
-- **Use the best model for the job, with everything it needs to know.** The vault belongs to no vendor. Claude runs it day to day; Codex and Grok can read the same files for a second opinion.
+- **Use the best model for the job, with everything it needs to know.** The vault belongs to no vendor. Claude Code or Codex runs it day to day, with the same skills; the other one, and Grok, can read the same files for a second opinion.
 - **Plain files over databases.** You can open, read, back up and move every file yourself. Nothing is locked in an app, and you can see exactly what the AI knows about you.
 - **Keep the original next to the summary.** Documents stay as they arrived. A future model can re-read them and pull out what today's missed.
 - **Questions instead of blank pages.** The daily and weekly debriefs ask you a few questions and write down the answers. Nobody has to keep a journal.
@@ -49,7 +49,7 @@ The name comes from the Greek *autarkeia*: self-sufficiency, having what you nee
 | `email` | Intake from `inbox/` — never send |
 | `realign` | Rebuild the open-work picture |
 | `health-check` | Is the vault still a system |
-| `brainstorm` | Second opinion: Claude, or Codex and Grok if you install them |
+| `brainstorm` | Second opinion: a sub-agent, or Codex and Grok if you install them |
 | `improve` | Capture friction — propose only |
 | `outbound-writing` | Draft a message — never send |
 | `sparring` | Think out loud with push-back |
@@ -65,6 +65,8 @@ You need a paid Claude plan and Claude Code. In the desktop app, this runs in th
 ```bash
 curl -fsSL https://claude.ai/install.sh | bash
 ```
+
+Using Codex instead of Claude? See [Using Codex](#using-codex) below; the vault and the skills are the same.
 
 Then:
 
@@ -89,6 +91,28 @@ Skills from a plugin carry its name. Type `/autarkeia:distill`, or just say **di
 5. Say: **setup**. It asks who this is for, what comes first, and the one job this vault should hold, then runs one real cycle and stops. One question at a time. If it stops early, say **setup** again next time and it continues.
 
 Fallback, if the two commands in step 1 fail: download this repository (green **Code** button, then **Download ZIP**), put the unzipped folder somewhere ordinary, for example `Documents/autarkeia-plugin`, and run `claude plugin marketplace add /absolute/path/to/autarkeia-plugin` followed by the same install command. If that complains too, copy `autarkeia/skills/` into `your-vault/.claude/skills/` and `autarkeia/references/` into `your-vault/.claude/references/`, and open the vault anyway.
+
+### Using Codex
+
+You need a ChatGPT plan that includes Codex, and the Codex command line (`codex --version` in Terminal prints a version; if not, install it from OpenAI: https://developers.openai.com/codex/cli). Sign in once by running `codex` and choosing Sign in with ChatGPT.
+
+1. In Terminal:
+
+```bash
+codex plugin marketplace add fukumushicha/autarkeia-plugin
+codex plugin add autarkeia@autarkeia-plugin
+```
+
+2. Make your vault from the copy that install left on your Mac:
+
+```bash
+cp -R ~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template ~/Documents/my-os
+```
+
+3. Start Codex in **that** folder (`cd ~/Documents/my-os`, then `codex`). Codex reads the vault's rules from `AGENTS.md` on its own.
+4. Say: **setup**. Every skill works by saying its name in a sentence, the same as in Claude.
+
+One vault can be used from both Claude Code and Codex: the rules and the files are shared. In Codex, a plain "second opinion" is a Codex sub-agent; "send to grok", or Claude, are the outside views.
 
 ## How to use it
 
@@ -129,7 +153,14 @@ claude plugin marketplace update autarkeia-plugin
 claude plugin update autarkeia@autarkeia-plugin
 ```
 
-Then quit and reopen Claude. Your vault is not replaced: never copy the template over it again. New skills and fixes arrive with the plugin; changes to the vault's own rules arrive through **health check**, shown before anything is written.
+Then quit and reopen Claude. In Codex:
+
+```bash
+codex plugin marketplace upgrade autarkeia-plugin
+codex plugin add autarkeia@autarkeia-plugin
+```
+
+then start a new Codex session. Your vault is not replaced: never copy the template over it again. New skills and fixes arrive with the plugin; changes to the vault's own rules arrive through **health check**, shown before anything is written.
 
 **Automatic updates.** Off by default for this plugin. To turn them on: in a Claude session type `/plugin`, open the Marketplaces tab, choose `autarkeia-plugin`, then **Enable auto-update**. Claude then fetches new versions when a session starts; the next session uses them. Your vault's rules still change only through **health check**.
 
@@ -139,6 +170,6 @@ Second opinions from Codex or Grok, not only Claude: [docs/second-opinion.md](do
 
 ## Cost
 
-It runs on your own Claude account. Fourteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
+It runs on your own Claude or ChatGPT account. Fourteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
 
 Day one can start with what you already have. The record compounds after that: it earns its place over weeks of real work.
