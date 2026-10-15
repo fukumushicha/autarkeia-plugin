@@ -131,6 +131,8 @@ claude plugin update autarkeia@autarkeia-plugin
 
 Then quit and reopen Claude. Your vault is not replaced: never copy the template over it again. New skills and fixes arrive with the plugin; changes to the vault's own rules arrive through **health check**, shown before anything is written.
 
+**Automatic updates.** Off by default for this plugin. To turn them on: in a Claude session type `/plugin`, open the Marketplaces tab, choose `autarkeia-plugin`, then **Enable auto-update**. Claude then fetches new versions when a session starts; the next session uses them. Your vault's rules still change only through **health check**.
+
 ## Second opinions
 
 Second opinions from Codex or Grok, not only Claude: [docs/second-opinion.md](docs/second-opinion.md) says what to install and how to ask for them.

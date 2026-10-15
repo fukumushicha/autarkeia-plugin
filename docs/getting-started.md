@@ -129,6 +129,7 @@ All optional.
 - **Remote Control**: carry on a session from your phone while the computer stays on. Turn it on per session, or for all new sessions in Settings → Claude Code.
 - **Claude in Chrome**: lets Claude use websites in your browser. Only if you want that.
 - **Notifications**: useful when several sessions run at once and one is waiting for you.
+- **Automatic plugin updates**: off by default for this plugin. Type `/plugin` in a session, open the Marketplaces tab, choose `autarkeia-plugin`, then **Enable auto-update**. New versions arrive when a session starts and are used from the next session. Changes to your vault's own rules still come only through **health check**, after your yes.
 
 ## 13. Second opinions
 
