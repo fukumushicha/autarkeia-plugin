@@ -38,6 +38,8 @@ Generated: YYYY-MM-DD
 
 A project whose rules keep its content inside it gets one line instead of its tasks: `[name] N open tasks, next due YYYY-MM-DD`, or `[name] has open work` if its rules forbid even the date. A project's due date matters most here: it is how a session that never opens the project still sees the deadline.
 
+A task line that only flags something, with no next step, is not yet open work: ask once whether it is an action they want (then give it a next step and, when known, a date) or something noticed (then move it to today's daily log as an observation and remove it from `tasks.md`).
+
 Do not put done tasks here. If a task in `memory/tasks.md` is checked off, move it to `memory/tasks-archive.md` (create if needed) and remove it from `tasks.md`. A checked-off project task moves to that project's own `memory/tasks-archive.md`.
 
 Lead the reply with the Now list, in plain language. One sentence on inbox if anything is waiting. Mention `/email` only if `inbox/` has `email-*.md` files.

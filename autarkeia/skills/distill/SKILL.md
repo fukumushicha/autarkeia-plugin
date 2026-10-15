@@ -60,6 +60,10 @@ A new rule for a project (who may see it, what never leaves it, how to talk abou
 
 Before each append, re-read the live insertion point. If the same claim is already there, skip it. Never replace a whole memory file.
 
-If the new text **corrects** something already written, do not stack a second version underneath. Mark the old line `updated YYYY-MM-DD:` with the new sentence, so the file says which one is current. Strike the old wording only if they told you it was wrong.
+If the new text **changes** something already written: same topic and newer, mark the old line `superseded YYYY-MM-DD:` with the new sentence, so the file says which one is current; a different aspect of the same topic is not a change, both stay; a contradiction you cannot settle from a source is written as neither, noted in the daily log, and asked. Never delete the old line. Full rules, and what wins between a project's entry and the vault's: `references/layers.md`.
+
+A task line holds current state only: what it is, the next step, a pointer to the history if there is one. A status change replaces the old status. Done items move to `memory/tasks-archive.md` now.
+
+An action they agreed to or asked for that could not be finished is not left as a note: it becomes a task with a next step and, when known, a date, or the daily log says it was dropped. Something merely noticed stays an observation; do not invent an owner or a deadline for it.
 
 After writes, re-read the daily tail and confirm the new `### Session` heading. Tell the user in one sentence what you saved. No file paths unless they ask.

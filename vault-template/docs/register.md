@@ -1,4 +1,4 @@
 # Document register
 
-| Date | Name | What it is | Path |
-|------|------|------------|------|
+| Date | Path | What it is | Concerns | Hash | Extracted |
+|------|------|------------|----------|------|-----------|

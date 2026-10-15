@@ -21,6 +21,7 @@ Check, in order:
 5. **Inbox.** Files sitting in `inbox/` more than 7 days.
 6. **Secrets.** Search the vault (not `docs/` binaries) for lines that look like passwords, API keys, or tokens. Report paths, not the secrets.
 7. **Hand edits to generated files.** If `NEXT-ACTIONS.md` exists and looks hand-written (no `Generated:` line), flag it.
+8. **Archive.** For each `archive/*/register.md`: every listed file exists and its hash still matches (a mismatch means the file no longer matches its registered hash; the cause is unverified, so say exactly that, keep both, fix nothing). Files in an archive area with no register row. Originals sitting in `docs/` (statements, contracts, scans, exports from outside) that belong in `archive/`; offer the move, do it only after yes: copy, verify the hash, add the archive register row, change the `docs/register.md` row to point at the new path, repair any memory line that cites the old path, then remove the source.
 
 Do not scan their whole disk. Stay in this folder.
 

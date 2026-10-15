@@ -1,4 +1,4 @@
-# Autarkeia v0.4.3
+# Autarkeia v0.4.4
 
 A file-based way of using Claude Code: files are the memory, the chat is not.
 
@@ -79,11 +79,13 @@ Skills from a plugin carry its name. Type `/autarkeia:distill`, or just say **di
 
 5. Say: **setup**. It asks who this is for, what comes first, and the one job this vault should hold, then runs one real cycle and stops. One question at a time. If it stops early, say **setup** again next time and it continues.
 
-Fallback, if the two commands in step 1 fail: download this repository (green **Code** button, then **Download ZIP**), put the unzipped folder somewhere ordinary, for example `Documents/autarkeia-plugin`, and run `claude plugin marketplace add /absolute/path/to/autarkeia-plugin` followed by the same install command. If that complains too, copy `autarkeia/skills/` into `your-vault/.claude/skills/` and open the vault anyway.
+Fallback, if the two commands in step 1 fail: download this repository (green **Code** button, then **Download ZIP**), put the unzipped folder somewhere ordinary, for example `Documents/autarkeia-plugin`, and run `claude plugin marketplace add /absolute/path/to/autarkeia-plugin` followed by the same install command. If that complains too, copy `autarkeia/skills/` into `your-vault/.claude/skills/` and `autarkeia/references/` into `your-vault/.claude/references/`, and open the vault anyway.
 
 ## How to use it
 
 Do real work in that vault folder. End of a session: **distill**. End of a day: **daily debrief**. End of a week: **weekly debrief**. A document: **librarian**. Emails you dropped in `inbox/`: **email**.
+
+A statement, a contract, a scan, anything that arrived from outside: drop it in `inbox/`, say **librarian**, and the original goes to `archive/` untouched, filed by part of life, then the person or thing, then the kind of document, with a hash in that area's register. Documents you or the AI wrote go to `docs/`. Facts taken out of either land in memory.
 
 Everything starts in the vault. When one piece of work or life grows a shape of its own, say **new project** and name it. It gets its own folder and memory, and, sooner or later, its own rules: who else is involved, what stays inside it, what to watch. The vault's rules always hold; a project's rules add to them. Keep opening the vault folder, not the project.
 
@@ -91,20 +93,21 @@ Everything starts in the vault. When one piece of work or life grows a shape of 
 
 | Path | What it is |
 |---|---|
-| `AGENTS.md` | The vault's rules: how to talk to you, what needs your yes, what never leaves. Every session reads it: Codex and Grok directly, Claude through `CLAUDE.md`. Change rules here, or ask Claude to. |
+| `AGENTS.md` | The vault's rules: how to talk to you, how to work (act then report, one recommendation and one question, a record is a claim until the file is opened, when you contradict the record it asks once and keeps both lines, never guess a date), what needs your yes, what never leaves. Every session reads it: Codex and Grok directly, Claude through `CLAUDE.md`. Change rules here, or ask Claude to. |
 | `CLAUDE.md` | One line, `@AGENTS.md`. It points Claude at the rules. Leave it alone. |
 | `PRIORITIES.md` | What comes first in your life, in order. You write it; the weekly debrief checks your week against it. |
 | `NEXT-ACTIONS.md` | Open work across the vault and every project. **realign** rebuilds it; do not edit it by hand. |
 | `memory/daily/` | One file per day. Everything lands here first, except the details of a project whose rules keep them inside it. |
 | `memory/facts.md`, `decisions.md`, `tasks.md` | What is true, what was chosen and why, what is still to do. |
-| `docs/` | Copies of documents you filed, listed in `docs/register.md`. |
+| `docs/` | Working documents: what you or the AI wrote, listed in `docs/register.md`. |
+| `archive/` | Originals from outside, exactly as they arrived, in up to eight areas by part of life (official documents, money and tax, health, homes, travel, companies and projects, photos and memories, archive records). Each area has its own register with a hash per file. An area appears when its first document does. |
 | `inbox/` | Drop a file or an email here, then say **librarian** or **email**. |
 | `reviews/` | Second opinions and health-check reports. |
 | `projects/<name>/` | A project, once you have one: its own `memory/`, and its own `AGENTS.md` and `CLAUDE.md` once it has its own rules. |
 
 Everything is plain text. You can open, read and edit any of it yourself.
 
-A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It keeps working. Say **health check** and it offers to move the rules to the new layout.
+A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It keeps working. Say **health check** and it offers to move the rules to the new layout. A vault made before v0.4.4 has no `archive/`, no "How to work" section in its rules, and a four-column `docs/register.md` without hashes; it keeps working. Copy `archive/README.md` and that section from `vault-template/AGENTS.md` when you want them, or ask Claude to; the librarian adds a hash column to the old register the first time it files something.
 
 ## Second opinions
 
