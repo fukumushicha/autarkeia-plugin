@@ -2,6 +2,8 @@
 
 Your first hour, step by step, in the Claude desktop app. The [README](../README.md) says what this is and why; this guide is the clicks.
 
+Working in Codex instead of Claude? This guide does not apply to you; follow [Using Codex](../README.md#using-codex) in the README. The vault and the skills are the same.
+
 Button names change between app versions. If one here does not match what you see, look for the nearest equivalent; the steps stay the same.
 
 ## 1. What you need
@@ -133,7 +135,7 @@ All optional.
 
 ## 13. Second opinions
 
-Codex (OpenAI) and Grok (xAI) can read your vault and review what Claude did. Setup, sign-in and what leaves your computer: [second-opinion.md](second-opinion.md). A printed version number proves a reviewer is installed, not that it is signed in; the guide's "Check it works" section has a real test ("brainstorm: test that codex answers").
+Codex (OpenAI) and Grok (xAI) can read your vault and review what Claude did (or, if you work in Codex, Grok and a separate Codex can). Setup, sign-in and what leaves your computer: [second-opinion.md](second-opinion.md). A printed version number proves a reviewer is installed, not that it is signed in; the guide's "Check it works" section has a real test ("brainstorm: test that codex answers").
 
 ## 14. Email
 
