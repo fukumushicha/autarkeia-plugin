@@ -4,14 +4,14 @@
     "name": "Roman"
   },
   "metadata": {
-    "description": "Autarkeia v0.4.5 — a file-based way to work with Claude Code: files are the memory, the chat is not.",
+    "description": "Autarkeia v0.4.5 — a living record of you, in files you own, that whatever AI is best at the time works from.",
     "version": "0.4.5"
   },
   "plugins": [
     {
       "name": "autarkeia",
       "source": "./autarkeia",
-      "description": "A file-based way of working with Claude Code, built around your own vault.",
+      "description": "A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.",
       "version": "0.4.5",
       "author": {
         "name": "Roman"

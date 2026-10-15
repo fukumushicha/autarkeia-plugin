@@ -1,6 +1,6 @@
 # Autarkeia v0.4.5
 
-A file-based way of using Claude Code: files are the memory, the chat is not.
+A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
 ## Why this exists
 
