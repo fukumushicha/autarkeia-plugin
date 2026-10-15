@@ -8,11 +8,11 @@ For a real second opinion, add a model from another company. Autarkeia can hand 
 
 | | What it is | Account |
 |---|---|---|
-| **Claude Code** | You already have it. Hosts Autarkeia and the built-in Claude reviewer. | Your Claude account |
+| **Claude Code** or **Codex** | The app you already run Autarkeia in. Hosts the built-in reviewer: a second Claude, or a second Codex. | Your Claude or ChatGPT account |
 | **Codex CLI** | OpenAI's command-line agent | A ChatGPT account. OpenAI says Codex is included across ChatGPT plans, Free included, with usage limits that vary by plan. |
 | **Grok Build** | xAI's command-line agent | An xAI account (sign in through the browser), or an xAI API key. Check x.ai for which plans include it. |
 
-You can install one, both, or neither. With neither, `brainstorm` still works with the Claude reviewer.
+You can install one, both, or neither. With neither, `brainstorm` still works with the built-in reviewer.
 
 ## Install
 
@@ -52,7 +52,7 @@ grok --version
 
 Each should print a version number. You only need the ones you installed.
 
-A version number proves the tool is installed, not that it is signed in. For a real test, open your vault in Claude Code and say **brainstorm: test that codex answers** (or grok). It sends a tiny question about a harmless file and shows the reply. A reply means it works end to end. "Not signed in" means: run `codex` (or `grok login`) in Terminal and sign in there, as in the Install section above.
+A version number proves the tool is installed, not that it is signed in. For a real test, open your vault in Claude Code (or Codex) and say **brainstorm: test that codex answers** (or grok). It sends a tiny question about a harmless file and shows the reply. A reply means it works end to end. "Not signed in" means: run `codex` (or `grok login`) in Terminal and sign in there, as in the Install section above.
 
 ## How to use it
 
@@ -65,14 +65,14 @@ In your vault, say:
 | **send to grok** | Grok |
 | **all reviewers** | Every reviewer installed |
 
-Nothing goes to Codex or Grok unless you name them. If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
+Nothing goes to an outside reviewer unless you name it. (When you work in Codex, the built-in reviewer is itself a Codex, so a plain second opinion is read by OpenAI, like everything else in that session.) If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
 
 What happens:
 
-1. Claude writes its own view first and keeps it to itself, so it cannot steer the reviewer.
+1. The AI you are working with (Claude or Codex) writes its own view first and keeps it to itself, so it cannot steer the reviewer.
 2. It writes a short packet in `reviews/` (or in a private project's own `reviews/`, where the answers then stay too): your question and which files to read.
 3. Each reviewer reads those files in your vault and writes its answer next to the packet.
-4. Claude puts the answers side by side. Where they disagree, you see both. It does not split the difference.
+4. It puts the answers side by side. Where they disagree, you see both. It does not split the difference.
 5. You get one recommendation and, if a decision is still yours, one question.
 
 A review takes from one to several minutes per reviewer.

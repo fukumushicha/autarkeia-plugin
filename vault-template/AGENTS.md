@@ -25,7 +25,7 @@ Whoever syncs or backs up this folder holds a copy of everything in it, health r
 | `memory/decisions.md` | What was chosen, and why. |
 | `memory/tasks.md` | What is still to do. |
 | `PRIORITIES.md` | What matters, in order. You write this. |
-| `NEXT-ACTIONS.md` | Generated picture of open work. Rebuilt by `/realign`. Do not edit by hand. |
+| `NEXT-ACTIONS.md` | Generated picture of open work. Rebuilt by **realign**. Do not edit by hand. |
 | `docs/` | Working documents: what they or an AI wrote, and copies filed for reference. |
 | `archive/` | Originals from outside (statements, contracts, scans, exports), kept exactly as they arrived. Layout: `archive/README.md`. |
 | `inbox/` | Drop a file or an email here. |

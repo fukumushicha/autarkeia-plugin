@@ -144,7 +144,7 @@ Everything starts in the vault. When one piece of work or life grows a shape of 
 
 Everything is plain text. You can open, read and edit any of it yourself.
 
-A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It keeps working. Say **health check** and it offers to move the rules to the new layout. A vault made before v0.4.4 has no `archive/`, no "How to work" section in its rules, and a four-column `docs/register.md` without hashes; it keeps working. Copy `archive/README.md` and that section from `vault-template/AGENTS.md` when you want them, or ask Claude to; the librarian adds a hash column to the old register the first time it files something.
+A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It keeps working in Claude Code; Codex does not read those rules until they move (see [Using Codex](#using-codex)). Say **health check** and it offers to move the rules to the new layout. A vault made before v0.4.4 has no `archive/`, no "How to work" section in its rules, and a four-column `docs/register.md` without hashes; it keeps working. Copy `archive/README.md` and that section from `vault-template/AGENTS.md` when you want them, or ask Claude to; the librarian adds a hash column to the old register the first time it files something.
 
 A vault made before v0.4.5 still offers `git init` as a backup in its rules, and its example of a private project uses an older name. Say **health check**: it shows the current lines and replaces only those after your yes, leaving everything you wrote yourself.
 

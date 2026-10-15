@@ -36,6 +36,6 @@ If the verb you are about to write is attend, register, watch, join, or consider
 4. Tasks only if they pass the gate above.
 5. Move the file to `inbox/processed/` when done.
 
-Attachments: do not pretend you extracted a PDF from a sentence in the email. Point `/librarian` at the file.
+Attachments: do not pretend you extracted a PDF from a sentence in the email. Point **librarian** at the file.
 
 Report: N processed, N tasks (who is waiting), N that were just FYI.

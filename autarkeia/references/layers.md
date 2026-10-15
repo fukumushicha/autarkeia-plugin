@@ -14,7 +14,7 @@ One vault. The chat is not memory.
 | `archive/` | Originals from outside, exactly as they arrived, by area of life. Each area has its own `register.md` with a hash per file. Layout and rules: `references/archive.md`. |
 | `memory/tasks-archive.md` | Done tasks, with the date they were done. |
 | `inbox/` | Drop files and emails here. |
-| `reviews/` | Second-opinion packets from `/brainstorm`. |
+| `reviews/` | Second-opinion packets from **brainstorm**. |
 | `memory/ops/friction.md` | Things that keep going wrong, from **improve**. Propose only. |
 | `memory/ops/improvement-proposals.md` | Proposals from **improve**. Nothing here is applied without you saying yes. |
 
