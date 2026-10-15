@@ -8,9 +8,13 @@ This file is the vault's one set of instructions. Codex and Grok read it directl
 
 ## Keep it safe
 
-This folder is the only copy. Put it somewhere that syncs — iCloud, Dropbox, Drive — or run `git init` here once and commit at the end of each week. If the disk dies, the memory dies with it.
+Three different things, often confused:
 
-If this vault will hold things you would not want read by someone else, where you put it is a real choice. Worth deciding on purpose rather than by default.
+- **A copy somewhere else** is what survives a dead or lost disk: a backup drive, a backup service, or a synced folder that the provider also keeps. Without one, if the disk dies, the memory dies with it.
+- **Sync** keeps a second computer current. Wait until the files have fully arrived before starting a session on the other machine. A sync service that swaps files for online-only placeholders to save space will break reading here: keep this folder fully downloaded.
+- **Version history** (for example `git init` here and a commit each week) lets you go back to last week's file. On the same disk it is not a backup.
+
+Whoever syncs or backs up this folder holds a copy of everything in it, health records included. The AI you work with also reads what it needs: whatever it reads is sent to the company that runs it (Anthropic, for Claude). The vault keeps the files yours; it does not hide them from the model you choose. If this vault will hold things you would not want read by someone else, where you put it is a real choice. Worth deciding on purpose rather than by default.
 
 ## Files
 
@@ -37,7 +41,7 @@ A project has its own memory: `projects/<name>/memory/` with `facts.md`, `decisi
 
 A project's rules add to this file. They never loosen **When you must ask** or the clause about a body.
 
-**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, checkpoints, reviews) get a pointer at most, for example "Cassilhaus: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
+**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, checkpoints, reviews) get a pointer at most, for example "house-renovation: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
 
 When the user asks for a new project:
 
@@ -56,6 +60,7 @@ Before working on a project or writing to it, read its `AGENTS.md` if it has one
 | daily debrief | Close the day with a few questions |
 | weekly debrief | See the week, promote what should last |
 | checkpoint | Quick working-state mark |
+| handover | Note for a fresh session to carry on from |
 | librarian / file this | File a document |
 | email / process emails | Intake from `inbox/` — never send |
 | realign | Rebuild the open-work picture |

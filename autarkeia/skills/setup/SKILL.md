@@ -22,7 +22,7 @@ Confirm the contract and `memory/facts.md` exist here. If not, stop and say so: 
 
 Read the contract. Run `date "+%Y-%m-%d"` and `date "+%H:%M"`. Do not guess the date.
 
-Search `memory/daily/` for the line `**Setup**: done`. If it exists, this vault is set up. Say so, say the rhythm (distill before closing a session, daily debrief at the end of a day), and stop. Projects and patterns come from use, not from setup.
+Search `memory/daily/` for the line `**Setup**: done`. If it exists, this vault is set up. Say so, say the rhythm (distill before closing a session, daily debrief at the end of a day), and stop. Setup does not run its questions again. If they want to change something it asked (their name, how to talk to them, their priorities, the first job), tell them to say it plainly in any session: priorities and the job are written like any other answer, and a change to how to talk is a contract change, shown first and written after yes. Projects and patterns come from use, not from setup.
 
 Otherwise append `### Setup (HH:MM)` to today's log, `memory/daily/YYYY-MM-DD.md` (create it if needed), and go through the steps in order. That is the whole resume: nothing is skipped. Where an earlier `### Setup` block or a file already holds an answer (a name, a filled priority, a real task in place of the seed task), do not ask it fresh: show what you have, in one message, and ask once whether it still holds. Then write each confirmed answer exactly like a new one, block line first, then its file. Re-read a file before writing to it and do not add a line it already has. `not named yet` and `not run` are not answers; ask those again.
 

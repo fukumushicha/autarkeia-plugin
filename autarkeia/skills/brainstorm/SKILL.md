@@ -31,12 +31,12 @@ Run `command -v codex` and `command -v grok` to see what is installed.
 
 ## How
 
-1. Run `date "+%Y-%m-%d"`. Pick a short name for the review.
+1. Run `date "+%Y-%m-%d"`. Pick a short name for the review. Choose the review folder once, and use it for everything below (packet, every reviewer's answer, retries, the result): `reviews` normally; `projects/<name>/reviews` when the thing belongs to a project whose rules keep its content inside it. Create it if missing. In the commands below it is written `<folder>`: put the folder's actual path in its place in every command you run, for example `projects/house-renovation/reviews`. Do not use a shell variable for it; each command runs in a fresh shell.
 2. Write your own take first, privately: what is true, what is weak, what would change the decision. It does not go to the reviewer.
-3. Write the packet to `reviews/YYYY-MM-DD-<short-name>-packet.md`: the question in their words, the paths of the files to read, and any source you already fetched. Not your take.
+3. Write the packet to `<folder>/YYYY-MM-DD-<short-name>-packet.md`: the question in their words, the paths of the files to read, and any source you already fetched. Not your take.
 4. Run each reviewer. One at a time is fine.
 5. Synthesize. Where you and a reviewer clash, show both. Do not average them. Do not invent a third position nobody held. A reviewer who opened the file beats one who reasoned from the packet; check the file yourself before adopting either.
-6. Save the result in `reviews/YYYY-MM-DD-<short-name>.md`, with which reviewers actually answered.
+6. Save the result in `<folder>/YYYY-MM-DD-<short-name>.md`, with which reviewers actually answered.
 
 ### The prompt every reviewer gets
 
@@ -53,7 +53,7 @@ Spawn **one** sub-agent with the packet only. Ask it to disagree where it can.
 From the vault folder. The prompt goes in through standard input; `-s read-only` is what stops it changing your vault.
 
 ```bash
-codex exec -C "$PWD" --skip-git-repo-check -s read-only -o "reviews/YYYY-MM-DD-<short-name>-codex.md" - < "reviews/YYYY-MM-DD-<short-name>-packet.md"
+codex exec -C "$PWD" --skip-git-repo-check -s read-only -o "<folder>/YYYY-MM-DD-<short-name>-codex.md" - < "<folder>/YYYY-MM-DD-<short-name>-packet.md"
 ```
 
 ### Grok
@@ -63,7 +63,7 @@ From the vault folder. `--sandbox read-only` is what stops it changing your vaul
 First check where the vault really is: run `pwd -P`, and `realpath` on each file named in the packet. If any of them is under `/tmp`, `/private/tmp`, `/var/tmp`, `/private/var/tmp`, `/var/folders`, `/private/var/folders` or `~/.grok`, stop: Grok's sandbox leaves those writable, so the review would not be read-only there. Say so and suggest moving the vault to an ordinary folder such as Documents.
 
 ```bash
-grok --prompt-file "reviews/YYYY-MM-DD-<short-name>-packet.md" --no-memory --disable-web-search --max-turns 40 --permission-mode bypassPermissions --sandbox read-only > "reviews/YYYY-MM-DD-<short-name>-grok.md"
+grok --prompt-file "<folder>/YYYY-MM-DD-<short-name>-packet.md" --no-memory --disable-web-search --max-turns 40 --permission-mode bypassPermissions --sandbox read-only > "<folder>/YYYY-MM-DD-<short-name>-grok.md"
 ```
 
 Grok sometimes stops on its first step. If that happens, run it once more into `...-grok-2.md`, keeping the first file.

@@ -1,4 +1,4 @@
-# Autarkeia v0.4.4
+# Autarkeia v0.4.5
 
 A file-based way of using Claude Code: files are the memory, the chat is not.
 
@@ -16,7 +16,7 @@ Two layers keep it honest. The record is the originals, untouched. The story is 
 
 **How this differs from a personal agent.** The personal agents you have heard of, Instinct, Meta's Muse and the ones that will follow, learn you inside their own service. The memory sits on the company's computer. You usually cannot open it, correct it or take it with you; what you tell the agent may be used to train the next version unless you opt out; and when the company changes direction, or a better model appears somewhere else, the years of context stay behind.
 
-Here the memory is a folder on your own disk. You can open every file and see exactly what the AI knows about you. The model is only the reader: Claude today, something else when something else is better, and the folder does not care. Nothing in it is sent anywhere unless you say so, and nothing is deleted, sent, posted or paid without your yes.
+Here the memory is a folder on your own disk. You can open every file and see exactly what the AI knows about you. The model is only the reader: Claude today, something else when something else is better, and the folder does not care. The AI reads what it needs from it, and what it reads goes to the company that runs that AI (Anthropic, for Claude), the same as your chats. Nothing is handed to anyone else, deleted, sent, posted or paid without your yes. Those are rules the AI follows, not a lock; how much it may do without asking is set in the app (see [Getting started](docs/getting-started.md), permission modes).
 
 The two are not enemies. You can keep a personal agent for errands and keep your life here. The question is only where the record of you lives: on their side or yours.
 
@@ -44,7 +44,8 @@ The name comes from the Greek *autarkeia*: self-sufficiency, having what you nee
 | `daily-debrief` | Close the day with a few questions |
 | `weekly-debrief` | See the week |
 | `checkpoint` | Quick mark so you can continue |
-| `librarian` | File a document |
+| `handover` | Note for a fresh session to carry on from, and the line to paste there |
+| `librarian` | File a document or a recording |
 | `email` | Intake from `inbox/` — never send |
 | `realign` | Rebuild the open-work picture |
 | `health-check` | Is the vault still a system |
@@ -57,7 +58,15 @@ The skills are the method. What goes into the vault is yours.
 
 ## Setup
 
-On the machine that already has Claude Code:
+**New to Claude Code?** Follow [docs/getting-started.md](docs/getting-started.md): the first hour, click by click, in the Claude desktop app. The short version is below.
+
+You need a paid Claude plan and Claude Code. In the desktop app, this runs in the **Code** tab, not in Cowork or an ordinary chat. If `claude --version` in Terminal prints nothing, install it first with Anthropic's own line (details: https://code.claude.com/docs/en/setup):
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Then:
 
 1. Nothing to download. In Terminal:
 
@@ -83,9 +92,11 @@ Fallback, if the two commands in step 1 fail: download this repository (green **
 
 ## How to use it
 
-Do real work in that vault folder. End of a session: **distill**. End of a day: **daily debrief**. End of a week: **weekly debrief**. A document: **librarian**. Emails you dropped in `inbox/`: **email**.
+Do real work in that vault folder, one task per session. End of a session: **distill**. A new topic halfway through: **handover**, then continue in a fresh session. End of a day: **daily debrief**. End of a week: **weekly debrief**. A document or a recording: **librarian**. Emails you dropped in `inbox/`: **email**.
 
 A statement, a contract, a scan, anything that arrived from outside: drop it in `inbox/`, say **librarian**, and the original goes to `archive/` untouched, filed by part of life, then the person or thing, then the kind of document, with a hash in that area's register. Documents you or the AI wrote go to `docs/`. Facts taken out of either land in memory.
+
+You do not have to start empty. Ask Claude to audit a folder or a project you already keep elsewhere and propose how to bring it in: originals are copied, never moved, and nothing is deleted without your yes. [Getting started](docs/getting-started.md) has example requests.
 
 Everything starts in the vault. When one piece of work or life grows a shape of its own, say **new project** and name it. It gets its own folder and memory, and, sooner or later, its own rules: who else is involved, what stays inside it, what to watch. The vault's rules always hold; a project's rules add to them. Keep opening the vault folder, not the project.
 
@@ -99,7 +110,7 @@ Everything starts in the vault. When one piece of work or life grows a shape of 
 | `NEXT-ACTIONS.md` | Open work across the vault and every project. **realign** rebuilds it; do not edit it by hand. |
 | `memory/daily/` | One file per day. Everything lands here first, except the details of a project whose rules keep them inside it. |
 | `memory/facts.md`, `decisions.md`, `tasks.md` | What is true, what was chosen and why, what is still to do. |
-| `docs/` | Working documents: what you or the AI wrote, listed in `docs/register.md`. |
+| `docs/` | Working documents: what you or the AI wrote (handover notes and transcripts too), listed in `docs/register.md`. |
 | `archive/` | Originals from outside, exactly as they arrived, in up to eight areas by part of life (official documents, money and tax, health, homes, travel, companies and projects, photos and memories, archive records). Each area has its own register with a hash per file. An area appears when its first document does. |
 | `inbox/` | Drop a file or an email here, then say **librarian** or **email**. |
 | `reviews/` | Second opinions and health-check reports. |
@@ -109,12 +120,23 @@ Everything is plain text. You can open, read and edit any of it yourself.
 
 A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It keeps working. Say **health check** and it offers to move the rules to the new layout. A vault made before v0.4.4 has no `archive/`, no "How to work" section in its rules, and a four-column `docs/register.md` without hashes; it keeps working. Copy `archive/README.md` and that section from `vault-template/AGENTS.md` when you want them, or ask Claude to; the librarian adds a hash column to the old register the first time it files something.
 
+A vault made before v0.4.5 still offers `git init` as a backup in its rules, and its example of a private project uses an older name. Say **health check**: it shows the current lines and replaces only those after your yes, leaving everything you wrote yourself.
+
+**Updating.** In Terminal:
+
+```bash
+claude plugin marketplace update autarkeia-plugin
+claude plugin update autarkeia@autarkeia-plugin
+```
+
+Then quit and reopen Claude. Your vault is not replaced: never copy the template over it again. New skills and fixes arrive with the plugin; changes to the vault's own rules arrive through **health check**, shown before anything is written.
+
 ## Second opinions
 
 Second opinions from Codex or Grok, not only Claude: [docs/second-opinion.md](docs/second-opinion.md) says what to install and how to ask for them.
 
 ## Cost
 
-It runs on your own Claude account. Thirteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
+It runs on your own Claude account. Fourteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
 
-It earns its place after weeks of real work, not on day one.
+Day one can start with what you already have. The record compounds after that: it earns its place over weeks of real work.

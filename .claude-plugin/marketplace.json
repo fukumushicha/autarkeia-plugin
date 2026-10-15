@@ -4,15 +4,15 @@
     "name": "Roman"
   },
   "metadata": {
-    "description": "Autarkeia v0.4.4 — a file-based way to work with Claude Code: files are the memory, the chat is not.",
-    "version": "0.4.4"
+    "description": "Autarkeia v0.4.5 — a file-based way to work with Claude Code: files are the memory, the chat is not.",
+    "version": "0.4.5"
   },
   "plugins": [
     {
       "name": "autarkeia",
       "source": "./autarkeia",
       "description": "A file-based way of working with Claude Code, built around your own vault.",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "author": {
         "name": "Roman"
       },

@@ -52,6 +52,8 @@ grok --version
 
 Each should print a version number. You only need the ones you installed.
 
+A version number proves the tool is installed, not that it is signed in. For a real test, open your vault in Claude Code and say **brainstorm: test that codex answers** (or grok). It sends a tiny question about a harmless file and shows the reply. A reply means it works end to end. "Not signed in" means: run `codex` (or `grok login`) in Terminal and sign in there, as in the Install section above.
+
 ## How to use it
 
 In your vault, say:
@@ -68,7 +70,7 @@ Nothing goes to Codex or Grok unless you name them. If you ask for a plain secon
 What happens:
 
 1. Claude writes its own view first and keeps it to itself, so it cannot steer the reviewer.
-2. It writes a short packet in `reviews/`: your question and which files to read.
+2. It writes a short packet in `reviews/` (or in a private project's own `reviews/`, where the answers then stay too): your question and which files to read.
 3. Each reviewer reads those files in your vault and writes its answer next to the packet.
 4. Claude puts the answers side by side. Where they disagree, you see both. It does not split the difference.
 5. You get one recommendation and, if a decision is still yours, one question.

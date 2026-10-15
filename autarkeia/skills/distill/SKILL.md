@@ -41,7 +41,7 @@ If nothing is worth saving, say so and stop.
 
 ## Write
 
-First decide where each item belongs. An item that belongs to a project whose `AGENTS.md` keeps its content inside goes only into the project's files; the daily log gets a pointer at most ("Cassilhaus: two items saved in the project"), or nothing if the rules forbid even that.
+First decide where each item belongs. An item that belongs to a project whose `AGENTS.md` keeps its content inside goes only into the project's files; the daily log gets a pointer at most ("house-renovation: two items saved in the project"), or nothing if the rules forbid even that.
 
 Everything else goes to `memory/daily/YYYY-MM-DD.md` first (create if needed; add at the end) under `### Session (HH:MM)`.
 

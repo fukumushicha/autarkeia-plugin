@@ -24,4 +24,4 @@ Append to today's daily log:
 **Next**: [bullets]
 ```
 
-If the work was in a project whose rules keep its content inside it, write the checkpoint in that project's terms only as a pointer here ("worked on Cassilhaus"), nothing private. Keep it under 20 lines. Re-read the tail after writing. Say: checkpoint saved.
+If the work was in a project whose rules keep its content inside it, write the checkpoint in that project's terms only as a pointer here ("worked on house-renovation"), nothing private. Keep it under 20 lines. Re-read the tail after writing. Say: checkpoint saved.

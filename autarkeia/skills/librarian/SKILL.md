@@ -1,6 +1,6 @@
 ---
 name: librarian
-description: "File a document: keep a copy, extract what should live in the vault. Use when the user says file this, process this, extract from this, or points at a file or folder."
+description: "File a document or a recording: keep a copy, extract what should live in the vault. Use when the user says file this, process this, extract from this, transcribe this, or points at a file, a folder, or an audio recording such as a voice memo."
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -11,6 +11,8 @@ A document is not memory until something true is taken out of it.
 **Mode: ask first.**
 
 Find the file: the path they named, or new files in `inbox/`. If several, list them and ask.
+
+A recording (audio: a voice memo, a call, an appointment) cannot be read directly: follow **If it is a recording** further down instead of the read-and-propose steps here; its filing uses the same numbered steps below.
 
 Read the document. If you cannot, stop. Do not guess from the filename.
 
@@ -38,6 +40,18 @@ After yes:
 
 Longer version, if the plugin's `references/health.md` is reachable: read it.
 
+
+**If it is a recording** (a voice memo, a call, an appointment):
+
+1. Decide whose it is, as above (a project whose rules keep its content inside gets everything inside `projects/<name>/`).
+2. First proposal, before any transcript exists: where the audio goes (an original: the area by what it is about, a doctor's visit under Health and the person), and how it will be transcribed. Check for a local transcription tool (`command -v whisper`, `command -v whisper-cli`, `command -v mlx_whisper`). If one is there, propose using it on this computer; a long recording takes a while and closing the laptop stops it; do not guess how long. If none is there and no transcript exists, say so: file the audio if they want, and stop there. Do not install anything, and never send the audio to an online transcription service without their yes. Wait for yes.
+3. After yes: file the audio like any original (hash, register row, copy check). Then the transcript:
+   - **A transcript that arrived with it** (from a clinic, an app, another person) is a received original: file it unchanged in the archive like any original, with the register row naming the recording it belongs to. Do not add a header to it.
+   - **A transcript made here** is a working document: `docs/` (or the project's `docs/`), named after the recording, with a first line pointing at the audio's archive path and the tool that made it; its register row names the same.
+4. Read the transcript. Second proposal: the specific facts, decisions and tasks to take out, as for any document. Wait for yes.
+5. Extraction after yes: keep who said what (doctor, patient, someone else) and keep what was unclear marked as unclear. A name, dose, value or date taken from a recording points at the transcript and the place in it; never promote a misheard word into a fact. A doctor's recording is a doctor's note: the body rules above hold.
+
+Say once: the transcript is read by the AI you work with, so it is sent to that company like any file it reads. Transcribing locally keeps the audio on this computer; it does not keep the transcript there.
 
 If it is about someone else, or looks private in a way that is not the user's, stop and ask before copying.
 
