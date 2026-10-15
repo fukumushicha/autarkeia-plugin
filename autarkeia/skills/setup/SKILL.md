@@ -75,7 +75,7 @@ Do not create projects during setup. One vault is enough to start; later, a "new
 
 ## 4. One cycle
 
-Talk about the job for a few minutes: what is true about it now, what was decided, what is still open. Then save it the way `/distill` does: run the distill skill if you can; if you cannot, read the plugin's `skills/distill/SKILL.md` and follow it (today's daily log first, under `### Session (HH:MM)`, then facts, decisions, tasks). Then open `memory/` and show them what landed, in their words: the next session will see this; the chat will not be there. Block line: what landed.
+Talk about the job for a few minutes: what is true about it now, what was decided, what is still open. Then save it the way **distill** does: run the distill skill if you can; if you cannot, read the plugin's `skills/distill/SKILL.md` and follow it (today's daily log first, under `### Session (HH:MM)`, then facts, decisions, tasks). Then open `memory/` and show them what landed, in their words: the next session will see this; the chat will not be there. Block line: what landed.
 
 ## Close
 

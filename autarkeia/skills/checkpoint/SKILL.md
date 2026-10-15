@@ -6,7 +6,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 # Checkpoint
 
-Mark the trail. This is not `/distill`.
+Mark the trail. This is not **distill**.
 
 **Mode: act.** No approval.
 

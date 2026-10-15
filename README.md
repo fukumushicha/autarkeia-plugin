@@ -25,7 +25,7 @@ The test for every line in this README: when a friend asks what you are building
 The ideas behind it:
 
 - **Models come and go; your memory should not.** AI models are replaced every few months. The files stay. Any capable model can read them, so a better model inherits everything instead of starting over.
-- **Use the best model for the job, with everything it needs to know.** The vault belongs to no vendor. Claude Code or Codex runs it day to day, with the same skills; the other one, and Grok, can read the same files for a second opinion.
+- **Use the best model for the job, with everything it needs to know.** The vault belongs to no vendor. Claude Code or Codex runs it day to day, with the same skills; Codex and Grok can read the same files for a second opinion.
 - **Plain files over databases.** You can open, read, back up and move every file yourself. Nothing is locked in an app, and you can see exactly what the AI knows about you.
 - **Keep the original next to the summary.** Documents stay as they arrived. A future model can re-read them and pull out what today's missed.
 - **Questions instead of blank pages.** The daily and weekly debriefs ask you a few questions and write down the answers. Nobody has to keep a journal.
@@ -112,7 +112,9 @@ cp -R ~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template ~/Documents/my-
 3. Start Codex in **that** folder (`cd ~/Documents/my-os`, then `codex`). Codex reads the vault's rules from `AGENTS.md` on its own.
 4. Say: **setup**. Every skill works by saying its name in a sentence, the same as in Claude.
 
-One vault can be used from both Claude Code and Codex: the rules and the files are shared. In Codex, a plain "second opinion" is a Codex sub-agent; "send to grok", or Claude, are the outside views.
+One vault can be used from both Claude Code and Codex: the rules and the files are shared. In Codex, a plain "second opinion" is a Codex sub-agent and "send to codex" a separate read-only Codex; for a view from another company, say "send to grok" ([docs/second-opinion.md](docs/second-opinion.md)).
+
+A vault made before v0.4.2 keeps its rules in `CLAUDE.md`, which Codex does not read. Open it in Codex once, say **health check**, and accept the move to `AGENTS.md`; then start a new Codex session.
 
 ## How to use it
 

@@ -1,6 +1,6 @@
 # Second opinions from other AI models
 
-The `brainstorm` skill gets you a second opinion on a decision, a document, or something an agent just did. Out of the box it asks a second Claude, which has a fresh context but the same training as the first. That catches slips; it does not catch the blind spots both share.
+The `brainstorm` skill gets you a second opinion on a decision, a document, or something an agent just did. Out of the box it asks a second Claude, which has a fresh context but the same training as the first. That catches slips; it does not catch the blind spots both share. If you work in Codex rather than Claude Code, the built-in reviewer is a second Codex instead, and the same holds.
 
 For a real second opinion, add a model from another company. Autarkeia can hand the review to **Codex** (OpenAI) or **Grok** (xAI). Each runs on your Mac, reads the files in your vault itself, and is blocked from changing them. That is the "agentic" part: the reviewer checks the actual file rather than trusting a summary of it.
 
@@ -60,12 +60,12 @@ In your vault, say:
 
 | Say | Who reviews |
 |---|---|
-| **second opinion on** this decision | The built-in Claude reviewer |
-| **send to codex** | Codex |
+| **second opinion on** this decision | The built-in reviewer: Claude, or Codex if you work in Codex |
+| **send to codex** | Codex (when you already work in Codex: a separate, read-only Codex; same company, fresh context) |
 | **send to grok** | Grok |
 | **all reviewers** | Every reviewer installed |
 
-Nothing goes to Codex or Grok unless you name them. If you ask for a plain second opinion, Autarkeia uses Claude and tells you which outside reviewers are available.
+Nothing goes to Codex or Grok unless you name them. If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
 
 What happens:
 
@@ -89,4 +89,4 @@ A review takes from one to several minutes per reviewer.
 
 - **"Not signed in"**: run `codex` (then choose Sign in with ChatGPT) or `grok login` again, in your own Terminal. Autarkeia never handles your password.
 - **Grok returns almost nothing**: it sometimes stops on its first step. Autarkeia retries once on its own. If the second try also fails, it tells you the review did not finish and leaves that reviewer out.
-- **"Command not found" inside Claude Code**: restart Claude Code after installing, so it sees the new command.
+- **"Command not found" inside Claude Code or Codex**: restart the app after installing, so it sees the new command.

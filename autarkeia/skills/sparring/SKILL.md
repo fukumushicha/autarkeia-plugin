@@ -29,4 +29,4 @@ If they switch language, follow.
 
 When they are done, ask once: what are you taking from this? If they skip it, skip it.
 
-If something factual or decided appeared, offer `/distill`. Do not extract identity-level content without showing them the list first.
+If something factual or decided appeared, offer **distill**. Do not extract identity-level content without showing them the list first.

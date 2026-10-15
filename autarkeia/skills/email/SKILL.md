@@ -32,7 +32,7 @@ If the verb you are about to write is attend, register, watch, join, or consider
 
 1. Read it.
 2. Daily log first: who, subject, what matters.
-3. Facts and decisions through `/distill` routing.
+3. Facts and decisions through **distill** routing.
 4. Tasks only if they pass the gate above.
 5. Move the file to `inbox/processed/` when done.
 

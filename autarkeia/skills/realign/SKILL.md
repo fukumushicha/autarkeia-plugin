@@ -42,4 +42,4 @@ A task line that only flags something, with no next step, is not yet open work: 
 
 Do not put done tasks here. If a task in `memory/tasks.md` is checked off, move it to `memory/tasks-archive.md` (create if needed) and remove it from `tasks.md`. A checked-off project task moves to that project's own `memory/tasks-archive.md`.
 
-Lead the reply with the Now list, in plain language. One sentence on inbox if anything is waiting. Mention `/email` only if `inbox/` has `email-*.md` files.
+Lead the reply with the Now list, in plain language. One sentence on inbox if anything is waiting. Mention **email** only if `inbox/` has `email-*.md` files.

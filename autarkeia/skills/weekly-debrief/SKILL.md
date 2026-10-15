@@ -14,7 +14,7 @@ Confirm this is the vault (`memory/facts.md`). Run `date "+%Y-%m-%d"`.
 
 ## 1. Picture of the week
 
-Run `/realign` for real — rebuilding the open-work picture is exactly what you want before a weekly look. Run `/health-check` dry: report only, no fixes. Then read the last seven daily logs, `memory/tasks.md`, and `PRIORITIES.md` if it exists.
+Run **realign** for real — rebuilding the open-work picture is exactly what you want before a weekly look. Run **health-check** dry: report only, no fixes. Then read the last seven daily logs, `memory/tasks.md`, and `PRIORITIES.md` if it exists.
 
 ## 2. Propose promotions
 
@@ -34,6 +34,6 @@ Ask one at a time, at most three:
 
 ## 5. Write
 
-Approved promotions go through `/distill` routing. Add `### Weekly debrief` to today's daily log.
+Approved promotions go through **distill** routing. Add `### Weekly debrief` to today's daily log.
 
 Close in three beats: what the week was, what it means, what you need from them (one thing, or nothing).

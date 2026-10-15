@@ -18,14 +18,14 @@ The file, decision, or output they pointed at. Read it. If it is a claim about t
 
 | Reviewer | When | What it is |
 |---|---|---|
-| Sub-agent | always available | A fresh copy of the model you are running on: a Claude sub-agent in Claude Code, a Codex sub-agent in Codex. Same family as you. Independent context, not an independent mind. |
+| Sub-agent | when your app can start one | A fresh copy of the model you are running on: a Claude sub-agent in Claude Code, a Codex sub-agent in Codex. Same family as you. Independent context, not an independent mind. |
 | Codex | they said codex, or all reviewers | OpenAI's agent, run on their own ChatGPT sign-in. Reads the vault itself. |
 | Grok | they said grok, or all reviewers | xAI's agent, run on their own xAI sign-in. Reads the vault itself. |
 
 Run `command -v codex` and `command -v grok` to see what is installed.
 
 - **They named an outside reviewer** (codex, grok, all reviewers): that is their yes to send it out. Use what they named, if installed. If it is not installed, say so and give them the setup guide: https://github.com/fukumushicha/autarkeia-plugin/blob/master/docs/second-opinion.md. Do not fake the run.
-- **They asked for a second opinion without naming one:** use the sub-agent. At the close, say in one line which outside reviewers are installed and that "send to codex" or "send to grok" would get one. Do not send anything outside on your own.
+- **They asked for a second opinion without naming one:** use the sub-agent. At the close, say in one line which outside reviewers are installed (from another company than the model you are running on) and that naming one would get it. Do not send anything outside on your own.
 - **The thing is about their health, another person, or anything they said was off the record:** even when they named an outside reviewer, confirm once before writing the packet, because that company will read it.
 - Their yes covers what you put in the packet. The read-only flags stop changes, not reading: a reviewer may open other files in the vault. Say this once the first time they send something out.
 
@@ -48,7 +48,7 @@ Put this at the top of the packet:
 
 Spawn **one** sub-agent with the packet only. Ask it to disagree where it can. If your runtime cannot start a sub-agent, say so and offer an outside reviewer instead; do not review it yourself and call that a second opinion.
 
-When you are Codex, "send to codex" is your own family: say so once and use the sub-agent. Grok stays an outside reviewer.
+When you are Codex, "send to codex" still runs the Codex command below: a separate Codex with a fresh context and the read-only sandbox. Say once that it is your own family, not an outside view. Grok is the outside view.
 
 ### Codex
 
