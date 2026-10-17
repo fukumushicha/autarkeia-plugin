@@ -69,8 +69,11 @@ def cuser(text, uid, parent=None, content=None, sid=SID, **flags):
     return record
 
 
+_OMIT = object()
+
+
 def queued_prompt(prompt, uid="a", parent="p", source_uuid="q", delivery_id="d",
-                  session_id=SID, command_mode="prompt", **flags):
+                  session_id=SID, command_mode="prompt", origin=_OMIT, **flags):
     attachment = {
         "type": "queued_command",
         "prompt": prompt,
@@ -81,6 +84,8 @@ def queued_prompt(prompt, uid="a", parent="p", source_uuid="q", delivery_id="d",
         attachment["source_uuid"] = source_uuid
     if delivery_id is not None:
         attachment["delivery_id"] = delivery_id
+    if origin is not _OMIT:
+        attachment["origin"] = origin
     record = {
         "parentUuid": parent,
         "isSidechain": False,
@@ -1452,7 +1457,8 @@ class TranscriptReaderTests(unittest.TestCase):
             self.assertEqual(item["parent_id"], "p")
             self.assertEqual(item["timestamp"], "2026-10-17T16:59:54.851Z")
             self.assertEqual(item["source_kind"], "claude_queued_command")
-            self.assertEqual(item["origin"], "claude_queued_command")
+            self.assertIsNone(item["origin_kind"])
+            self.assertNotIn("origin", item)
             self.assertEqual(item["source_uuid"], "q")
             self.assertEqual(item["delivery_id"], "d")
             self.assertNotIn("RENDERED_WRAPPER_SECRET", out + err)
@@ -1554,10 +1560,238 @@ class TranscriptReaderTests(unittest.TestCase):
                 self.assertEqual(piece["coverage_status"], "retained_snapshot_only")
                 for item in piece["items"]:
                     self.assertEqual(item["source_kind"], "claude_queued_command")
-                    self.assertEqual(item["origin"], "claude_queued_command")
+                    self.assertIsNone(item["origin_kind"])
+                    self.assertNotIn("origin", item)
                     self.assertEqual(item["source_uuid"], "q")
                     self.assertEqual(item["delivery_id"], "d")
                     self.assertEqual(item["id"], "a")
+
+    def test_queued_command_list_prompts_images_and_origin(self):
+        caption = "Caption beside the shot."
+        image = {
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": "image/png",
+                "data": "QUEUED_IMAGE_SECRET_BASE64",
+            },
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            claude_path(root / "list-absent", [
+                queued_prompt([{"type": "text", "text": "Queued list without an origin."}], parent=None),
+            ])
+            code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / "list-absent"),
+                                                "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "retained_snapshot_only")
+            self.assertEqual(len(page["items"]), 1)
+            item = page["items"][0]
+            self.assertEqual(item["role"], "user")
+            self.assertEqual(item["kind"], "user_message_candidate")
+            self.assertEqual(item["text"], "Queued list without an origin.")
+            self.assertEqual(item["source_kind"], "claude_queued_command")
+            self.assertIsNone(item["origin_kind"])
+            self.assertNotIn("origin", item)
+            self.assertEqual(item["source_uuid"], "q")
+            self.assertEqual(item["delivery_id"], "d")
+            self.assertNotIn("queued_command_shape", [warning["code"] for warning in page["warnings"]])
+            self.assertNotIn("RENDERED_WRAPPER_SECRET", out + err)
+
+            claude_path(root / "list-human", [
+                queued_prompt(
+                    [{"type": "text", "text": "/goal clear"}],
+                    parent=None,
+                    origin={"kind": "human"},
+                ),
+            ])
+            code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / "list-human"),
+                                                "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "retained_snapshot_only")
+            item = page["items"][0]
+            self.assertEqual(item["text"], "/goal clear")
+            self.assertEqual(item["kind"], "user_message_candidate")
+            self.assertEqual(item["origin_kind"], "human")
+            self.assertEqual(item["source_kind"], "claude_queued_command")
+            self.assertNotIn("origin", item)
+            self.assertNotIn("RENDERED_WRAPPER_SECRET", out + err)
+
+            claude_path(root / "string-human", [
+                queued_prompt("String prompt from a person.", parent=None, origin={"kind": "human"}),
+            ])
+            code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / "string-human"),
+                                                "--session-id", SID])
+            self.assertEqual(code, 0)
+            item = page["items"][0]
+            self.assertEqual(item["text"], "String prompt from a person.")
+            self.assertEqual(item["kind"], "user_message_candidate")
+            self.assertEqual(item["origin_kind"], "human")
+            self.assertNotIn("RENDERED_WRAPPER_SECRET", out + err)
+
+            claude_path(root / "text-image", [
+                queued_prompt(
+                    [{"type": "text", "text": caption}, image],
+                    parent=None,
+                    origin={"kind": "human"},
+                ),
+            ])
+            code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / "text-image"),
+                                                "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "retained_snapshot_only")
+            self.assertEqual([item["text"] for item in page["items"]], [caption])
+            self.assertEqual(page["items"][0]["origin_kind"], "human")
+            self.assertEqual(page["omissions"]["attachments"], 1)
+            self.assertNotIn("queued_command", page["attachment_subtype_omissions"])
+            codes = [warning["code"] for warning in page["warnings"]]
+            self.assertIn("attachment_omitted", codes)
+            self.assertNotIn("queued_command_shape", codes)
+            self.assertNotIn("QUEUED_IMAGE_SECRET_BASE64", out + err)
+            self.assertNotIn("RENDERED_WRAPPER_SECRET", out + err)
+
+            claude_path(root / "image-only", [
+                cuser("KEEP_BESIDE_IMAGE", "keep"),
+                queued_prompt([image], uid="shot", parent="keep", origin={"kind": "human"}),
+            ])
+            code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / "image-only"),
+                                                "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "retained_snapshot_only")
+            self.assertEqual([item["text"] for item in page["items"]], ["KEEP_BESIDE_IMAGE"])
+            self.assertEqual(page["omissions"]["attachments"], 1)
+            self.assertNotIn("queued_command", page["attachment_subtype_omissions"])
+            codes = [warning["code"] for warning in page["warnings"]]
+            self.assertIn("attachment_omitted", codes)
+            self.assertNotIn("queued_command_shape", codes)
+            self.assertNotIn("QUEUED_IMAGE_SECRET_BASE64", out + err)
+
+            block = ("B" * 2400) + "END_BLOCK"
+            claude_path(root / "long-block", [
+                queued_prompt(
+                    [{"type": "text", "text": block}],
+                    parent=None,
+                    origin={"kind": "human"},
+                ),
+            ])
+            pages = self.walk(["--runtime", "claude", "--home", str(root / "long-block"),
+                               "--session-id", SID, "--max-chars", "400"])
+            self.assertGreater(len(pages), 1)
+            self.assertEqual(self.joined(pages), [("user_message_candidate", "user", block)])
+            for piece in pages:
+                self.assertEqual(piece["coverage_status"], "retained_snapshot_only")
+                for item in piece["items"]:
+                    self.assertEqual(item["source_kind"], "claude_queued_command")
+                    self.assertEqual(item["origin_kind"], "human")
+                    self.assertEqual(item["source_uuid"], "q")
+                    self.assertEqual(item["delivery_id"], "d")
+                    self.assertNotIn("origin", item)
+
+            claude_path(root / "nonhuman", [
+                cuser("KEEP_HUMAN", "keep"),
+                queued_prompt(
+                    [{"type": "text", "text": "SECRET_AGENT_QUEUE"}],
+                    uid="agent",
+                    parent="keep",
+                    origin={"kind": "agent"},
+                ),
+            ])
+            code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / "nonhuman"),
+                                                "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "retained_snapshot_only")
+            self.assertEqual([(item["kind"], item["text"]) for item in page["items"]], [
+                ("user_message_candidate", "KEEP_HUMAN"),
+                ("nonhuman_context", ""),
+            ])
+            self.assertGreaterEqual(page["omissions"]["nonhuman_context"], 1)
+            suppressed = page["items"][1]
+            self.assertEqual(suppressed["origin_kind"], "agent")
+            self.assertEqual(suppressed["source_kind"], "claude_queued_command")
+            self.assertNotIn("queued_command_shape", [warning["code"] for warning in page["warnings"]])
+            self.assertNotIn("SECRET_AGENT_QUEUE", out + err)
+            self.assertNotIn("RENDERED_WRAPPER_SECRET", out + err)
+
+            malformed = (
+                ("bad-string", "human"),
+                ("bad-null", None),
+                ("bad-blank", {"kind": ""}),
+                ("bad-empty", {}),
+            )
+            for folder, origin in malformed:
+                secret = "SECRET_BAD_ORIGIN_" + folder
+                claude_path(root / folder, [
+                    cuser("KEEP_MALFORMED", "keep"),
+                    queued_prompt(secret, uid="bad", parent="keep", origin=origin),
+                ])
+                code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / folder),
+                                                    "--session-id", SID])
+                self.assertEqual(code, 0, folder)
+                self.assertEqual(page["coverage_status"], "partial", folder)
+                self.assertEqual([item["text"] for item in page["items"]], ["KEEP_MALFORMED"], folder)
+                self.assertGreaterEqual(page["omissions"]["unresolved_user_context"], 1, folder)
+                codes = [warning["code"] for warning in page["warnings"]]
+                self.assertIn("possible_omitted_user_context", codes, folder)
+                self.assertNotIn("queued_command_shape", codes, folder)
+                self.assertNotIn(secret, out + err, folder)
+                self.assertNotIn("RENDERED_WRAPPER_SECRET", out + err)
+
+            claude_path(root / "empty-list", [
+                cuser("KEEP_EMPTY", "keep"),
+                queued_prompt([], uid="empty-list", parent="keep"),
+            ])
+            code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / "empty-list"),
+                                                "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "partial")
+            self.assertEqual([item["text"] for item in page["items"]], ["KEEP_EMPTY"])
+            self.assertEqual(page["omissions"]["unknown_content_blocks"], 0)
+            self.assertNotIn("queued_command", page["attachment_subtype_omissions"])
+            gaps = [warning for warning in page["warnings"] if warning["code"] == "missing_metadata"]
+            self.assertTrue(any("no readable text" in warning["message"] for warning in gaps))
+            self.assertNotIn("queued_command_shape", [warning["code"] for warning in page["warnings"]])
+
+            claude_path(root / "unsupported", [
+                cuser("KEEP_UNSUPPORTED", "keep"),
+                queued_prompt(
+                    [{"type": "mystery_widget", "text": "SECRET_UNSUPPORTED_BLOCK"}],
+                    uid="bad-block",
+                    parent="keep",
+                ),
+            ])
+            code, page, out, err = self.invoke(["--runtime", "claude", "--home", str(root / "unsupported"),
+                                                "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "partial")
+            self.assertEqual([item["text"] for item in page["items"]], ["KEEP_UNSUPPORTED"])
+            self.assertGreaterEqual(page["omissions"]["unknown_content_blocks"], 1)
+            codes = [warning["code"] for warning in page["warnings"]]
+            self.assertIn("unknown_content_block", codes)
+            self.assertNotIn("queued_command_shape", codes)
+            self.assertNotIn("SECRET_UNSUPPORTED_BLOCK", out + err)
+
+            claude_path(root / "tool-block", [
+                queued_prompt([
+                    {"type": "text", "text": "KEEP_WITH_TOOL"},
+                    {"type": "tool_use", "id": "toolu_q", "name": "Read",
+                     "input": {"path": "SECRET_QUEUED_TOOL"}},
+                ], parent=None),
+            ])
+            args = ["--runtime", "claude", "--home", str(root / "tool-block"), "--session-id", SID]
+            code, page, out, err = self.invoke(args)
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "retained_snapshot_only")
+            self.assertEqual([(item["role"], item["text"]) for item in page["items"]], [
+                ("user", "KEEP_WITH_TOOL"),
+            ])
+            self.assertGreaterEqual(page["omissions"]["tool_evidence"], 1)
+            self.assertNotIn("SECRET_QUEUED_TOOL", out + err)
+            code, shown, out, err = self.invoke(args + ["--include-tools"])
+            self.assertEqual(code, 0)
+            self.assertEqual([(item["role"], item["text"]) for item in shown["items"]], [
+                ("user", "KEEP_WITH_TOOL"),
+            ])
+            self.assertNotIn("SECRET_QUEUED_TOOL", out + err)
 
     def test_queued_command_shape_identity_suppression_and_input_gaps(self):
         with tempfile.TemporaryDirectory() as tmp:

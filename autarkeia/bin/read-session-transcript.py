@@ -892,11 +892,61 @@ def queue_ids_match(found, delivered):
     return False
 
 
-def queued_command_provenance(obj, attachment, state):
+def queued_prompt_accepted(prompt):
+    # A prompt is a nonempty string or a content-block list. Whitespace-only
+    # strings stay a bad shape. An empty list is accepted here and reported
+    # later as a content gap, not as a malformed command.
+    if isinstance(prompt, str):
+        return prompt.strip() != ""
+    return isinstance(prompt, list)
+
+
+def queued_origin(attachment):
+    # Origin is the vendor attachment field. Absent origin stays compatible
+    # with the string prompt probe. A supplied origin with no kind string is
+    # unresolved, not human.
+    if "origin" not in attachment:
+        return "absent", None
+    origin = attachment.get("origin")
+    if not isinstance(origin, dict):
+        return "malformed", None
+    kind = origin.get("kind")
+    if not isinstance(kind, str) or kind.strip() == "":
+        return "malformed", None
+    if kind != "human":
+        return "nonhuman", kind
+    return "human", kind
+
+
+def stamp_queued_units(units, extra):
+    for unit in units:
+        for key, value in extra.items():
+            # Null origin_kind means the vendor left origin off. Keep that visible.
+            if value is not None or key == "origin_kind":
+                unit[key] = value
+    return units
+
+
+def queued_content_explained(state, before):
+    attachments, tools, reasoning, unknown, warnings = before
+    if state.omissions["attachments"] != attachments:
+        return True
+    if state.omissions["tool_evidence"] != tools:
+        return True
+    if state.omissions["reasoning"] != reasoning:
+        return True
+    if state.omissions["unknown_content_blocks"] != unknown:
+        return True
+    if state.warning_total != warnings:
+        return True
+    return False
+
+
+def queued_command_provenance(obj, attachment, state, origin_kind):
     # The prompt is the candidate. rendered / renderedRole are not read.
     extra = {
         "source_kind": "claude_queued_command",
-        "origin": "claude_queued_command",
+        "origin_kind": origin_kind,
     }
     for key in QUEUE_ID_KEYS:
         value = bounded_queue_id(attachment.get(key))
@@ -1270,7 +1320,7 @@ def queued_command_units(obj, attachment, line, state):
     mode = attachment.get("commandMode")
     prompt = attachment.get("prompt")
     # Non-prompt command modes are not speech. A bad shape is a visible gap.
-    if mode != "prompt" or not isinstance(prompt, str) or prompt.strip() == "":
+    if mode != "prompt" or not queued_prompt_accepted(prompt):
         state.remember_attachment_subtype("queued_command")
         state.partial = True
         state.warn(
@@ -1280,11 +1330,36 @@ def queued_command_units(obj, attachment, line, state):
             line,
         )
         return []
+    status, origin_kind = queued_origin(attachment)
+    if status == "malformed":
+        state.note_unresolved_user()
+        return []
     parent = obj.get("parentUuid") if isinstance(obj.get("parentUuid"), str) else None
-    meta = meta_for(obj, line, obj.get("uuid"), parent)
-    extra = queued_command_provenance(obj, attachment, state)
-    units = [make_unit(meta, 0, "user", "user_message_candidate", prompt, extra)]
-    warn_emitted(meta, state, "claude")
+    item_id = obj.get("uuid")
+    meta = meta_for(obj, line, item_id, parent)
+    extra = queued_command_provenance(obj, attachment, state, origin_kind)
+    if status == "nonhuman":
+        # An explicit non-human kind is context, not a person, even when the
+        # prompt text is ordinary words.
+        units = nonhuman_units(obj, line, item_id, parent, state, "claude")
+        return stamp_queued_units(units, extra)
+    before = (
+        state.omissions["attachments"],
+        state.omissions["tool_evidence"],
+        state.omissions["reasoning"],
+        state.omissions["unknown_content_blocks"],
+        state.warning_total,
+    )
+    # Ordinary block decoder: images stay omissions, and tools are not speech.
+    units = content_units(prompt, "user", "user_message_candidate", meta, state, False)
+    stamp_queued_units(units, extra)
+    if not units and not queued_content_explained(state, before):
+        state.coverage_gap(
+            "Line %s has a queued_command prompt with no readable text." % line,
+            line,
+        )
+    if units:
+        warn_emitted(meta, state, "claude")
     return units
 
 
@@ -1548,7 +1623,7 @@ def item_dict(unit, text, offset, continued):
         "continued": continued,
         "segment": unit["segment"],
     }
-    for key in ("content_item_kinds", "source_kind", "origin", "source_uuid", "delivery_id"):
+    for key in ("content_item_kinds", "source_kind", "origin_kind", "source_uuid", "delivery_id"):
         if key in unit:
             item[key] = unit[key]
     return item
