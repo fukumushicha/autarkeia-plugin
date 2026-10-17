@@ -1,6 +1,6 @@
 {
   "name": "autarkeia",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "A living record of you, in files you own. Skills: setup, distill, debriefs, librarian, email intake, realign, health check, brainstorm, improve, drafts, sparring.",
   "author": {
     "name": "Roman",
@@ -13,7 +13,6 @@
     "distill",
     "daily-debrief",
     "weekly-debrief",
-    "checkpoint",
     "handover",
     "librarian",
     "email",

@@ -1,4 +1,4 @@
-# Autarkeia v0.4.7
+# Autarkeia v0.4.8
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -53,10 +53,9 @@ The name comes from the Greek *autarkeia*: self-sufficiency, having what you nee
 | Skill | What it does |
 |---|---|
 | `setup` | First session: who this is for, what comes first, one job, one cycle |
-| `distill` | Write what this session changed |
+| `distill` | Read the retained conversation, including before compaction, and save what changed |
 | `daily-debrief` | Close the day with a few questions |
 | `weekly-debrief` | See the week |
-| `checkpoint` | Quick mark so you can continue |
 | `handover` | Note for a fresh session to carry on from, and the line to paste there |
 | `librarian` | File a document or a recording |
 | `email` | Intake from `inbox/` — never send |
@@ -67,6 +66,8 @@ The name comes from the Greek *autarkeia*: self-sufficiency, having what you nee
 | `outbound-writing` | Draft a message — never send |
 | `sparring` | Think out loud with push-back |
 
+Distill uses the exact current conversation in local Claude Code and Codex. It reads retained original messages in sections, checks corrections and existing memory, and tells you when history is missing. Python 3 is needed for the bundled local reader. Retention or disabled history can limit recovery. Checkpoint has been removed; existing saved notes stay untouched. Handover still writes a separate note for a fresh session.
+
 The skills are the method. What goes into the vault is yours.
 
 ## Everyday use
@@ -75,6 +76,6 @@ Work in your vault folder. Say **setup** for the first session, **distill** befo
 
 ## Cost
 
-It runs on your own Claude or ChatGPT account. Fourteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
+It runs on your own Claude or ChatGPT account. Thirteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
 
 Day one can start with what you already have. The record compounds after that: it earns its place over weeks of real work.

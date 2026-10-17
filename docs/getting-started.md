@@ -122,3 +122,9 @@ Everything starts in the vault. When one piece of work or life grows a shape of 
 | `projects/<name>/` | A project, once you have one: its own `memory/`, and its own `AGENTS.md` and `CLAUDE.md` once it has its own rules. |
 
 Everything is plain text. You can open, read and edit any of it yourself.
+
+## What distill can recover
+
+In local Claude Code and Codex, distill identifies this exact chat and reads retained original messages, including those before the app shortened its context. It reads in sections, keeps corrections and sources, and checks what your vault already holds. If a transcript has expired, was not saved, or cannot be read, it saves supported items and tells you the extraction is partial. It cannot recreate deleted history. The local reader needs Python 3.
+
+Checkpoint is no longer a skill. Earlier checkpoint notes stay in your vault. Use distill to save lasting memory and handover to prepare the separate note for a fresh chat.

@@ -1,6 +1,6 @@
 ---
 name: handover
-description: "Write a handover note so a fresh session can carry on this work, and give the one line to paste there. Use when the user says handover, hand over, prepare a handover, hand this over to a new session, continue in a fresh session, or new topic for a new session. Not distill and not checkpoint: this writes a separate file for the next session to open."
+description: "Write a handover note so a fresh session can carry on this work, and give the one line to paste there. Use when the user says handover, hand over, prepare a handover, hand this over to a new session, continue in a fresh session, or new topic for a new session. Separate from distill: this writes a separate file for the next session to open."
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
