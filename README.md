@@ -1,6 +1,19 @@
-# Autarkeia v0.4.6
+# Autarkeia v0.4.7
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
+
+## Start here
+
+**Ask your agent to install it.** Give an agent that can work on your computer this request:
+
+> Install Autarkeia from https://github.com/fukumushicha/autarkeia-plugin, following its INSTALL.md. Check what is already installed and whether I already have a vault. Preserve existing files and permissions. Complete the installation checks, then help me start the first session. Ask me when you need sign-in, consent or a personal choice; do not answer setup questions for me.
+
+The agent handles the commands; you provide access and your own answers. An ordinary web chat without access to your computer can explain the steps, but cannot perform the local installation.
+
+- [Installation guide](INSTALL.md): the shared procedure for agents and people, including updates and existing vaults. If you do not have an agent yet, start with its prerequisites.
+- [Getting started](docs/getting-started.md): your first real job and everyday use, after installation.
+
+Autarkeia runs in **Claude Code or Codex**, using your own account. Claude's ordinary chat and Cowork are not the Claude Code installation described here. The installation guide uses macOS examples; it identifies what needs adapting on other systems.
 
 ## Why this exists
 
@@ -56,119 +69,9 @@ The name comes from the Greek *autarkeia*: self-sufficiency, having what you nee
 
 The skills are the method. What goes into the vault is yours.
 
-## Setup
+## Everyday use
 
-**New to Claude Code?** Follow [docs/getting-started.md](docs/getting-started.md): the first hour, click by click, in the Claude desktop app. The short version is below.
-
-You need a paid Claude plan and Claude Code. In the desktop app, this runs in the **Code** tab, not in Cowork or an ordinary chat. If `claude --version` in Terminal prints nothing, install it first with Anthropic's own line (details: https://code.claude.com/docs/en/setup):
-
-```bash
-curl -fsSL https://claude.ai/install.sh | bash
-```
-
-Using Codex instead of Claude? See [Using Codex](#using-codex) below; the vault and the skills are the same.
-
-Then:
-
-1. Nothing to download. In Terminal:
-
-```bash
-claude plugin marketplace add fukumushicha/autarkeia-plugin
-claude plugin install autarkeia@autarkeia-plugin
-```
-
-2. Make your vault: a copy of `vault-template` in a new folder with your name on it, for example `Documents/my-os`. The install left a copy of this repository on your Mac, so this works in the same Terminal:
-
-```bash
-cp -R ~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template ~/Documents/my-os
-```
-
-3. Open **that** folder in Claude Code. Not the plugin — the vault.
-4. Restart Claude Code if the commands do not appear.
-
-Skills from a plugin carry its name. Type `/autarkeia:distill`, or just say **distill** in a sentence — both work.
-
-5. Say: **setup**. It asks who this is for, what comes first, and the one job this vault should hold, then runs one real cycle and stops. One question at a time. If it stops early, say **setup** again next time and it continues.
-
-Fallback, if the two commands in step 1 fail: download this repository (green **Code** button, then **Download ZIP**), put the unzipped folder somewhere ordinary, for example `Documents/autarkeia-plugin`, and run `claude plugin marketplace add /absolute/path/to/autarkeia-plugin` followed by the same install command. If that complains too, copy `autarkeia/skills/` into `your-vault/.claude/skills/` and `autarkeia/references/` into `your-vault/.claude/references/`, and open the vault anyway.
-
-### Using Codex
-
-You need a ChatGPT plan that includes Codex, and the Codex command line (`codex --version` in Terminal prints a version; if not, install it from OpenAI: https://developers.openai.com/codex/cli). Sign in once by running `codex` and choosing Sign in with ChatGPT.
-
-1. In Terminal:
-
-```bash
-codex plugin marketplace add fukumushicha/autarkeia-plugin
-codex plugin add autarkeia@autarkeia-plugin
-```
-
-2. Make your vault from the copy that install left on your Mac:
-
-```bash
-cp -R ~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template ~/Documents/my-os
-```
-
-3. Start Codex in **that** folder (`cd ~/Documents/my-os`, then `codex`). Codex reads the vault's rules from `AGENTS.md` on its own.
-4. Say: **setup**. Every skill works by saying its name in a sentence, the same as in Claude.
-
-One vault can be used from both Claude Code and Codex: the rules and the files are shared. In Codex, a plain "second opinion" is a Codex sub-agent and "send to codex" a separate read-only Codex; for a view from another company, say "send to grok" ([docs/second-opinion.md](docs/second-opinion.md)).
-
-A vault made before v0.4.2 keeps its rules in `CLAUDE.md`, which Codex does not read. Open it in Codex once, say **health check**, and accept the move to `AGENTS.md`; then start a new Codex session.
-
-## How to use it
-
-Do real work in that vault folder, one task per session. End of a session: **distill**. A new topic halfway through: **handover**, then continue in a fresh session. End of a day: **daily debrief**. End of a week: **weekly debrief**. A document or a recording: **librarian**. Emails you dropped in `inbox/`: **email**.
-
-A statement, a contract, a scan, anything that arrived from outside: drop it in `inbox/`, say **librarian**, and the original goes to `archive/` untouched, filed by part of life, then the person or thing, then the kind of document, with a hash in that area's register. Documents you or the AI wrote go to `docs/`. Facts taken out of either land in memory.
-
-You do not have to start empty. Ask Claude to audit a folder or a project you already keep elsewhere and propose how to bring it in: originals are copied, never moved, and nothing is deleted without your yes. [Getting started](docs/getting-started.md) has example requests.
-
-Everything starts in the vault. When one piece of work or life grows a shape of its own, say **new project** and name it. It gets its own folder and memory, and, sooner or later, its own rules: who else is involved, what stays inside it, what to watch. The vault's rules always hold; a project's rules add to them. Keep opening the vault folder, not the project.
-
-## What is in your vault
-
-| Path | What it is |
-|---|---|
-| `AGENTS.md` | The vault's rules: how to talk to you, how to work (act then report, one recommendation and one question, a record is a claim until the file is opened, when you contradict the record it asks once and keeps both lines, never guess a date), what needs your yes, what never leaves. Every session reads it: Codex and Grok directly, Claude through `CLAUDE.md`. Change rules here, or ask Claude to. |
-| `CLAUDE.md` | One line, `@AGENTS.md`. It points Claude at the rules. Leave it alone. |
-| `PRIORITIES.md` | What comes first in your life, in order. You write it; the weekly debrief checks your week against it. |
-| `NEXT-ACTIONS.md` | Open work across the vault and every project. **realign** rebuilds it; do not edit it by hand. |
-| `memory/daily/` | One file per day. Everything lands here first, except the details of a project whose rules keep them inside it. |
-| `memory/facts.md`, `decisions.md`, `tasks.md` | What is true, what was chosen and why, what is still to do. |
-| `docs/` | Working documents: what you or the AI wrote (handover notes and transcripts too), listed in `docs/register.md`. |
-| `archive/` | Originals from outside, exactly as they arrived, in up to eight areas by part of life (official documents, money and tax, health, homes, travel, companies and projects, photos and memories, archive records). Each area has its own register with a hash per file. An area appears when its first document does. |
-| `inbox/` | Drop a file or an email here, then say **librarian** or **email**. |
-| `reviews/` | Second opinions and health-check reports. |
-| `projects/<name>/` | A project, once you have one: its own `memory/`, and its own `AGENTS.md` and `CLAUDE.md` once it has its own rules. |
-
-Everything is plain text. You can open, read and edit any of it yourself.
-
-A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It keeps working in Claude Code; Codex does not read those rules until they move (see [Using Codex](#using-codex)). Say **health check** and it offers to move the rules to the new layout. A vault made before v0.4.4 has no `archive/`, no "How to work" section in its rules, and a four-column `docs/register.md` without hashes; it keeps working. Copy `archive/README.md` and that section from `vault-template/AGENTS.md` when you want them, or ask Claude to; the librarian adds a hash column to the old register the first time it files something.
-
-A vault made before v0.4.5 still offers `git init` as a backup in its rules, and its example of a private project uses an older name. Say **health check**: it shows the current lines and replaces only those after your yes, leaving everything you wrote yourself.
-
-**Updating.** In Terminal:
-
-```bash
-claude plugin marketplace update autarkeia-plugin
-claude plugin update autarkeia@autarkeia-plugin
-```
-
-Then quit and reopen Claude. In Codex:
-
-```bash
-codex plugin marketplace upgrade autarkeia-plugin
-codex plugin add autarkeia@autarkeia-plugin
-```
-
-then start a new Codex session. Your vault is not replaced: never copy the template over it again. New skills and fixes arrive with the plugin; changes to the vault's own rules arrive through **health check**, shown before anything is written.
-
-**Automatic updates.** Off by default for this plugin. To turn them on: in a Claude session type `/plugin`, open the Marketplaces tab, choose `autarkeia-plugin`, then **Enable auto-update**. Claude then fetches new versions when a session starts; the next session uses them. Your vault's rules still change only through **health check**.
-
-## Second opinions
-
-Second opinions from Codex or Grok, not only Claude: [docs/second-opinion.md](docs/second-opinion.md) says what to install and how to ask for them.
+Work in your vault folder. Say **setup** for the first session, **distill** before closing a session, **daily debrief** at the end of a day and **weekly debrief** at the end of a week. Say **librarian** to file a document or recording. [Getting started](docs/getting-started.md) explains these habits, projects and what is in your vault.
 
 ## Cost
 
