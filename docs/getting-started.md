@@ -6,15 +6,15 @@ Start here after the installation checks pass. Open your own vault folder, not t
 
 ## Your first session
 
-Type **setup** and answer one question at a time: your name, your language, what this vault is for, how it should talk to you, what comes first in your life, and one real job. Skip any question you are not ready for; it waits.
+Type **setup** and answer one question at a time: your name, your language, what this vault is for, how it should talk to you, what comes first in your life, and one real job. The agent waits for your answers. If you cannot name a first job yet, the vault can wait.
 
 When it wants to change its own rules (how to talk to you), it shows you the lines first and writes them only after your yes. That is on purpose: the AI does not change its own rules on its own.
 
-Setup runs once. Later, to change something it asked, just say it in any session: "call me Sam", "my priorities have changed", "talk to me more briefly". It shows a rules change before writing it.
+If setup stops early, say **setup** again in the next session; it checks the answers already saved and continues. Once the first real cycle is complete, setup does not run its questions again. Later, to change something it asked, just say it in any session: "call me Sam", "my priorities have changed", "talk to me more briefly". It shows a rules change before writing it.
 
 ## End the session with distill
 
-Say **distill**. It writes what this session changed into files: today's log in `memory/daily/`, plus facts, decisions and tasks. Open the vault in Finder and look: that is the memory. The chat is not.
+Say **distill**. It writes what this session changed into files: today's log in `memory/daily/`, plus facts, decisions and tasks. Open the vault in your file manager (Finder on macOS) and look: that is the memory. The chat is not.
 
 You can then archive the chat using your app’s sidebar controls. Archiving only hides the chat from the list. It is not the vault's `archive/` folder, which is where original documents are kept.
 
@@ -38,7 +38,7 @@ Where your app offers an effort setting, it sets how long and how carefully it w
 - **Medium** for everyday work.
 - **High** or above for something that matters and must be right, especially reviewing work an earlier session did. A fresh session at high effort is a good reviewer.
 
-Higher effort uses more of your plan's limits. The usage view shows how much is left.
+Higher effort uses more of your plan's limits. Check your app’s usage or account controls for the available limits.
 
 ## One task per session
 
@@ -71,11 +71,11 @@ What helps:
 
 A recording of an appointment or a call is an original, like a scanned letter.
 
-1. Get the file onto the Mac (from a phone: share or AirDrop the voice memo).
+1. Get the file onto your computer (on a Mac, share or AirDrop a voice memo from your phone).
 2. Drop it in the vault's `inbox/` and say **librarian**. This is better than attaching a medical recording in the chat.
-3. It files the audio, then proposes a transcript. That needs a transcription tool already on your Mac (Whisper is one); it runs on your computer, takes a while for a long recording, and stops if you close the laptop. If there is none, it says so. It will not install one or send the audio online without your yes.
+3. It files the audio, then proposes a transcript. That needs a transcription tool already on your computer (Whisper is one); it runs on your computer, takes a while for a long recording, and stops if you close the laptop. If there is none, it says so. It will not install one or send the audio online without your yes.
 
-The transcript itself is read by your AI like any other file, so it goes to the company running that AI (Anthropic for Claude, OpenAI for Codex). Transcribing locally keeps the audio on your Mac; it does not keep the transcript there.
+The transcript itself is read by your AI like any other file, so it goes to the company running that AI (Anthropic for Claude, OpenAI for Codex). Transcribing locally keeps the audio on your computer; it does not keep the transcript there.
 
 ## Two computers, and backup
 

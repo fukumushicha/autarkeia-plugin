@@ -4,9 +4,9 @@ A living record of you, in files you own. It remembers your past, runs your pres
 
 ## Start here
 
-**Ask your agent to install it.** Give an agent that can work on your computer this request, together with this repository's link:
+**Ask your agent to install it.** Give an agent that can work on your computer this request:
 
-> Install Autarkeia from this repository, following INSTALL.md. Check what is already installed and whether I already have a vault. Preserve existing files and permissions. Complete the installation checks, then help me start the first session. Ask me when you need sign-in, consent or a personal choice; do not answer setup questions for me.
+> Install Autarkeia from https://github.com/fukumushicha/autarkeia-plugin, following its INSTALL.md. Check what is already installed and whether I already have a vault. Preserve existing files and permissions. Complete the installation checks, then help me start the first session. Ask me when you need sign-in, consent or a personal choice; do not answer setup questions for me.
 
 The agent handles the commands; you provide access and your own answers. An ordinary web chat without access to your computer can explain the steps, but cannot perform the local installation.
 

@@ -12,7 +12,7 @@ Every change a user could notice updates the user documentation **in the same co
 - `docs/second-opinion.md` when `brainstorm` or the outside reviewers change.
 - A tool's own README (for example `tools/email-stager/README.md`) when that tool changes.
 
-Update the relevant document in the same commit. Touch the README when its overview, links or version change. A commit that changes `autarkeia/`, `vault-template/`, `tools/` or `docs/` without touching `README.md` says why in its message, on a line of its own: `README: no user-visible change (<reason>)`.
+Update the relevant document in the same commit. Touch the README when its overview, links or version change. A commit that changes `autarkeia/`, `vault-template/`, `tools/` or `docs/` without touching `README.md` says why in its message, on a line of its own: `README: unchanged (<reason>; updated guide: <path or not applicable>)`.
 
 Before pushing, read the README and affected guides against what the change does, and check their links. Documentation that describes old behaviour is a bug, the same as broken code.
 

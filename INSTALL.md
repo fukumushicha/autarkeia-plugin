@@ -30,7 +30,7 @@ Follow [Anthropic’s installation instructions](https://code.claude.com/docs/en
 curl -fsSL https://claude.ai/install.sh | bash
 ```
 
-Open a fresh Terminal and check `claude --version`. Run `claude` and let the owner complete sign-in. If they prefer the desktop app, use the **Code** tab, not Cowork or ordinary chat; the command line is used for the plugin commands below.
+The installer may show no progress while downloading. When it finishes, open a fresh Terminal and check `claude --version`. Run `claude` and let the owner complete sign-in. If they prefer the desktop app, use the **Code** tab, not Cowork or ordinary chat; the command line is used for the plugin commands below.
 
 ### Codex
 
@@ -46,7 +46,7 @@ For either app, let the owner handle credentials, trust prompts and consent. Do 
 
 ## 3. Install the plugin in the selected app
 
-Skip a marketplace-add command if the expected marketplace is already configured. Confirm it refers to this repository before reusing it; if the name points somewhere else, resolve that conflict instead of replacing it silently.
+Skip a marketplace-add command if the expected marketplace is already configured. Confirm it refers to this repository before reusing it; if the name points somewhere else, show the owner the configured source and stop before removing or replacing it.
 
 ### Claude Code
 
@@ -84,7 +84,7 @@ Codex:
 cp -R ~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template ~/Documents/my-os
 ```
 
-If the source is absent, locate the configured marketplace checkout. Do not create a replacement template from memory. The plugin supplies the skills; your separate vault holds your own rules and personal information.
+If the source is absent, locate the configured marketplace checkout. If it is still absent, stop and report the exact marketplace path checked. Do not create a replacement template from memory. The plugin supplies the skills; your separate vault holds your own rules and personal information.
 
 ## 5. Open the vault and verify
 
@@ -119,7 +119,7 @@ Report the app and plugin version, vault location, checks that passed, and anyth
 
 ## Updates
 
-Update the plugin without replacing the vault. In Claude Code:
+Update the plugin without replacing an existing vault. If the plugin is installed but you do not yet have a vault, run the update commands, then return to step 4 to create one before attempting the verification in step 5. In Claude Code:
 
 ```bash
 claude plugin marketplace update autarkeia-plugin
@@ -135,7 +135,7 @@ codex plugin add autarkeia@autarkeia-plugin
 
 Save active work, then reopen Claude or start a fresh Codex session. Repeat the installation checks above. Never copy the template over your existing vault. New skills and fixes arrive with the plugin; changes to your vault’s own rules are shown for approval through **health check**.
 
-**Automatic updates in Claude Code:** off by default for third-party marketplaces. If the owner wants them, type `/plugin`, open **Marketplaces**, choose `autarkeia-plugin`, then **Enable auto-update**. Claude fetches updates at session start and uses them in the next session. This does not change the vault’s rules. The Codex path here is the manual update procedure above; do not assume Claude’s menu exists in Codex.
+**Automatic updates in Claude Code:** off by default for this plugin. If the owner wants them, type `/plugin`, open **Marketplaces**, choose `autarkeia-plugin`, then **Enable auto-update**. Claude fetches updates at session start and uses them in the next session. This does not change the vault’s rules. The Codex path here is the manual update procedure above; do not assume Claude’s menu exists in Codex.
 
 ## Older vaults
 
