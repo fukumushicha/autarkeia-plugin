@@ -123,6 +123,31 @@ INJECTED_CONTEXT_KINDS = {
     "environments.environment_context",
     "additional_content.codex_apps_open_page",
 }
+# Named Claude attachment subtypes that are context or file material.
+# A queued_command prompt is not in this set. Any other subtype may contain user input.
+KNOWN_CONTEXT_ATTACHMENTS = {
+    "edited_text_file",
+    "compact_file_reference",
+    "prompt_snapshot",
+    "read_truncation_notice",
+    "total_tokens_reminder",
+    "environment",
+    "instructions",
+    "hook_success",
+}
+MAX_ATTACHMENT_SUBTYPE_KEYS = 24
+MAX_QUEUE_ID_CHARS = 512
+QUEUE_REMOVAL_OPS = {
+    "remove",
+    "removal",
+    "removed",
+    "dequeue",
+    "dequeued",
+    "pop",
+    "delete",
+    "drop",
+}
+QUEUE_ID_KEYS = ("source_uuid", "delivery_id")
 OMISSION_KEYS = (
     "mirrored_events",
     "telemetry",
@@ -133,6 +158,7 @@ OMISSION_KEYS = (
     "attachments",
     "sidechain",
     "synthetic_or_meta",
+    "unresolved_user_context",
     "compaction_summaries",
     "duplicate_ids",
     "unknown_records",
@@ -151,9 +177,12 @@ that the id recorded in the file is the same id, and reads original records from
 of the file. It does not pick the newest file. It does not search the words of other files.
 
 User text is returned as kind user_message_candidate. That is not proof the person typed
-those words. A later step has to check wrappers and quoted text. Assistant text keeps the
-assistant role. Tool output is included only with --include-tools, and each tool record is
-labeled tool evidence rather than as a person speaking.
+those words. A later step has to check wrappers and quoted text. A Claude attachment of
+type queued_command with command mode prompt is the same kind of candidate, labelled
+claude_queued_command. Assistant text keeps the assistant role. Tool output is included
+only with --include-tools, and each tool record is labeled tool evidence rather than as a
+person speaking. Other attachment subtypes are not read as a person. An attachment subtype
+this program does not handle makes coverage partial, because it may contain user input.
 
 coverage_status is retained_snapshot_only when this snapshot was read cleanly, or partial
 when a record was cut off, badly formed, or not understood. It is never a promise that the
@@ -203,6 +232,12 @@ class State:
         self.nodes = []
         self.node_ids = set()
         self.context_attachment_warned = False
+        self.unhandled_attachment_warned = False
+        self.attachment_overflow_warned = False
+        self.attachment_subtypes = {}
+        self.attachment_subtype_overflow = 0
+        self.delivered_queue_ids = {key: set() for key in QUEUE_ID_KEYS}
+        self.pending_enqueues = []
 
     def warn(self, code, message, line):
         if code in PARTIAL_CODES:
@@ -243,18 +278,88 @@ class State:
         self.partial = True
         self.warn("missing_metadata", message, line)
 
-    def note_context_attachment(self, line):
-        # Top-level Claude attachments can hold file or context material.
-        # Count every one, but warn once so a long file cannot flood the page.
+    def remember_attachment_subtype(self, type_name):
+        # Count every omitted attachment. Keys are bounded so a hostile or
+        # unknown subtype cannot grow the page without a visible overflow.
         self.omissions["attachments"] += 1
+        key = short_type(type_name)
+        if key in self.attachment_subtypes:
+            self.attachment_subtypes[key] += 1
+            return
+        if len(self.attachment_subtypes) >= MAX_ATTACHMENT_SUBTYPE_KEYS:
+            self.attachment_subtype_overflow += 1
+            self.partial = True
+            if not self.attachment_overflow_warned:
+                self.attachment_overflow_warned = True
+                self.warn(
+                    "attachment_subtype_overflow",
+                    "Some omitted attachment subtypes are not listed. "
+                    "The overflow count is recorded. Unlisted subtypes were not read "
+                    "and may contain user input.",
+                    None,
+                )
+            return
+        self.attachment_subtypes[key] = 1
+
+    def note_known_context_attachment(self, line, type_name):
+        self.remember_attachment_subtype(type_name)
         if self.context_attachment_warned:
             return
         self.context_attachment_warned = True
         self.warn(
             "context_attachment_omitted",
-            "Context and file attachments are not human messages. "
+            "Omitted context and file attachments. Their subtype counts are recorded. "
             "Open them at the source when their content is needed.",
             line,
+        )
+
+    def note_unhandled_attachment(self, line, type_name):
+        self.remember_attachment_subtype(type_name)
+        self.partial = True
+        if self.unhandled_attachment_warned:
+            return
+        self.unhandled_attachment_warned = True
+        self.warn(
+            "unhandled_attachment",
+            "An unhandled attachment subtype was omitted. It may contain user input. "
+            "It was not read as a message, and coverage is partial.",
+            line,
+        )
+
+    def note_unresolved_user(self):
+        # Meta text is not promoted from its wording. Human status stays unresolved.
+        self.omissions["unresolved_user_context"] += 1
+        self.partial = True
+
+    def remember_queued_delivery(self, key, value):
+        if key in self.delivered_queue_ids and value:
+            self.delivered_queue_ids[key].add(value)
+
+    def note_queue_operation(self, obj):
+        # Queue records are transport. Text is not copied. An enqueue with no
+        # matching delivery id is unresolved input, not proof the text was kept.
+        if queue_operation_name(obj) in QUEUE_REMOVAL_OPS:
+            return
+        if not queue_has_text(obj):
+            return
+        self.pending_enqueues.append(queue_attribution_ids(obj))
+
+    def finish_pending_enqueues(self):
+        unresolved = 0
+        for found in self.pending_enqueues:
+            if queue_ids_match(found, self.delivered_queue_ids):
+                continue
+            unresolved += 1
+        if not unresolved:
+            return
+        self.partial = True
+        self.warn(
+            "possible_pending_input",
+            "Possible pending or unresolved queued input. %s text-bearing enqueue "
+            "record(s) had no safe delivery attribution. Their text was not read as a "
+            "person speaking, and this snapshot is not proof that every queued input was kept."
+            % unresolved,
+            None,
         )
 
 
@@ -280,7 +385,8 @@ def preview(value):
 def mismatch(requested, recorded):
     raise ReaderError(
         "session_id_mismatch",
-        "The recorded session id does not match the requested session id.",
+        "The recorded session id does not match the requested session id. "
+        "Do not retry with another recorded id.",
         {"requested": requested, "recorded": preview(recorded)},
     )
 
@@ -457,7 +563,9 @@ def locate(runtime, session_id, path, home, env):
         paths = sorted(os.path.abspath(str(item)) for item in matches)
         raise ReaderError(
             "multiple_candidates",
-            "More than one transcript file matches this session id. Pass --path to choose one. No file was selected.",
+            "More than one transcript file matches this session id. "
+            "Pass a host-supplied exact path with --path. "
+            "No file was selected. Do not choose a file arbitrarily.",
             {"count": len(paths), "paths": paths},
         )
     return os.path.abspath(str(matches[0])), root
@@ -600,11 +708,28 @@ def check_identity_codex(obj, requested, state):
                     mismatch(requested, value)
 
 
+def is_queued_command_record(obj):
+    if obj.get("type") != "attachment":
+        return False
+    attachment = obj.get("attachment")
+    return isinstance(attachment, dict) and attachment.get("type") == "queued_command"
+
+
+def claude_record_is_conversational(obj):
+    # A prompt-mode queued_command is conversational even when the file has no
+    # ordinary user record. Sidechain and compaction stay out of that check.
+    if obj.get("isSidechain") is True:
+        return False
+    if obj.get("type") in {"user", "assistant", "system"}:
+        return True
+    if obj.get("isCompactSummary") is True or obj.get("type") in {"summary", "compact_summary"}:
+        return False
+    return is_queued_command_record(obj)
+
+
 def check_identity_claude(obj, requested, state):
-    sidechain = obj.get("isSidechain") is True
-    conversational = obj.get("type") in {"user", "assistant", "system"} and not sidechain
     session_id = obj.get("sessionId")
-    if conversational:
+    if claude_record_is_conversational(obj):
         state.conversational += 1
         norm = norm_uuid(session_id) if isinstance(session_id, str) else None
         if norm is None:
@@ -689,8 +814,8 @@ def meta_for(obj, line, item_id, parent_id):
     }
 
 
-def make_unit(meta, segment, role, kind, text):
-    return {
+def make_unit(meta, segment, role, kind, text, extra=None):
+    unit = {
         "line": meta["line"],
         "segment": segment,
         "id": meta["id"],
@@ -700,6 +825,88 @@ def make_unit(meta, segment, role, kind, text):
         "kind": kind,
         "text": text,
     }
+    if extra:
+        for key, value in extra.items():
+            if value is not None:
+                unit[key] = value
+    return unit
+
+
+def bounded_queue_id(value):
+    if isinstance(value, str) and value and len(value) <= MAX_QUEUE_ID_CHARS:
+        return value
+    return None
+
+
+def queue_operation_name(obj):
+    value = obj.get("operation")
+    if not isinstance(value, str):
+        value = obj.get("op")
+    if not isinstance(value, str):
+        return ""
+    return value.strip().lower()
+
+
+def value_has_text(value):
+    if isinstance(value, str):
+        return value.strip() != ""
+    if isinstance(value, dict):
+        return any(value_has_text(inner) for inner in value.values())
+    if isinstance(value, list):
+        return any(value_has_text(inner) for inner in value)
+    return False
+
+
+def queue_has_text(obj):
+    for key in ("content", "text", "prompt", "message", "body"):
+        if key in obj and value_has_text(obj.get(key)):
+            return True
+    return False
+
+
+def queue_attribution_sources(obj):
+    sources = [obj]
+    for key in ("attachment", "item", "payload", "queue", "content"):
+        inner = obj.get(key)
+        if isinstance(inner, dict):
+            sources.append(inner)
+    return sources
+
+
+def queue_attribution_ids(obj):
+    found = {}
+    for source in queue_attribution_sources(obj):
+        for key in QUEUE_ID_KEYS:
+            if key in found:
+                continue
+            value = bounded_queue_id(source.get(key))
+            if value:
+                found[key] = value
+    return found
+
+
+def queue_ids_match(found, delivered):
+    for key, value in found.items():
+        if value in delivered.get(key, ()):
+            return True
+    return False
+
+
+def queued_command_provenance(obj, attachment, state):
+    # The prompt is the candidate. rendered / renderedRole are not read.
+    extra = {
+        "source_kind": "claude_queued_command",
+        "origin": "claude_queued_command",
+    }
+    for key in QUEUE_ID_KEYS:
+        value = bounded_queue_id(attachment.get(key))
+        if value is None:
+            value = bounded_queue_id(obj.get(key))
+        if value is None:
+            continue
+        extra[key] = value
+        state.remember_queued_delivery(key, value)
+    return extra
 
 
 def warn_emitted(meta, state, runtime):
@@ -1059,20 +1266,76 @@ def only_tool_content(obj):
     return True
 
 
-def units_for_claude(obj, line, state, include_tools):
-    # Attachments are context or file material. renderedRole user is not a person.
-    if obj.get("type") == "attachment":
-        state.note_context_attachment(line)
+def queued_command_units(obj, attachment, line, state):
+    mode = attachment.get("commandMode")
+    prompt = attachment.get("prompt")
+    # Non-prompt command modes are not speech. A bad shape is a visible gap.
+    if mode != "prompt" or not isinstance(prompt, str) or prompt.strip() == "":
+        state.remember_attachment_subtype("queued_command")
+        state.partial = True
+        state.warn(
+            "queued_command_shape",
+            "Line %s has a queued_command attachment that is malformed or not a prompt. "
+            "It was not read as a person speaking, and coverage is partial." % line,
+            line,
+        )
         return []
+    parent = obj.get("parentUuid") if isinstance(obj.get("parentUuid"), str) else None
+    meta = meta_for(obj, line, obj.get("uuid"), parent)
+    extra = queued_command_provenance(obj, attachment, state)
+    units = [make_unit(meta, 0, "user", "user_message_candidate", prompt, extra)]
+    warn_emitted(meta, state, "claude")
+    return units
+
+
+def units_for_attachment(obj, line, state):
+    attachment = obj.get("attachment")
+    if not isinstance(attachment, dict):
+        state.note_unhandled_attachment(line, None)
+        return []
+    atype = attachment.get("type")
+    # Meta is suppressed before any prompt is taken from the attachment.
+    if obj.get("isMeta") is True and atype == "queued_command":
+        state.note_unresolved_user()
+        state.remember_attachment_subtype(atype)
+        return []
+    if atype == "queued_command":
+        return queued_command_units(obj, attachment, line, state)
+    if isinstance(atype, str) and atype in KNOWN_CONTEXT_ATTACHMENTS:
+        state.note_known_context_attachment(line, atype)
+        return []
+    state.note_unhandled_attachment(line, atype)
+    return []
+
+
+def unresolved_meta_user(obj):
+    if obj.get("type") == "user":
+        return True
+    message = obj.get("message")
+    return isinstance(message, dict) and message.get("role") == "user"
+
+
+def units_for_claude(obj, line, state, include_tools):
+    # Sidechain, compaction, and meta are decided before attachment text is read.
     if obj.get("isSidechain") is True:
         state.omissions["sidechain"] += 1
         return []
     if obj.get("isCompactSummary") is True or obj.get("type") in {"summary", "compact_summary"}:
         state.omissions["synthetic_or_meta"] += 1
         return []
-    # A meta record is not a person speaking. A tool result can also be marked
-    # meta; that one stays available as tool evidence and is never a user candidate.
+    if obj.get("type") == "attachment":
+        return units_for_attachment(obj, line, state)
+    if obj.get("type") == "queue-operation":
+        state.note_queue_operation(obj)
+        state.omissions["telemetry"] += 1
+        return []
+    # A meta record is not promoted from English wording inside a wrapper.
+    # A tool result can also be marked meta; that one stays tool evidence.
+    # A summary was already suppressed above and is not a new fact.
     if obj.get("isMeta") is True and not only_tool_content(obj):
+        if unresolved_meta_user(obj):
+            state.note_unresolved_user()
+            return []
         state.omissions["synthetic_or_meta"] += 1
         return []
     record_type = obj.get("type")
@@ -1210,6 +1473,15 @@ def summary_warnings(state):
             "Skipped %s meta or synthetic summary records. Their text is not included." % synthetic,
             None,
         )
+    unresolved = state.omissions["unresolved_user_context"]
+    if unresolved:
+        state.warn(
+            "possible_omitted_user_context",
+            "Possible omitted user context. %s meta record(s) have unresolved original-human "
+            "status. Their text was not promoted, and coverage is partial. "
+            "Summaries stay suppressed and are not new facts." % unresolved,
+            None,
+        )
     sidechain = state.omissions["sidechain"]
     if sidechain:
         state.warn(
@@ -1276,8 +1548,9 @@ def item_dict(unit, text, offset, continued):
         "continued": continued,
         "segment": unit["segment"],
     }
-    if "content_item_kinds" in unit:
-        item["content_item_kinds"] = unit["content_item_kinds"]
+    for key in ("content_item_kinds", "source_kind", "origin", "source_uuid", "delivery_id"):
+        if key in unit:
+            item[key] = unit[key]
     return item
 
 
@@ -1329,7 +1602,7 @@ def read_page(path, runtime, session_id, snapshot_bytes, cursor, max_chars, incl
             obj["_line"] = line_no
             line = obj_line(obj)
             check_identity(runtime, obj, session_id, state)
-            if runtime == "claude" and obj.get("type") in {"user", "assistant", "system"}:
+            if runtime == "claude" and claude_record_is_conversational(obj):
                 note_parent(obj, line, state)
             if duplicate(runtime, obj, line, state):
                 continue
@@ -1349,6 +1622,7 @@ def read_page(path, runtime, session_id, snapshot_bytes, cursor, max_chars, incl
     if runtime == "claude":
         parent_warnings(state)
     summary_warnings(state)
+    state.finish_pending_enqueues()
     done = flags["stop"] is None
     return {
         "source": path,
@@ -1359,6 +1633,8 @@ def read_page(path, runtime, session_id, snapshot_bytes, cursor, max_chars, incl
         "warnings": state.warnings,
         "warnings_truncated": state.warnings_truncated,
         "omissions": state.omissions,
+        "attachment_subtype_omissions": state.attachment_subtypes,
+        "attachment_subtype_overflow": state.attachment_subtype_overflow,
         "items": items,
         "next_cursor": None if done else flags["stop"],
         "done": done,
