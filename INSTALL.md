@@ -143,6 +143,8 @@ A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It k
 
 A vault made before v0.4.5 still offers `git init` as a backup in its rules, and its example of a private project uses an older name. Say **health check**: it shows the current lines and replaces only those after your yes, leaving everything you wrote yourself.
 
+Distill’s bundled local transcript reader requires Python 3 (`python3 --version`). It does not change retention or turn on history recording. If Python or retained history is unavailable, extraction reports partial coverage. Older vault rules may still list checkpoint: the skill has been removed, but do not delete earlier checkpoint records. Update that obsolete skill-table row only with the owner’s approval, preserving their other rules. Handover remains available.
+
 ## Troubleshooting
 
 - **Command not found:** open a fresh Terminal and check the vendor’s installation instructions. Do not repeatedly reinstall over an unexplained failure.

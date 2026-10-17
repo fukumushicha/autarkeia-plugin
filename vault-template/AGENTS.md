@@ -41,7 +41,7 @@ A project has its own memory: `projects/<name>/memory/` with `facts.md`, `decisi
 
 A project's rules add to this file. They never loosen **When you must ask** or the clause about a body.
 
-**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, checkpoints, reviews) get a pointer at most, for example "house-renovation: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
+**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, handovers, reviews) get a pointer at most, for example "house-renovation: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
 
 When the user asks for a new project:
 
@@ -59,7 +59,6 @@ Before working on a project or writing to it, read its `AGENTS.md` if it has one
 | distill / save | Write what this session changed |
 | daily debrief | Close the day with a few questions |
 | weekly debrief | See the week, promote what should last |
-| checkpoint | Quick working-state mark |
 | handover | Note for a fresh session to carry on from |
 | librarian / file this | File a document |
 | email / process emails | Intake from `inbox/` — never send |
