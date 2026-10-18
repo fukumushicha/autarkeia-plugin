@@ -202,7 +202,15 @@ class TempTest(unittest.TestCase):
         self.assertIsNotNone(FORBIDDEN.search("you should consider this"))
         self.assertIn(LEGEND, markdown)
         self.assertIn("https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/", markdown)
-        self.assertIn("Exact match on chromosome, position, reference and alternate allele.", markdown)
+        if chip:
+            self.assertIn(gc.METHOD_TEXT_CHIP, markdown)
+            self.assertNotIn(
+                "Exact match on chromosome, position, reference and alternate allele.",
+                markdown,
+            )
+        else:
+            self.assertIn(gc.METHOD_TEXT, markdown)
+            self.assertNotIn("only single-letter ClinVar variants can be matched", markdown)
         self.assertIn("not evidence the person does not carry it", markdown)
         self.assertIn("somatic and oncogenicity classifications are ignored", markdown)
         self.assertIn("no recommendations by design", markdown)
@@ -236,7 +244,7 @@ class TempTest(unittest.TestCase):
         self.assertEqual(star_total, counts["hits"])
         self.assertEqual(int(counts["by_stars"]["0"]) + int(counts["by_stars"]["1"]), counts["low_confidence"])
         self.assertEqual(payload["tool"], "genome-check")
-        self.assertEqual(payload["tool_version"], "0.1.0")
+        self.assertEqual(payload["tool_version"], "0.2.0")
         self.assertEqual(payload["metadata"]["clinvar_source"], "local file provided")
         self.assertIsNone(payload["metadata"]["clinvar_url"])
         self.assertIsNone(payload["metadata"]["clinvar_download_time"])
@@ -262,6 +270,22 @@ class TestWords(TempTest):
         self.assertEqual(gc.HEADER_CHIP, CHIP)
         self.assertEqual(gc.STAR_LEGEND, LEGEND)
         self.assertEqual(gc.CLINVAR_BASE_URL, "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/")
+
+    def test_chip_method_text_is_separate_from_sequencing(self):
+        sentence = (
+            "Chip files: only single-letter ClinVar variants can be matched; a hit means "
+            "the chip called ClinVar's alternate letter at that position. The chip does not "
+            "report the reference letter, so the reference allele is not checked."
+        )
+        self.assertIn(sentence, gc.METHOD_TEXT_CHIP)
+        self.assertNotIn("only single-letter ClinVar variants can be matched", gc.METHOD_TEXT)
+        self.assertTrue(
+            gc.METHOD_TEXT.startswith(
+                "Exact match on chromosome, position, reference and alternate allele."
+            )
+        )
+        self.assertEqual(gc.method_text_for(False), gc.METHOD_TEXT)
+        self.assertEqual(gc.method_text_for(True), gc.METHOD_TEXT_CHIP)
 
 
 class TestClassify(TempTest):
@@ -383,6 +407,9 @@ class TestZygosityAndChrom(TempTest):
         self.assertEqual(gc.zygosity_for_gt([1], 1), "hemizygous")
         self.assertEqual(gc.zygosity_for_gt([1, 2], 1), "compound with another allele")
         self.assertEqual(gc.zygosity_for_gt([0, 2], 2), "heterozygous")
+        for genotype in ("1/.", "./1", "1|.", ".|1"):
+            alleles = gc.parse_gt(genotype)
+            self.assertEqual(gc.zygosity_for_gt(alleles, 1), gc.INCOMPLETE_ZYGOSITY)
         self.assertEqual(gc.zygosity_from_copies(1, 2), "heterozygous")
         self.assertEqual(gc.zygosity_from_copies(2, 2), "homozygous")
         self.assertEqual(gc.zygosity_from_copies(1, 1), "hemizygous")
@@ -650,6 +677,7 @@ class TestMatchVcf(TempTest):
         counts = payload["metadata"]["counts"]
         self.assertEqual(counts["genome_records_scanned"], 11)
         self.assertEqual(counts["no_calls"], 1)
+        self.assertEqual(counts["incomplete_calls"], 0)
         self.assertEqual(counts["hits"], 8)
         self.assertEqual(counts["filtered_matches"], 2)
         self.assertEqual(counts["skipped_indels"], 0)
@@ -684,6 +712,40 @@ class TestMatchVcf(TempTest):
         self.assertIn("NOPE", err)
         self.assertIn("S1", err)
         self.assertIn("S2", err)
+
+    def test_partly_missing_genotypes_stay_hits_but_are_not_heterozygous(self):
+        genotypes = ["1/.", "./1", "1|.", ".|1", "0/.", "./.", "0/1"]
+        genome = genome_vcf(
+            [gline("1", 1000 + index * 1000, "C", "T", gt) for index, gt in enumerate(genotypes)]
+        )
+        clinvar = clinvar_vcf(
+            [cv("1", 1000 + index * 1000, "C", "T", vid=str(1000 + index * 1000)) for index in range(len(genotypes))]
+        )
+        result = self.run_local(genome, clinvar)
+        by_gt = {hit["genotype"]: hit for hit in result["payload"]["hits"]}
+        self.assertEqual(set(by_gt), {"1/.", "./1", "1|.", ".|1", "0/1"})
+        for genotype in ("1/.", "./1", "1|.", ".|1"):
+            self.assertEqual(by_gt[genotype]["zygosity"], "unknown (one allele not called)")
+            self.assertTrue(by_gt[genotype]["incomplete_call"])
+            self.assertIn(
+                f"Genotype: {genotype} (unknown (one allele not called))",
+                result["md"],
+            )
+        self.assertEqual(by_gt["0/1"]["zygosity"], "heterozygous")
+        self.assertFalse(by_gt["0/1"]["incomplete_call"])
+        self.assertIn("Genotype: 0/1 (heterozygous)", result["md"])
+        flag_lines = [line for line in result["md"].splitlines() if "INCOMPLETE CALL" in line]
+        self.assertEqual(len(flag_lines), 4)
+        for line in flag_lines:
+            self.assertTrue(line.startswith("- **"))
+            self.assertIn("\u2014 INCOMPLETE CALL", line)
+        counts = result["payload"]["metadata"]["counts"]
+        self.assertEqual(counts["hits"], 5)
+        self.assertEqual(counts["no_calls"], 1)
+        self.assertEqual(counts["incomplete_calls"], 5)
+        self.assertIn("- Incomplete calls: 5", result["md"])
+        self.assertNotIn("Genotype: 0/.", result["md"])
+        self.assertNotIn("Genotype: ./.", result["md"])
 
 
 class TestClasses(TempTest):
@@ -742,6 +804,87 @@ class TestClasses(TempTest):
         self.assertEqual([hit["pos"] for hit in result["payload"]["hits"]], [1000])
         self.assertEqual(result["payload"]["metadata"]["selected_classes"], ["Pathogenic"])
 
+    def test_display_labels_map_to_clinvar_terms(self):
+        labels = {
+            "Pathogenic": "Pathogenic",
+            "pathogenic": "Pathogenic",
+            "Likely pathogenic": "Likely_pathogenic",
+            "likely_pathogenic": "Likely_pathogenic",
+            "risk factor": "risk_factor",
+            "drug response": "drug_response",
+            "association": "association",
+            "protective": "protective",
+            "confers sensitivity": "confers_sensitivity",
+            "Uncertain significance": "Uncertain_significance",
+            "Likely benign": "Likely_benign",
+            "Benign": "Benign",
+            "Likely risk allele": "Likely_risk_allele",
+            "Uncertain risk allele": "Uncertain_risk_allele",
+            "Established risk allele": "Established_risk_allele",
+            "Affects": "Affects",
+            "other": "other",
+            "not provided": "not_provided",
+        }
+        for label, canonical in labels.items():
+            with self.subTest(label=label):
+                self.assertEqual(gc.parse_classes(label), [canonical])
+        self.assertEqual(
+            gc.parse_classes("Likely pathogenic, likely_pathogenic, risk factor"),
+            ["Likely_pathogenic", "risk_factor"],
+        )
+        genome = genome_vcf(
+            [
+                gline("1", 1000, "C", "T", "0/1"),
+                gline("1", 2000, "C", "T", "0/1"),
+                gline("1", 3000, "C", "T", "0/1"),
+            ]
+        )
+        clinvar = clinvar_vcf(
+            [
+                cv("1", 1000, "C", "T", clnsig="Pathogenic"),
+                cv("1", 2000, "C", "T", clnsig="Likely_pathogenic"),
+                cv("1", 3000, "C", "T", clnsig="risk_factor"),
+            ]
+        )
+        result = self.run_local(
+            genome,
+            clinvar,
+            extra=["--classes", "Likely pathogenic, risk factor"],
+        )
+        self.assertEqual([hit["pos"] for hit in result["payload"]["hits"]], [2000, 3000])
+        self.assertEqual(
+            result["payload"]["metadata"]["selected_classes"],
+            ["Likely_pathogenic", "risk_factor"],
+        )
+
+    def test_unknown_class_is_rejected(self):
+        with self.assertRaises(gc.GenomeCheckError) as caught:
+            gc.parse_classes("Pathogenic, made_up")
+        message = str(caught.exception)
+        self.assertIn("made_up", message)
+        for term in gc.ACCEPTED_CLASSES:
+            self.assertIn(term, message)
+        root = self.temp()
+        genome = root / "genome.vcf"
+        genome.write_text(genome_vcf([gline("1", 1000, "C", "T", "0/1")]), encoding="utf-8")
+        code, _stdout, err = run_main(
+            [
+                "run",
+                "--genome",
+                str(genome),
+                "--out-dir",
+                str(root / "out"),
+                "--classes",
+                "not_a_class",
+            ]
+        )
+        self.assertEqual(code, 1)
+        self.assertIn("not_a_class", err)
+        self.assertIn("Likely_pathogenic", err)
+        self.assertIn("not_provided", err)
+        self.assertIn("Established_risk_allele", err)
+        self.assertFalse((root / "out").exists())
+
 
 class TestMatchChip(TempTest):
     def test_23andme(self):
@@ -781,6 +924,7 @@ class TestMatchChip(TempTest):
         counts = result["payload"]["metadata"]["counts"]
         self.assertEqual(counts["genome_records_scanned"], 9)
         self.assertEqual(counts["no_calls"], 1)
+        self.assertEqual(counts["incomplete_calls"], 0)
         self.assertEqual(counts["skipped_indels"], 3)
         self.assertEqual(counts["allele_mismatches"], 1)
         self.assertEqual(counts["hits"], 3)
@@ -814,6 +958,7 @@ class TestMatchChip(TempTest):
         )
         counts = result["payload"]["metadata"]["counts"]
         self.assertEqual(counts["no_calls"], 1)
+        self.assertEqual(counts["incomplete_calls"], 0)
         self.assertEqual(counts["skipped_indels"], 1)
         self.assertEqual(counts["allele_mismatches"], 0)
         self.assertEqual(counts["genome_records_scanned"], 5)
@@ -1031,6 +1176,61 @@ class TestDownload(TempTest):
         self.assertEqual(snap(genome), before)
         self.assertFalse(out.exists())
 
+    def test_link_failure_copies_without_replacing(self):
+        root = self.temp()
+        real_link = gc.os.link
+        real_rename = gc.os.rename
+        real_lexists = gc.os.path.lexists
+
+        def boom(*_args, **_kwargs):
+            raise OSError("cross-device link")
+
+        def rename_bomb(*_args, **_kwargs):
+            raise AssertionError("os.rename must not be used to publish ClinVar")
+
+        gc.os.link = boom
+        gc.os.rename = rename_bomb
+        try:
+            tmp = root / "partial.vcf.gz"
+            final = root / "clinvar_GRCh37_20240115.vcf.gz"
+            payload = b"clinvar-bytes-v1"
+            tmp.write_bytes(payload)
+            gc._publish_new(str(tmp), str(final))
+            self.assertFalse(tmp.exists())
+            self.assertEqual(final.read_bytes(), payload)
+
+            tmp_existing = root / "partial-existing.vcf.gz"
+            final_existing = root / "already.vcf.gz"
+            tmp_existing.write_bytes(b"new-bytes")
+            final_existing.write_bytes(b"old-bytes")
+            with self.assertRaises(gc.GenomeCheckError) as caught:
+                gc._publish_new(str(tmp_existing), str(final_existing))
+            self.assertIn("already here", str(caught.exception))
+            self.assertEqual(final_existing.read_bytes(), b"old-bytes")
+
+            calls = {"n": 0}
+
+            def hide_first(path):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    return False
+                return real_lexists(path)
+
+            gc.os.path.lexists = hide_first
+            tmp_race = root / "partial-race.vcf.gz"
+            final_race = root / "race.vcf.gz"
+            tmp_race.write_bytes(b"race-bytes")
+            final_race.write_bytes(b"kept-bytes")
+            with self.assertRaises(gc.GenomeCheckError) as caught_race:
+                gc._publish_new(str(tmp_race), str(final_race))
+            self.assertIn("already here", str(caught_race.exception))
+            self.assertEqual(final_race.read_bytes(), b"kept-bytes")
+            self.assertFalse(tmp_race.exists())
+        finally:
+            gc.os.link = real_link
+            gc.os.rename = real_rename
+            gc.os.path.lexists = real_lexists
+
 
 class TestNeverOverwrite(TempTest):
     def test_second_run_and_genome_path_collision(self):
@@ -1163,7 +1363,10 @@ class TestDiff(TempTest):
         markdown = out.read_text(encoding="utf-8")
         self.assert_diff_contract(markdown)
         self.assertIn("now classified: Benign, 1/4", markdown)
-        self.assertIn("no longer in this ClinVar release at this exact position and alleles", markdown)
+        self.assertIn("current classification not looked up", markdown)
+        self.assertNotIn("no longer in this ClinVar release", markdown)
+        self.assertNotIn("now listed at", markdown)
+        self.assertNotIn("is not in this release", markdown)
         self.assertIn("GENEB", markdown)
         self.assertIn("Pathogenic \u2192 Likely_pathogenic", markdown)
         self.assertIn("1/4 \u2192 2/4", markdown)
@@ -1190,6 +1393,8 @@ class TestDiff(TempTest):
         self.assertEqual(code, 0, err)
         bare = bare_out.read_text(encoding="utf-8")
         self.assertIn("current classification not looked up", bare)
+        self.assertNotIn("now listed at", bare)
+        self.assertNotIn("is not in this release", bare)
         self.assertNotIn("genome file names differ", bare)
         self.assert_diff_contract(bare)
 
@@ -1246,9 +1451,15 @@ class TestDiff(TempTest):
         self.assertEqual(snap(first["genome"]), before)
         payload, _markdown, _md_path, _json_path, diffs = load_outputs(second_out)
         self.assertEqual([hit["gene"] for hit in payload["hits"]], ["GENEB"])
-        self.assertEqual(payload["previous_lookup"]["1:1000:C:T"]["clnsig"], "Benign")
-        self.assertEqual(payload["previous_lookup"]["1:1000:C:T"]["stars"], 1)
-        self.assertNotIn("1:3000:G:T", payload["previous_lookup"])
+        looked = payload["previous_lookup"]["1:1000:C:T"]
+        self.assertTrue(looked["looked_up"])
+        self.assertTrue(looked["found"])
+        self.assertEqual(looked["clnsig"], "Benign")
+        self.assertEqual(looked["stars"], 1)
+        missing = payload["previous_lookup"]["1:3000:G:T"]
+        self.assertEqual(missing["looked_up"], True)
+        self.assertEqual(missing["found"], False)
+        self.assertNotIn("clnsig", missing)
         self.assertEqual(len(diffs), 1)
         self.assertTrue(diffs[0].name.endswith("-diff.md"))
         self.assertIn("20240215", diffs[0].name)
@@ -1259,6 +1470,211 @@ class TestDiff(TempTest):
         self.assertIn("GENEB", diff)
         self.assertNotIn("genome file names differ", diff)
         self.assertNotIn("genotyping-chip", diff)
+
+    def _section(self, markdown: str, heading: str) -> str:
+        start = markdown.index(heading)
+        rest = markdown[start + len(heading):]
+        nxt = rest.find("\n## ")
+        return rest if nxt < 0 else rest[:nxt]
+
+    def test_secondary_clinvar_records_are_compared(self):
+        genome = genome_vcf([gline("1", 1000, "C", "T", "0/1")])
+        old_cv = clinvar_vcf(
+            [
+                cv("1", 1000, "C", "T", vid="111", clnsig="Pathogenic", rev=REV3, gene="GENEA"),
+                cv("1", 1000, "C", "T", vid="222", clnsig="risk_factor", rev=REV1, gene="GENEA"),
+            ],
+            filedate="20240115",
+        )
+        new_cv = clinvar_vcf(
+            [
+                cv("1", 1000, "C", "T", vid="111", clnsig="Pathogenic", rev=REV3, gene="GENEA"),
+                cv("1", 1000, "C", "T", vid="222", clnsig="Likely_pathogenic", rev=REV2, gene="GENEA"),
+            ],
+            filedate="20240215",
+        )
+        old = self.run_local(genome, old_cv)
+        new = self.run_local(genome, new_cv)
+        self.assertEqual(old["payload"]["hits"][0]["classification"], "Pathogenic")
+        self.assertEqual(new["payload"]["hits"][0]["classification"], "Pathogenic")
+        self.assertEqual(old["payload"]["hits"][0]["stars"], 3)
+        self.assertEqual(new["payload"]["hits"][0]["stars"], 3)
+        out = self.temp() / "secondary.md"
+        code, _stdout, err = run_main(
+            ["diff", str(old["json_path"]), str(new["json_path"]), "--out", str(out)]
+        )
+        self.assertEqual(code, 0, err)
+        text = out.read_text(encoding="utf-8")
+        self.assert_diff_contract(text)
+        self.assertIn("- Reclassified: 1", text)
+        self.assertIn("- Review-status changes: 1", text)
+        self.assertIn("- ClinVar records added: 0", text)
+        self.assertIn("- ClinVar records removed: 0", text)
+        reclass = self._section(text, "## Reclassified")
+        stars = self._section(text, "## Review-status changes")
+        self.assertIn("222", reclass)
+        self.assertNotIn("111", reclass)
+        self.assertIn("risk_factor \u2192 Likely_pathogenic", reclass)
+        self.assertEqual(reclass.count("\u2192"), 1)
+        self.assertIn("222", stars)
+        self.assertNotIn("111", stars)
+        self.assertIn("1/4 \u2192 2/4", stars)
+        self.assertIn("criteria provided, single submitter", stars)
+        self.assertIn("criteria provided, multiple submitters, no conflicts", stars)
+
+    def test_added_and_removed_clinvar_records(self):
+        genome = genome_vcf([gline("1", 1000, "C", "T", "0/1")])
+        old_cv = clinvar_vcf(
+            [
+                cv("1", 1000, "C", "T", vid="111", clnsig="Pathogenic", rev=REV3),
+                cv("1", 1000, "C", "T", vid="333", clnsig="risk_factor", rev=REV1),
+            ],
+            filedate="20240115",
+        )
+        new_cv = clinvar_vcf(
+            [
+                cv("1", 1000, "C", "T", vid="111", clnsig="Pathogenic", rev=REV3),
+                cv("1", 1000, "C", "T", vid="444", clnsig="association", rev=REV2),
+            ],
+            filedate="20240215",
+        )
+        old = self.run_local(genome, old_cv)
+        new = self.run_local(genome, new_cv)
+        out = self.temp() / "records.md"
+        code, _stdout, err = run_main(
+            ["diff", str(old["json_path"]), str(new["json_path"]), "--out", str(out)]
+        )
+        self.assertEqual(code, 0, err)
+        text = out.read_text(encoding="utf-8")
+        self.assertIn("- Reclassified: 0", text)
+        self.assertIn("- Review-status changes: 0", text)
+        self.assertIn("- ClinVar records added: 1", text)
+        self.assertIn("- ClinVar records removed: 1", text)
+        added = self._section(text, "## ClinVar records added")
+        removed = self._section(text, "## ClinVar records removed")
+        self.assertIn("ClinVar 444", added)
+        self.assertIn("association", added)
+        self.assertIn("ClinVar 333", removed)
+        self.assertIn("risk_factor", removed)
+        self.assertNotIn("111", added)
+        self.assertNotIn("111", removed)
+
+    def test_not_looked_up_when_the_previous_run_lacked_the_key(self):
+        genome = genome_vcf(
+            [
+                gline("1", 1000, "C", "T", "0/1"),
+                gline("1", 3000, "G", "A", "0/1"),
+            ]
+        )
+        report_a = self.run_local(
+            genome,
+            clinvar_vcf(
+                [
+                    cv("1", 1000, "C", "T", vid="1000"),
+                    cv("1", 3000, "G", "A", vid="3000"),
+                ],
+                filedate="20240115",
+            ),
+        )
+        report_b = self.run_local(
+            genome,
+            clinvar_vcf([cv("1", 1000, "C", "T", vid="1000")], filedate="20240215"),
+        )
+        report_c = self.run_local(
+            genome,
+            clinvar_vcf([cv("1", 4000, "A", "C", vid="4000")], filedate="20240315"),
+            extra=["--previous", str(report_b["json_path"])],
+        )
+        self.assertEqual(set(report_c["payload"]["previous_lookup"]), {"1:1000:C:T"})
+        self.assertTrue(report_c["payload"]["previous_lookup"]["1:1000:C:T"]["looked_up"])
+        self.assertFalse(report_c["payload"]["previous_lookup"]["1:1000:C:T"]["found"])
+        self.assertNotIn("1:3000:G:A", report_c["payload"]["previous_lookup"])
+        out = self.temp() / "a-vs-c.md"
+        code, _stdout, err = run_main(
+            ["diff", str(report_a["json_path"]), str(report_c["json_path"]), "--out", str(out)]
+        )
+        self.assertEqual(code, 0, err)
+        text = out.read_text(encoding="utf-8")
+        self.assert_diff_contract(text)
+        matched = [line for line in text.splitlines() if "1:3000:G:A" in line]
+        self.assertTrue(matched)
+        for line in matched:
+            self.assertIn("not looked up", line)
+            self.assertNotIn("no longer in this ClinVar release", line)
+        self.assertIn(
+            "no longer in this ClinVar release at this exact position and alleles",
+            text,
+        )
+
+    def test_dropped_hit_explains_each_variation_id(self):
+        genome = genome_vcf(
+            [
+                gline("1", 1000, "C", "T", "0/1"),
+                gline("1", 2000, "A", "G", "0/1"),
+            ]
+        )
+        old_cv = clinvar_vcf(
+            [
+                cv("1", 1000, "C", "T", vid="111", clnsig="Pathogenic", gene="GENEA"),
+                cv("1", 2000, "A", "G", vid="222", clnsig="Pathogenic", gene="GENEB"),
+            ],
+            filedate="20240115",
+        )
+        new_cv = clinvar_vcf(
+            [cv("1", 9000, "C", "T", vid="111", clnsig="Benign", rev=REV1, gene="GENEA")],
+            filedate="20240215",
+        )
+        first = self.run_local(genome, old_cv)
+        second = self.run_local(genome, new_cv, extra=["--previous", str(first["json_path"])])
+        lookup = second["payload"]["previous_lookup"]
+        moved = lookup["1:1000:C:T"]
+        gone = lookup["1:2000:A:G"]
+        self.assertTrue(moved["looked_up"])
+        self.assertFalse(moved["found"])
+        self.assertEqual(
+            moved["ids"]["111"],
+            {
+                "found": True,
+                "chrom": "1",
+                "pos": 9000,
+                "ref": "C",
+                "alt": "T",
+                "clnsig": "Benign",
+                "stars": 1,
+            },
+        )
+        self.assertTrue(gone["looked_up"])
+        self.assertFalse(gone["found"])
+        self.assertEqual(gone["ids"]["222"], {"found": False})
+        diff = second["diffs"][0].read_text(encoding="utf-8")
+        self.assert_diff_contract(diff)
+        self.assertIn(
+            "ClinVar record 111 now listed at 1:9000 C>T, classified Benign, 1/4",
+            diff,
+        )
+        self.assertIn(
+            "ClinVar record 222 is not in this release (removed, merged or withdrawn by ClinVar)",
+            diff,
+        )
+        self.assertIn("no longer in this ClinVar release at this exact position and alleles", diff)
+
+        plain_new = json.loads(second["json_path"].read_text(encoding="utf-8"))
+        for entry in plain_new["previous_lookup"].values():
+            entry.pop("ids", None)
+        root = self.temp()
+        old_path = root / "old.json"
+        new_path = root / "new.json"
+        plain_out = root / "plain.md"
+        old_path.write_text(first["json_path"].read_text(encoding="utf-8"), encoding="utf-8")
+        new_path.write_text(json.dumps(plain_new), encoding="utf-8")
+        code, _stdout, err = run_main(
+            ["diff", str(old_path), str(new_path), "--out", str(plain_out)]
+        )
+        self.assertEqual(code, 0, err)
+        plain = plain_out.read_text(encoding="utf-8")
+        self.assertNotIn("now listed at", plain)
+        self.assertNotIn("is not in this release", plain)
+        self.assertIn("no longer in this ClinVar release at this exact position and alleles", plain)
 
 
 if __name__ == "__main__":

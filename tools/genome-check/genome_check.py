@@ -24,7 +24,7 @@ import zlib
 from datetime import date, datetime, timezone
 
 TOOL_NAME = "genome-check"
-TOOL_VERSION = "0.1.0"
+TOOL_VERSION = "0.2.0"
 
 # NCBI's public ClinVar VCF. Tests point this at a file:// directory.
 CLINVAR_BASE_URL = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/"
@@ -37,6 +37,26 @@ DEFAULT_CLASSES = [
     "association",
     "protective",
     "confers_sensitivity",
+]
+
+# Every base term --classes accepts. The spelling here is ClinVar's own.
+ACCEPTED_CLASSES = [
+    "Pathogenic",
+    "Likely_pathogenic",
+    "risk_factor",
+    "drug_response",
+    "association",
+    "protective",
+    "confers_sensitivity",
+    "Uncertain_significance",
+    "Likely_benign",
+    "Benign",
+    "Likely_risk_allele",
+    "Uncertain_risk_allele",
+    "Established_risk_allele",
+    "Affects",
+    "other",
+    "not_provided",
 ]
 
 HEADER_RESEARCH = (
@@ -79,6 +99,21 @@ METHOD_TEXT = (
     "only; somatic and oncogenicity classifications are ignored. The report "
     "contains no recommendations by design."
 )
+
+# Chip files do not carry the reference allele, so they do not use METHOD_TEXT.
+METHOD_TEXT_CHIP = (
+    "Chip files: only single-letter ClinVar variants can be matched; a hit means "
+    "the chip called ClinVar's alternate letter at that position. The chip does not "
+    "report the reference letter, so the reference allele is not checked. "
+    "Variants written differently in the two files (for example indels not "
+    "left-aligned) are not matched. A variant absent from the genome file is "
+    "not evidence the person does not carry it, especially for chip files and "
+    "for VCFs that list only variant sites. ClinVar germline classifications "
+    "only; somatic and oncogenicity classifications are ignored. The report "
+    "contains no recommendations by design."
+)
+
+INCOMPLETE_ZYGOSITY = "unknown (one allele not called)"
 
 # Contig length of chromosome 1 decides the build when it is one of these,
 # and it wins when the header text names a different build.
@@ -441,9 +476,13 @@ def zygosity_for_gt(alleles: list[int | None], allele_index: int) -> str:
 
     1/2 is compound, because the other allele is a different alternate.
     0/1 is heterozygous. 1/1 is homozygous. A single '1' is hemizygous.
+    1/. and the other one-missing forms stay hits, but the zygosity is unknown.
     """
     copies = sum(1 for allele in alleles if allele == allele_index)
     ploidy = len(alleles)
+    # A partly missing genotype is not heterozygous: one allele was not called.
+    if copies >= 1 and any(allele is None for allele in alleles):
+        return INCOMPLETE_ZYGOSITY
     other_alt = any(
         allele not in (None, 0, allele_index) for allele in alleles
     )
@@ -756,26 +795,48 @@ def _stream_url(url: str, dest: str) -> str:
     return digest.hexdigest()
 
 
+def _already_here(final: str) -> GenomeCheckError:
+    return GenomeCheckError(
+        f"A ClinVar file is already here, so it was not overwritten: {final}"
+    )
+
+
+def _copy_exclusive(tmp: str, final: str) -> None:
+    """Copy tmp to a new file. Exclusive create refuses an existing final."""
+    try:
+        dest = open(final, "xb")
+    except FileExistsError as exc:
+        _remove(tmp)
+        raise _already_here(final) from exc
+    try:
+        with dest, open(tmp, "rb") as source:
+            while True:
+                chunk = source.read(1 << 20)
+                if not chunk:
+                    break
+                dest.write(chunk)
+    except Exception:
+        _remove(final)
+        raise
+    _remove(tmp)
+
+
 def _publish_new(tmp: str, final: str) -> None:
-    """Put tmp at final. Never replace a file that is already there."""
+    """Put tmp at final. Never replace a file that is already there.
+
+    os.rename replaces on Unix, so a failed os.link falls back to an
+    exclusive copy instead.
+    """
     if os.path.lexists(final):
-        raise GenomeCheckError(
-            f"A ClinVar file is already here, so it was not overwritten: {final}"
-        )
+        raise _already_here(final)
     try:
         os.link(tmp, final)
-        os.remove(tmp)
-        return
     except FileExistsError as exc:
-        raise GenomeCheckError(
-            f"A ClinVar file is already here, so it was not overwritten: {final}"
-        ) from exc
+        raise _already_here(final) from exc
     except OSError:
-        if os.path.lexists(final):
-            raise GenomeCheckError(
-                f"A ClinVar file is already here, so it was not overwritten: {final}"
-            )
-        os.rename(tmp, final)
+        _copy_exclusive(tmp, final)
+        return
+    os.remove(tmp)
 
 
 def acquire_clinvar(
@@ -1200,14 +1261,37 @@ def format_detect(info: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _class_key(token: str) -> str:
+    return re.sub(r"[\s_]+", "_", token.strip().lower()).strip("_")
+
+
+def canonical_class(token: str) -> str:
+    """Map a class label to ClinVar's spelling.
+
+    Spaces or underscores, and any case, are accepted. An unknown label errors
+    and lists the accepted terms.
+    """
+    key = _class_key(token)
+    for term in ACCEPTED_CLASSES:
+        if _class_key(term) == key:
+            return term
+    accepted = ", ".join(ACCEPTED_CLASSES)
+    raise GenomeCheckError(
+        f"Unknown classification {token!r}. Accepted terms: {accepted}."
+    )
+
+
 def parse_classes(text: str | None) -> list[str]:
     if text is None:
-        return list(DEFAULT_CLASSES)
+        return [canonical_class(term) for term in DEFAULT_CLASSES]
     items = []
     for part in text.split(","):
         part = part.strip()
-        if part and part not in items:
-            items.append(part)
+        if not part:
+            continue
+        canonical = canonical_class(part)
+        if canonical not in items:
+            items.append(canonical)
     if not items:
         raise GenomeCheckError(
             "The --classes list is empty. Name at least one ClinVar classification."
@@ -1241,16 +1325,27 @@ def _better_lookup(candidate: dict, current: dict | None) -> bool:
     return _record_sort_key(candidate) < _record_sort_key(current)
 
 
-def index_clinvar(path: str, selected: set[str], previous_keys: set[str]) -> tuple[dict, dict, dict]:
+def index_clinvar(
+    path: str,
+    selected: set[str],
+    previous_keys: set[str],
+    ids_by_key: dict[str, list[str]] | None = None,
+) -> tuple[dict, dict, dict]:
     """Stream ClinVar once.
 
-    Selected records are indexed for matching. Keys from a previous run are
-    also remembered, whatever their class, so a dropped hit can be explained.
+    Selected records are indexed for matching. Every key from a previous run
+    is recorded, including keys this release does not have. Variation IDs from
+    those hits are indexed even when the class would not be selected, so a
+    dropped hit can say where the record went.
     """
+    if ids_by_key is None:
+        ids_by_key = {}
+    wanted_ids = {vid for vids in ids_by_key.values() for vid in vids}
     by_key: dict[tuple, list[dict]] = {}
     by_pos: dict[tuple, list[tuple]] = {}
-    lookup: dict[str, dict] = {}
     lookup_rank: dict[str, dict] = {}
+    id_rank: dict[str, dict] = {}
+    id_index: dict[str, dict] = {}
     progress("Reading ClinVar.")
     header_done = False
     with open_text(path) as handle:
@@ -1266,11 +1361,18 @@ def index_clinvar(path: str, selected: set[str], previous_keys: set[str]) -> tup
             key_text = parsed["key_text"]
             if key_text in previous_keys and _better_lookup(parsed, lookup_rank.get(key_text)):
                 lookup_rank[key_text] = parsed
-                lookup[key_text] = {
-                    "clnsig": parsed["classification"],
-                    "clnrevstat": parsed["review_status_raw"],
-                    "stars": parsed["stars"],
-                }
+            for vid in parsed["clinvar_ids"]:
+                if vid in wanted_ids and _better_lookup(parsed, id_rank.get(vid)):
+                    id_rank[vid] = parsed
+                    id_index[vid] = {
+                        "found": True,
+                        "chrom": parsed["chrom"],
+                        "pos": parsed["pos"],
+                        "ref": parsed["ref"],
+                        "alt": parsed["alt"],
+                        "clnsig": parsed["classification"],
+                        "stars": parsed["stars"],
+                    }
             if not parsed["selected"]:
                 continue
             by_key.setdefault(key, []).append(parsed)
@@ -1280,6 +1382,24 @@ def index_clinvar(path: str, selected: set[str], previous_keys: set[str]) -> tup
                     bucket.append(key)
     for records in by_key.values():
         records.sort(key=_record_sort_key)
+    lookup: dict[str, dict] = {}
+    for key_text in previous_keys:
+        parsed = lookup_rank.get(key_text)
+        if parsed is None:
+            entry: dict = {"looked_up": True, "found": False}
+        else:
+            entry = {
+                "looked_up": True,
+                "found": True,
+                "clnsig": parsed["classification"],
+                "clnrevstat": parsed["review_status_raw"],
+                "stars": parsed["stars"],
+            }
+        id_map: dict[str, dict] = {}
+        for vid in ids_by_key.get(key_text, []):
+            id_map[vid] = id_index.get(vid) or {"found": False}
+        entry["ids"] = id_map
+        lookup[key_text] = entry
     return by_key, by_pos, lookup
 
 
@@ -1337,6 +1457,7 @@ def _empty_counts() -> dict:
     return {
         "genome_records_scanned": 0,
         "no_calls": 0,
+        "incomplete_calls": 0,
         "skipped_indels": 0,
         "filtered_matches": 0,
         "allele_mismatches": 0,
@@ -1386,10 +1507,14 @@ def _match_vcf(reader, by_key, sample_index, hits, filtered, counts) -> None:
         elif len(columns) == 9:
             fmt = parse_format(columns[8], "")
             gt = fmt.get("GT", "")
-        if not gt or all(allele is None for allele in parse_gt(gt)):
+        alleles = parse_gt(gt) if gt else []
+        if not gt or not alleles or all(allele is None for allele in alleles):
             counts["no_calls"] += 1
             continue
-        alleles = parse_gt(gt)
+        # One allele called, one not: keep going, and count it either way.
+        # 0/. is not a hit. 1/. can be. ./. was already counted as a no-call.
+        if any(allele is None for allele in alleles):
+            counts["incomplete_calls"] += 1
         alts = alt_field.split(",")
         for index, alt in enumerate(alts, start=1):
             if alt in ("*", ".") or alt.startswith("<"):
@@ -1448,6 +1573,7 @@ def _vcf_observation(*, gt, alleles, allele_index, qual, filt, info, fmt) -> dic
     return {
         "genotype": gt,
         "zygosity": zygosity_for_gt(alleles, allele_index),
+        "incomplete_call": any(allele is None for allele in alleles),
         "depth": depth,
         "alt_reads": alt_reads,
         "total_reads": total_reads,
@@ -1498,6 +1624,7 @@ def _match_chip(reader, by_key, by_pos, hits, filtered, counts) -> None:
             observation = {
                 "genotype": call["genotype"],
                 "zygosity": zygosity_from_copies(copies, len(bases)),
+                "incomplete_call": False,
                 "depth": None,
                 "alt_reads": None,
                 "total_reads": None,
@@ -1590,6 +1717,7 @@ def _assemble_hit(records: list[dict], observation: dict) -> dict:
         "area": area,
         "genotype": observation["genotype"],
         "zygosity": observation["zygosity"],
+        "incomplete_call": bool(observation.get("incomplete_call")),
         "depth": observation["depth"],
         "alt_reads": observation["alt_reads"],
         "total_reads": observation["total_reads"],
@@ -1649,6 +1777,7 @@ def _summary_counts(hits: list[dict], filtered: list[dict], counts: dict, select
         "low_confidence": low,
         "genome_records_scanned": counts["genome_records_scanned"],
         "no_calls": counts["no_calls"],
+        "incomplete_calls": counts.get("incomplete_calls", 0),
         "skipped_indels": counts["skipped_indels"],
         "filtered_matches": len(filtered),
         "allele_mismatches": counts["allele_mismatches"],
@@ -1682,6 +1811,8 @@ def _classification_lines(hit: dict) -> list[str]:
         review = record.get("review_status") or ""
         display = record.get("classification_display") or class_display(record.get("classification", ""))
         flags = _flag_suffix(record)
+        if index == 0 and hit.get("incomplete_call"):
+            flags += f" {EM} INCOMPLETE CALL"
         if index == 0:
             lines.append(
                 f"- **{hit['gene']}** {EM} {display} {EM} {glyph} "
@@ -1786,6 +1917,7 @@ def render_report(payload: dict) -> str:
     lines.append(f"- Low confidence (0 or 1 star): {counts['low_confidence']}")
     lines.append(f"- Genome records scanned: {counts['genome_records_scanned']}")
     lines.append(f"- No-calls: {counts['no_calls']}")
+    lines.append(f"- Incomplete calls: {counts.get('incomplete_calls', 0)}")
     lines.append(f"- Skipped indel codes: {counts['skipped_indels']}")
     lines.append(f"- Filtered matches: {counts['filtered_matches']}")
     lines.append(f"- Chip allele mismatches: {counts['allele_mismatches']}")
@@ -1831,9 +1963,15 @@ def render_report(payload: dict) -> str:
             lines.append("")
     lines.append("## Method and limits")
     lines.append("")
-    lines.append(METHOD_TEXT)
+    lines.append(method_text_for(is_chip))
     lines.append("")
     return "\n".join(lines)
+
+
+def method_text_for(is_chip: bool) -> str:
+    if is_chip:
+        return METHOD_TEXT_CHIP
+    return METHOD_TEXT
 
 
 def render_diff(old: dict, new: dict) -> str:
@@ -1847,16 +1985,16 @@ def render_diff(old: dict, new: dict) -> str:
     new_keys = [key for key in new_hits if key not in old_hits]
     dropped_keys = [key for key in old_hits if key not in new_hits]
     shared = [key for key in new_hits if key in old_hits]
-    reclassified = [
-        key
-        for key in shared
-        if str(old_hits[key].get("classification", "")) != str(new_hits[key].get("classification", ""))
-    ]
-    star_changes = [
-        key
-        for key in shared
-        if int(old_hits[key].get("stars", -1)) != int(new_hits[key].get("stars", -1))
-    ]
+    reclassified = []
+    star_changes = []
+    added_records = []
+    removed_records = []
+    for key in shared:
+        events = _record_events(old_hits[key], new_hits[key], key)
+        reclassified.extend(events["reclassified"])
+        star_changes.extend(events["star_changes"])
+        added_records.extend(events["added"])
+        removed_records.extend(events["removed"])
     other_changes = []
     for key in shared:
         changes = []
@@ -1879,10 +2017,15 @@ def render_diff(old: dict, new: dict) -> str:
             )
         if changes:
             other_changes.append((key, changes))
+    def _event_sort(item: tuple) -> tuple:
+        return (_key_sort(item[0]), str(item[1]))
+
     new_keys.sort(key=_key_sort)
     dropped_keys.sort(key=_key_sort)
-    reclassified.sort(key=_key_sort)
-    star_changes.sort(key=_key_sort)
+    reclassified.sort(key=_event_sort)
+    star_changes.sort(key=_event_sort)
+    added_records.sort(key=_event_sort)
+    removed_records.sort(key=_event_sort)
     other_changes.sort(key=lambda item: _key_sort(item[0]))
     is_chip = "chip" in str(old_meta.get("file_type", "")).lower() or "chip" in str(
         new_meta.get("file_type", "")
@@ -1917,6 +2060,8 @@ def render_diff(old: dict, new: dict) -> str:
     lines.append(f"- Dropped hits: {len(dropped_keys)}")
     lines.append(f"- Reclassified: {len(reclassified)}")
     lines.append(f"- Review-status changes: {len(star_changes)}")
+    lines.append(f"- ClinVar records added: {len(added_records)}")
+    lines.append(f"- ClinVar records removed: {len(removed_records)}")
     lines.append(f"- Genotype or area changes: {len(other_changes)}")
     lines.append("")
     lines.append(f"## New hits ({len(new_keys)})")
@@ -1945,6 +2090,7 @@ def render_diff(old: dict, new: dict) -> str:
         lines.append(
             f"- **{hit.get('gene', 'no gene')}** {EM} {text} {EM} was {was}, {hit.get('stars')}/4. {tail}"
         )
+        lines.extend(_dropped_id_lines(lookup, text))
     if dropped_keys:
         lines.append("")
     lines.append(f"## Reclassified ({len(reclassified)})")
@@ -1952,11 +2098,9 @@ def render_diff(old: dict, new: dict) -> str:
     if not reclassified:
         lines.append("None.")
         lines.append("")
-    for key in reclassified:
-        before = old_hits[key].get("classification", "")
-        after = new_hits[key].get("classification", "")
+    for key, vid, gene, before, after in reclassified:
         lines.append(
-            f"- **{new_hits[key].get('gene', 'no gene')}** {EM} {_key_text(key)} {EM} "
+            f"- **{gene}** {EM} {_key_text(key)} {EM} {_vid_phrase(vid)}"
             f"{before} {_arrow()} {after}"
         )
     if reclassified:
@@ -1966,16 +2110,32 @@ def render_diff(old: dict, new: dict) -> str:
     if not star_changes:
         lines.append("None.")
         lines.append("")
-    for key in star_changes:
-        before = old_hits[key]
-        after = new_hits[key]
+    for key, vid, gene, before, after in star_changes:
         lines.append(
-            f"- **{after.get('gene', 'no gene')}** {EM} {_key_text(key)} {EM} "
-            f"{before.get('stars')}/4 {_arrow()} {after.get('stars')}/4"
+            f"- **{gene}** {EM} {_key_text(key)} {EM} {_vid_phrase(vid)}"
+            f"{_stars_of(before)}/4 {_arrow()} {_stars_of(after)}/4"
         )
         lines.append(f"  - Earlier: {before.get('review_status', '')}")
         lines.append(f"  - Later: {after.get('review_status', '')}")
     if star_changes:
+        lines.append("")
+    lines.append(f"## ClinVar records added ({len(added_records)})")
+    lines.append("")
+    if not added_records:
+        lines.append("None.")
+        lines.append("")
+    for key, vid, gene, record in added_records:
+        lines.append(_record_presence_line(gene, key, vid, record))
+    if added_records:
+        lines.append("")
+    lines.append(f"## ClinVar records removed ({len(removed_records)})")
+    lines.append("")
+    if not removed_records:
+        lines.append("None.")
+        lines.append("")
+    for key, vid, gene, record in removed_records:
+        lines.append(_record_presence_line(gene, key, vid, record))
+    if removed_records:
         lines.append("")
     lines.append(f"## Genotype or area changes ({len(other_changes)})")
     lines.append("")
@@ -1991,7 +2151,7 @@ def render_diff(old: dict, new: dict) -> str:
         lines.append("")
     lines.append("## Method and limits")
     lines.append("")
-    lines.append(METHOD_TEXT)
+    lines.append(method_text_for(is_chip))
     lines.append("")
     return "\n".join(lines)
 
@@ -2015,16 +2175,176 @@ def _key_sort(key: tuple) -> tuple:
     return (chrom_sort_key(chrom), pos, ref, alt)
 
 
+def _id_list(value) -> list[str]:
+    if value is None or value == "":
+        return []
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, list):
+        return []
+    found: list[str] = []
+    for item in value:
+        text = str(item).strip()
+        if text and text != "." and text not in found:
+            found.append(text)
+    return found
+
+
+def _stars_of(record: dict) -> int:
+    try:
+        return int(record.get("stars"))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _class_of(record: dict) -> str:
+    value = record.get("classification")
+    if value is None:
+        return ""
+    return str(value)
+
+
+def _records_for_diff(hit: dict) -> tuple[dict[str, dict], list[dict]]:
+    """Variation-id map, plus records that have no id.
+
+    A hit with no clinvar_records is one virtual record, so an older JSON
+    file still diffs on its top-level classification and stars.
+    """
+    records = hit.get("clinvar_records")
+    if not isinstance(records, list) or not records:
+        ids = _id_list(hit.get("clinvar_ids"))
+        virtual = {
+            "clinvar_ids": ids,
+            "classification": hit.get("classification", ""),
+            "stars": hit.get("stars", 0),
+            "review_status": hit.get("review_status", ""),
+        }
+        if ids:
+            return {ids[0]: virtual}, []
+        return {"": virtual}, []
+    by_id: dict[str, dict] = {}
+    anonymous: list[dict] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        ids = _id_list(record.get("clinvar_ids"))
+        if not ids:
+            anonymous.append(record)
+            continue
+        by_id.setdefault(ids[0], record)
+    return by_id, anonymous
+
+
+def _vid_phrase(vid: str) -> str:
+    if vid and not str(vid).startswith("#"):
+        return f"ClinVar {vid} {EM} "
+    return ""
+
+
+def _record_presence_line(gene: str, key: tuple, vid: str, record: dict) -> str:
+    if vid and not str(vid).startswith("#"):
+        label = f"ClinVar {vid}"
+    else:
+        label = "ClinVar id not recorded"
+    return (
+        f"- **{gene}** {EM} {_key_text(key)} {EM} {label} {EM} "
+        f"{_class_of(record)} ({_stars_of(record)}/4)"
+    )
+
+
+def _record_events(old_hit: dict, new_hit: dict, key: tuple) -> dict:
+    """Compare every ClinVar record on one key, by variation id."""
+    old_by, old_anon = _records_for_diff(old_hit)
+    new_by, new_anon = _records_for_diff(new_hit)
+    gene_new = new_hit.get("gene", "no gene")
+    gene_old = old_hit.get("gene", "no gene")
+    reclassified = []
+    star_changes = []
+    added = []
+    removed = []
+    for vid in sorted(set(old_by) | set(new_by)):
+        if vid not in old_by:
+            added.append((key, vid, gene_new, new_by[vid]))
+        elif vid not in new_by:
+            removed.append((key, vid, gene_old, old_by[vid]))
+        else:
+            before = old_by[vid]
+            after = new_by[vid]
+            if _class_of(before) != _class_of(after):
+                reclassified.append((key, vid, gene_new, _class_of(before), _class_of(after)))
+            if _stars_of(before) != _stars_of(after):
+                star_changes.append((key, vid, gene_new, before, after))
+    shared_n = min(len(old_anon), len(new_anon))
+    for index in range(shared_n):
+        before = old_anon[index]
+        after = new_anon[index]
+        vid = f"#{index}"
+        if _class_of(before) != _class_of(after):
+            reclassified.append((key, vid, gene_new, _class_of(before), _class_of(after)))
+        if _stars_of(before) != _stars_of(after):
+            star_changes.append((key, vid, gene_new, before, after))
+    for index in range(shared_n, len(old_anon)):
+        removed.append((key, f"#{index}", gene_old, old_anon[index]))
+    for index in range(shared_n, len(new_anon)):
+        added.append((key, f"#{index}", gene_new, new_anon[index]))
+    return {
+        "reclassified": reclassified,
+        "star_changes": star_changes,
+        "added": added,
+        "removed": removed,
+    }
+
+
 def _dropped_tail(lookup: dict | None, key_text: str) -> str:
-    if lookup is None:
+    if not isinstance(lookup, dict) or key_text not in lookup:
         return "current classification not looked up"
-    if key_text not in lookup:
+    info = lookup.get(key_text)
+    if not isinstance(info, dict):
+        return "current classification not looked up"
+    # Only an explicit miss may say the variant left this ClinVar release.
+    if info.get("looked_up") is True and info.get("found") is False:
         return "no longer in this ClinVar release at this exact position and alleles"
-    info = lookup[key_text] or {}
-    raw = str(info.get("clnsig", ""))
-    display = clnsig_display(raw)
-    stars = info.get("stars", 0)
-    return f"now classified: {display}, {stars}/4"
+    if info.get("found") is True or "clnsig" in info:
+        raw = str(info.get("clnsig", ""))
+        display = clnsig_display(raw) if raw else ""
+        stars = info.get("stars", 0)
+        return f"now classified: {display}, {stars}/4"
+    return "current classification not looked up"
+
+
+def _dropped_id_lines(lookup: dict | None, key_text: str) -> list[str]:
+    """Where each previous variation id sits in this ClinVar release.
+
+    Omitted when the lookup has no per-id data, including a plain diff of two
+    JSON files that never recorded it.
+    """
+    if not isinstance(lookup, dict) or key_text not in lookup:
+        return []
+    info = lookup.get(key_text)
+    if not isinstance(info, dict) or "ids" not in info:
+        return []
+    ids = info.get("ids")
+    if not isinstance(ids, dict):
+        return []
+    lines = []
+    for vid, detail in ids.items():
+        if not isinstance(detail, dict):
+            detail = {}
+        if detail.get("found"):
+            raw = str(detail.get("clnsig", ""))
+            display = clnsig_display(raw) if raw else ""
+            lines.append(
+                "  - ClinVar record "
+                f"{vid} now listed at {detail.get('chrom')}:{detail.get('pos')} "
+                f"{detail.get('ref')}>{detail.get('alt')}, "
+                f"classified {display}, {detail.get('stars', 0)}/4"
+            )
+        else:
+            lines.append(
+                f"  - ClinVar record {vid} is not in this release "
+                "(removed, merged or withdrawn by ClinVar)"
+            )
+    return lines
 
 
 def load_json(path: str) -> dict:
@@ -2040,10 +2360,12 @@ def load_json(path: str) -> dict:
     return data
 
 
-def previous_keys_from(payload: dict) -> set[str]:
+def previous_interest(payload: dict) -> tuple[set[str], dict[str, list[str]]]:
+    """Keys to look up, and the variation ids that belong to each key."""
     if "hits" not in payload:
         raise GenomeCheckError("Previous report JSON has no hits list.")
-    keys = set()
+    keys: set[str] = set()
+    ids_by_key: dict[str, list[str]] = {}
     for bucket in ("hits", "filtered_matches"):
         for hit in payload.get(bucket) or []:
             try:
@@ -2052,7 +2374,22 @@ def previous_keys_from(payload: dict) -> set[str]:
                 raise GenomeCheckError(
                     "A hit in the previous report is missing chrom, pos, ref, or alt."
                 ) from exc
-            keys.add(variant_key(chrom, pos, ref, alt))
+            key = variant_key(chrom, pos, ref, alt)
+            keys.add(key)
+            found = ids_by_key.setdefault(key, [])
+            records = hit.get("clinvar_records")
+            sources = records if isinstance(records, list) and records else [hit]
+            for source in sources:
+                if not isinstance(source, dict):
+                    continue
+                for vid in _id_list(source.get("clinvar_ids")):
+                    if vid not in found:
+                        found.append(vid)
+    return keys, ids_by_key
+
+
+def previous_keys_from(payload: dict) -> set[str]:
+    keys, _ids = previous_interest(payload)
     return keys
 
 
@@ -2165,9 +2502,10 @@ def run_check(
     run_date = run_date or date.today().isoformat()
     previous_payload = None
     previous_key_set: set[str] = set()
+    ids_by_key: dict[str, list[str]] = {}
     if previous:
         previous_payload = load_json(previous)
-        previous_key_set = previous_keys_from(previous_payload)
+        previous_key_set, ids_by_key = previous_interest(previous_payload)
     with GenomeReader(genome) as reader:
         genome_meta = reader.inspect(build)
         if reader.kind == "vcf":
@@ -2207,7 +2545,9 @@ def run_check(
             )
         if not os.path.isdir(out_dir):
             os.makedirs(out_dir, exist_ok=True)
-        by_key, by_pos, lookup = index_clinvar(clinvar, selected_set, previous_key_set)
+        by_key, by_pos, lookup = index_clinvar(
+            clinvar, selected_set, previous_key_set, ids_by_key
+        )
         hits, filtered, counts = match_genome(
             reader, by_key, by_pos, sample_index=sample_index
         )
@@ -2270,7 +2610,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--previous", help="JSON from an earlier run, used to describe what changed.")
     run.add_argument(
         "--classes",
-        help="Comma-separated ClinVar terms to keep. The default is the built-in list.",
+        help=(
+            "Comma-separated ClinVar terms to keep. Spaces or underscores, any case. "
+            "An unknown term stops the run and lists the accepted terms."
+        ),
     )
     run.add_argument("--clinvar-base-url", default=CLINVAR_BASE_URL, help=argparse.SUPPRESS)
 
