@@ -18,6 +18,21 @@ About 250 MB free if the tool downloads ClinVar. That file is large because it i
 
 No install. The tool is one file, `genome_check.py`, in this folder.
 
+## Getting it
+
+**Ask your agent to fetch it.** In Claude Code or Codex, in your vault, give this request:
+
+> Download the genome check tool from https://github.com/fukumushicha/autarkeia-plugin/tree/master/tools/genome-check (the files `genome_check.py` and `README.md`) into `tools/genome-check/` in my health project. Read its README. Then run `detect` on my genome file and show me what it found before the full run. Do not move or change my genome file.
+
+To do it by hand, open Terminal in the folder where you want the tool and paste:
+
+```
+curl -fLO https://raw.githubusercontent.com/fukumushicha/autarkeia-plugin/master/tools/genome-check/genome_check.py
+curl -fLO https://raw.githubusercontent.com/fukumushicha/autarkeia-plugin/master/tools/genome-check/README.md
+```
+
+To update the tool later, fetch the same two files again. Each JSON report records the tool version that wrote it.
+
 ## Which file you have
 
 A sequencing file is a VCF: a text file of variants from a sequencing machine. It may be plain text or gzip-compressed (the name often ends in `.vcf.gz`). The tool can usually tell whether the positions use GRCh37 or GRCh38, the two reference editions it knows. The reference edition is the version of the human reference the positions were counted on. If the file does not say, the tool stops and you add `--build GRCh37` or `--build GRCh38`.
