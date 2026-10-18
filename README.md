@@ -74,6 +74,8 @@ The skills are the method. What goes into the vault is yours.
 
 Work in your vault folder. Say **setup** for the first session, **distill** before closing a session, **daily debrief** at the end of a day and **weekly debrief** at the end of a week. Say **librarian** to file a document or recording. [Getting started](docs/getting-started.md) explains these habits, projects and what is in your vault.
 
+Optional tool, not for day one: [`tools/genome-check/`](tools/genome-check/README.md) compares a raw genome file (a sequencing VCF, or a 23andMe or AncestryDNA download) with ClinVar, the public database of what DNA variants are known to mean, on your own computer, and shows what changed since the last check. Research-grade only. Its README has a request you can give your agent to fetch it, and says how to read the results.
+
 ## Cost
 
 It runs on your own Claude or ChatGPT account. Thirteen skills against a vault that grows for a month is real usage; expect it to show in your plan's limits.
