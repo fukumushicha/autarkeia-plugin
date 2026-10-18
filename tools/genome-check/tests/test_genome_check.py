@@ -1676,6 +1676,67 @@ class TestDiff(TempTest):
         self.assertNotIn("is not in this release", plain)
         self.assertIn("no longer in this ClinVar release at this exact position and alleles", plain)
 
+    def test_diff_explains_only_ids_from_the_dropped_hit(self):
+        genome = genome_vcf([gline("1", 1000, "C", "T", "0/1")])
+        report_a = self.run_local(
+            genome,
+            clinvar_vcf(
+                [cv("1", 1000, "C", "T", vid="111", clnsig="Pathogenic", gene="GENEA")],
+                filedate="20240115",
+            ),
+        )
+        report_b = self.run_local(
+            genome,
+            clinvar_vcf(
+                [cv("1", 1000, "C", "T", vid="222", clnsig="Pathogenic", gene="GENEA")],
+                filedate="20240215",
+            ),
+        )
+        report_c = self.run_local(
+            genome,
+            clinvar_vcf(
+                [cv("1", 9000, "C", "T", vid="222", clnsig="Benign", rev=REV1, gene="GENEA")],
+                filedate="20240315",
+            ),
+            extra=["--previous", str(report_b["json_path"])],
+        )
+        hit_a = report_a["payload"]["hits"][0]
+        hit_b = report_b["payload"]["hits"][0]
+        self.assertEqual(hit_a["clinvar_records"][0]["clinvar_ids"], ["111"])
+        self.assertEqual(hit_b["clinvar_records"][0]["clinvar_ids"], ["222"])
+        saved = report_c["payload"]["previous_lookup"]["1:1000:C:T"]["ids"]
+        self.assertEqual(set(saved), {"222"})
+        self.assertTrue(saved["222"]["found"])
+
+        wrong = self.temp() / "a-vs-c.md"
+        code, _stdout, err = run_main(
+            ["diff", str(report_a["json_path"]), str(report_c["json_path"]), "--out", str(wrong)]
+        )
+        self.assertEqual(code, 0, err)
+        text = wrong.read_text(encoding="utf-8")
+        self.assert_diff_contract(text)
+        self.assertNotIn("222", text)
+        self.assertNotIn("111", text)
+        self.assertNotIn("now listed at", text)
+        self.assertNotIn("is not in this release", text)
+        self.assertIn(
+            "no longer in this ClinVar release at this exact position and alleles",
+            text,
+        )
+
+        right = self.temp() / "b-vs-c.md"
+        code, _stdout, err = run_main(
+            ["diff", str(report_b["json_path"]), str(report_c["json_path"]), "--out", str(right)]
+        )
+        self.assertEqual(code, 0, err)
+        positive = right.read_text(encoding="utf-8")
+        self.assert_diff_contract(positive)
+        self.assertIn(
+            "ClinVar record 222 now listed at 1:9000 C>T, classified Benign, 1/4",
+            positive,
+        )
+        self.assertNotIn("111", positive)
+
 
 if __name__ == "__main__":
     unittest.main()

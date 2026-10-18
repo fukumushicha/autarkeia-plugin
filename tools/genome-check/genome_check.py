@@ -2090,7 +2090,7 @@ def render_diff(old: dict, new: dict) -> str:
         lines.append(
             f"- **{hit.get('gene', 'no gene')}** {EM} {text} {EM} was {was}, {hit.get('stars')}/4. {tail}"
         )
-        lines.extend(_dropped_id_lines(lookup, text))
+        lines.extend(_dropped_id_lines(lookup, text, _hit_variation_ids(hit)))
     if dropped_keys:
         lines.append("")
     lines.append(f"## Reclassified ({len(reclassified)})")
@@ -2312,22 +2312,51 @@ def _dropped_tail(lookup: dict | None, key_text: str) -> str:
     return "current classification not looked up"
 
 
-def _dropped_id_lines(lookup: dict | None, key_text: str) -> list[str]:
-    """Where each previous variation id sits in this ClinVar release.
+def _hit_variation_ids(hit: dict) -> list[str]:
+    """Variation ids carried by one hit, in report order.
 
-    Omitted when the lookup has no per-id data, including a plain diff of two
-    JSON files that never recorded it.
+    Every id on every clinvar_records entry. When that list is missing or
+    empty, the hit's own clinvar_ids are used, matching an older report and
+    the ids previous_lookup recorded for it.
     """
+    records = hit.get("clinvar_records")
+    sources = records if isinstance(records, list) and records else [hit]
+    found: list[str] = []
+    for source in sources:
+        if not isinstance(source, dict):
+            continue
+        for vid in _id_list(source.get("clinvar_ids")):
+            if vid not in found:
+                found.append(vid)
+    return found
+
+
+def _dropped_id_lines(
+    lookup: dict | None, key_text: str, variation_ids: list[str]
+) -> list[str]:
+    """Where the dropped hit's own variation ids sit in this ClinVar release.
+
+    A line is printed only for an id the dropped hit carries, and only when
+    this report saved evidence for that id under previous_lookup. An id with
+    no saved evidence is omitted, and an id the hit does not carry is never
+    mentioned. Also omitted when the lookup has no per-id data, including a
+    plain diff of two JSON files that never recorded it.
+    """
+    if not variation_ids:
+        return []
     if not isinstance(lookup, dict) or key_text not in lookup:
         return []
     info = lookup.get(key_text)
     if not isinstance(info, dict) or "ids" not in info:
         return []
-    ids = info.get("ids")
-    if not isinstance(ids, dict):
+    saved = info.get("ids")
+    if not isinstance(saved, dict):
         return []
     lines = []
-    for vid, detail in ids.items():
+    for vid in variation_ids:
+        if vid not in saved:
+            continue
+        detail = saved[vid]
         if not isinstance(detail, dict):
             detail = {}
         if detail.get("found"):
