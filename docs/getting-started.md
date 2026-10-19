@@ -12,6 +12,62 @@ When it wants to change its own rules (how to talk to you), it shows you the lin
 
 If setup stops early, say **setup** again in the next session; it checks the answers already saved and continues. Once the first real cycle is complete, setup does not run its questions again. Later, to change something it asked, just say it in any session: "call me Sam", "my priorities have changed", "talk to me more briefly". It shows a rules change before writing it.
 
+## Choosing a skill
+
+Start with the situation you are in. These are example requests, not exact commands you have to memorize. The [README’s skills table](../README.md#skills) explains what each skill does and its benefit.
+
+### Start using the vault — setup
+
+Say **“Set up my vault.”** The agent asks about you, how you want to work, your priorities and one real job. It saves a first cycle of work so another session has something to continue from. Your answers supply the content; the agent does not invent your priorities. This is personal setup after [installation](../INSTALL.md), not a request to fill every folder.
+
+### Keep what a conversation taught you — distill
+
+Say **“Distill this session.”** The agent reads the retained conversation, checks corrections and existing records, then saves useful facts, decisions and tasks with the relevant project. You get lasting knowledge rather than another chat to search through. It reports missing history rather than pretending to recover it; see [What distill can recover](#what-distill-can-recover).
+
+### Close the day — daily debrief
+
+Say **“Let’s do a daily debrief.”** The agent reads the day’s log and tasks, then asks a few questions, one at a time, about what happened, decisions and unfinished work. It shows the proposed additions and saves them after your approval. You get a short record of the day without starting from a blank page.
+
+### Step back from the week — weekly debrief
+
+Say **“Let’s review the week.”** The agent gathers open work, checks the vault, reads the last seven daily logs and compares the week with your written priorities. It proposes what deserves lasting memory and asks what next week is for. You get a chance to adjust your focus; it does not rewrite your priorities on its own.
+
+### Continue in a fresh chat — handover
+
+Say **“Prepare a handover so I can continue this in a fresh chat.”** The agent writes a separate briefing with the goal, progress, decisions, relevant files and next step, then gives you a line to paste into the new chat. This saves reconstruction time when a conversation gets long. Handover prepares the next chat; distill updates your lasting records. Use both when both are needed.
+
+### Make a document useful — librarian
+
+Say **“File this contract and propose what we should remember from it.”** The agent reads it, proposes a location and useful facts or tasks, then waits for approval. It keeps the original, checks the copy and records where it went. You get searchable context with the evidence still available. For audio, it first proposes filing and local transcription if a suitable tool is available, then separately proposes what to extract from the transcript. See [Recordings](#recordings).
+
+### Separate commitments from email noise — email
+
+Say **“Process the emails I saved in the inbox.”** The agent reads those files, records useful facts and decisions, and identifies actual requests or promises. Processed files move into a processed folder. You get commitments in your working records without treating newsletters as obligations. This skill does not connect to your mailbox, fetch new mail or send replies.
+
+### See your open work together — realign
+
+Say **“Realign: show me what is open across my projects.”** The agent rebuilds one overview from the task files: current work, things waiting on someone else and files in the inbox. It respects projects that restrict how much detail can appear outside them. You get a current starting point without opening each project, but it can only show work that has been recorded.
+
+### Check the vault itself — health check
+
+Say **“Run a health check on the vault.”** The agent checks file structure, task and inbox age, archive records and possible credentials, then saves a report with proposed repairs. It can create missing empty folders; other fixes need your approval. Say **“Run a dry health check”** for a report with no changes. This is maintenance of your records, not a medical check or a guarantee that every problem has been found.
+
+### Challenge an important piece of work — brainstorm
+
+Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. To request an installed external reviewer, name Codex or Grok explicitly. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation and what reviewers can read: [Second opinions](second-opinion.md).
+
+### Stop repeating the same annoyance — improve
+
+Say **“Capture this friction: I keep having to correct where documents are filed.”** The agent records the problem. Later, say **“Run improve”** to look for repeated problems in recent logs and produce proposed changes. You get a concrete improvement list; the skill does not silently change its rules or apply its own proposals.
+
+### Write with your context available — outbound writing
+
+Say **“Draft a reply explaining the decision we made about this project.”** The agent checks relevant facts and decisions, matches your language and voice, and shows the text in chat. You get a draft to revise or use, without reconstructing all the context yourself. It does not send, post or create an email draft in your account.
+
+### Think without making another task list — sparring
+
+Say **“I want to think through whether this project still matters to me.”** The agent uses a small amount of relevant context, asks questions and challenges assumptions or tensions with your priorities. You get a conversation that can sharpen your judgment without forcing a plan. If something worth remembering emerges, you can choose to distill it afterwards.
+
 ## End the session with distill
 
 Say **distill**. It writes what this session changed into files: today's log in `memory/daily/`, plus facts, decisions and tasks. Open the vault in your file manager (Finder on macOS) and look: that is the memory. The chat is not.
