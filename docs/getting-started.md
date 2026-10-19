@@ -26,7 +26,15 @@ Say **“Distill this session.”** The agent reads the retained conversation, c
 
 ### Close the day — daily debrief
 
-Say **“Let’s do a daily debrief.”** The agent reads the day’s log and tasks, then asks a few questions, one at a time, about what happened, decisions and unfinished work. It shows the proposed additions and saves them after your approval. You get a short record of the day without starting from a blank page.
+Say **“Let’s do a daily debrief.”** You can name a past date too. The agent reads that day's log and tasks, and follows a relevant filed-record pointer only when it would otherwise ask you to repeat what the record already says. It stays inside your vault; it does not open your calendar, mailbox or meeting service. Private-project answers stay in their project.
+
+If little of the day was recorded, it helps you recall what stands out, without demanding a full diary. It asks one question at a time, at most four including follow-ups, about events, decisions, unfinished work or working friction. Say **“skip”** or stop whenever you want. It shows proposed additions and writes only after your approval.
+
+Reflection is optional and off by default. Say **“Include reflection in this debrief”** to add two short questions: what you would do differently and what you are satisfied with, by your own standard. These replace other questions within the same four-question limit. Saying **“nothing”** is a complete answer. An adjustment is a reflection, not a new task, unless you explicitly ask for a task and approve it.
+
+For a lasting preference, say **“Make reflection part of my daily debriefs.”** The agent shows a proposed vault-rule change and saves it after your yes. Say **“Skip reflection tonight”** for a one-off change, or ask to turn the saved preference off. No new settings file is needed.
+
+Later **distill** runs respect the debrief's approved list: declined items stay unwritten and log-only reflections do not silently become facts or tasks. You can explicitly change your mind later. You get a short record of what matters without repeating what is already known or collecting obligations you did not choose.
 
 ### Step back from the week — weekly debrief
 
