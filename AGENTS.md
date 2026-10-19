@@ -25,3 +25,12 @@ The skills, references and vault template exist once and serve both apps. Only t
 3. **One procedure, two app paths.** Check any installation or update change in `INSTALL.md` against both app paths in the same commit. Keep personal setup in `docs/getting-started.md`, shared by both apps. Do not duplicate installation commands there or in the README.
 
 Before publishing a release, install it once in each app from the pushed branch or a local path: `claude plugin validate .`, and in Codex a scratch `CODEX_HOME` with `codex plugin marketplace add <path>` and `codex plugin add autarkeia@autarkeia-plugin`, then confirm `codex debug prompt-input` lists every skill.
+
+## Every release has a changelog entry
+
+Updating `CHANGELOG.md` is mandatory for every future plugin release. A release is not ready to merge or publish without its entry. This is a contributor and reviewer requirement; no automated release gate is currently configured.
+
+- Add or finalize the entry in the same commit that changes the version. Use `## X.Y.Z — YYYY-MM-DD`, newest version first, with the exact version shared by the manifests and README. Verify the date from the clock when preparing the release; correct it if publication moves to another date.
+- Explain the user-visible changes and their practical effect. Call out removals, breaking changes, new prerequisites and any action existing users must take. Record only changes included in the release, never planned work or unverified outcomes.
+- Keep notable changes published without a plugin version bump as separately dated follow-ups under the current version, or as a clearly labelled repository-only update. Do not retroactively imply they were included in the original release. A documentation-only change does not require a version bump solely for the changelog.
+- Before merge or publication, the author and reviewer compare the entry with the changes since the previous version, check version/date consistency and upgrade guidance, and confirm the README still links to the changelog. Missing or stale notes block release completion, just like missing required documentation.
