@@ -1,4 +1,4 @@
-# Autarkeia v0.4.8
+# Autarkeia v0.4.9
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -56,7 +56,7 @@ Skills are repeatable ways of working with your agent. Ask in ordinary language;
 |---|---|---|
 | **Setup** | Asks about you, your priorities and one real job, then saves the first conversation about that work. | A useful starting point built around your life, without designing a whole system first. |
 | **Distill** | Reads the retained conversation and saves important facts, decisions and tasks in the right place. | Less background to repeat in future chats, and useful decisions that survive the conversation. |
-| **Daily debrief** | Asks a few questions about your day, decisions and unfinished work, then saves what you approve. | A record of what matters while it is fresh, without writing a journal from scratch. |
+| **Daily debrief** | Reads relevant filed records before asking about your day, decisions and unfinished work, then saves what you approve. Reflection is optional. | A record of what matters while it is fresh, without writing a journal from scratch. |
 | **Weekly debrief** | Reviews the week’s records and open work against your priorities, then asks what to carry forward. | A chance to notice when daily activity is pulling you away from what matters and choose your next focus. |
 | **Handover** | Writes a briefing for a fresh chat: the goal, progress, relevant files and next step. | You can change conversations without reconstructing the whole task yourself. |
 | **Librarian** | Proposes where to file a document and what to remember, then preserves the original and saves approved facts or tasks. Can also arrange local transcription of recordings. | Documents become useful context for future work, with the original evidence available to check. |
@@ -75,6 +75,8 @@ See [Choosing a skill](docs/getting-started.md#choosing-a-skill) for example req
 ## Everyday use
 
 Work in your vault folder. Say **setup** for the first session, **distill** before closing a session, **daily debrief** at the end of a day and **weekly debrief** at the end of a week. Say **librarian** to file a document or recording. [Getting started](docs/getting-started.md) explains these habits, projects and what is in your vault.
+
+Daily debrief stays within four questions. It uses relevant records already in your vault, helps you recall a lightly recorded day, and keeps private-project answers in the right place. Say **“Include reflection in this debrief”** to add what you would do differently and what you feel satisfied with; reflection is off by default. Later saves respect what you approved or declined. See [Daily debrief](docs/getting-started.md#close-the-day--daily-debrief).
 
 Optional tool, not for day one: [`tools/genome-check/`](tools/genome-check/README.md) compares a raw genome file (a sequencing VCF, or a 23andMe or AncestryDNA download) with ClinVar, the public database of what DNA variants are known to mean, on your own computer, and shows what changed since the last check. Research-grade only. Its README has a request you can give your agent to fetch it, and says how to read the results.
 
