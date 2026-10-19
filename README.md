@@ -50,25 +50,27 @@ The name comes from the Greek *autarkeia*: self-sufficiency, having what you nee
 
 ## Skills
 
-| Skill | What it does |
-|---|---|
-| `setup` | First session: who this is for, what comes first, one job, one cycle |
-| `distill` | Read the retained conversation, including before compaction, and save what changed |
-| `daily-debrief` | Close the day with a few questions |
-| `weekly-debrief` | See the week |
-| `handover` | Note for a fresh session to carry on from, and the line to paste there |
-| `librarian` | File a document or a recording |
-| `email` | Intake from `inbox/` — never send |
-| `realign` | Rebuild the open-work picture |
-| `health-check` | Is the vault still a system |
-| `brainstorm` | Second opinion: a sub-agent, or Codex and Grok if you install them |
-| `improve` | Capture friction — propose only |
-| `outbound-writing` | Draft a message — never send |
-| `sparring` | Think out loud with push-back |
+Skills are repeatable ways of working with your agent. Ask in ordinary language; the agent follows a defined process, reads the relevant records, and saves the result when the workflow calls for it. You do not need to learn special commands.
+
+| Skill | What it does | What you gain |
+|---|---|---|
+| **Setup** | Asks about you, your priorities and one real job, then saves the first conversation about that work. | A useful starting point built around your life, without designing a whole system first. |
+| **Distill** | Reads the retained conversation and saves important facts, decisions and tasks in the right place. | Less background to repeat in future chats, and useful decisions that survive the conversation. |
+| **Daily debrief** | Asks a few questions about your day, decisions and unfinished work, then saves what you approve. | A record of what matters while it is fresh, without writing a journal from scratch. |
+| **Weekly debrief** | Reviews the week’s records and open work against your priorities, then asks what to carry forward. | A chance to notice when daily activity is pulling you away from what matters and choose your next focus. |
+| **Handover** | Writes a briefing for a fresh chat: the goal, progress, relevant files and next step. | You can change conversations without reconstructing the whole task yourself. |
+| **Librarian** | Proposes where to file a document and what to remember, then preserves the original and saves approved facts or tasks. Can also arrange local transcription of recordings. | Documents become useful context for future work, with the original evidence available to check. |
+| **Email** | Reads emails saved into the vault, extracts useful information and separates real commitments from information. Does not open your mailbox or send replies. | Important requests enter your working records without every newsletter becoming another obligation. |
+| **Realign** | Combines open tasks across projects into one overview of current work, waiting items and the inbox. | You can see what needs attention without opening every project separately. |
+| **Health check** | Checks for missing files, old unfinished tasks, archive inconsistencies and possible credentials; reports problems and proposes repairs. | You can catch maintenance problems before they make the system harder to rely on. |
+| **Brainstorm** | Gets a separate AI review of a decision, document or piece of work, then compares the findings and explains disagreements. | Another chance to spot weak assumptions, mistakes and overlooked alternatives before acting. Agreement is not proof. |
+| **Improve** | Records recurring friction and proposes changes for your approval. | Annoyances can lead to deliberate improvements instead of recurring indefinitely or triggering unapproved changes. |
+| **Outbound writing** | Drafts or proofreads a message using relevant facts from your records and your own voice, without sending it. | Less time reconstructing context and composing replies, while you control what goes out in your name. |
+| **Sparring** | Helps you think through a question, challenges assumptions and points out tensions with your stated priorities. | Space to think with someone who pushes back, without automatically creating another task list. |
 
 Distill uses the exact current conversation in local Claude Code and Codex. It reads retained original messages in sections, checks corrections and existing memory, and tells you when history is missing. Python 3 is needed for the bundled local reader. Retention or disabled history can limit recovery. Checkpoint has been removed; existing saved notes stay untouched. Handover still writes a separate note for a fresh session.
 
-The skills are the method. What goes into the vault is yours.
+See [Choosing a skill](docs/getting-started.md#choosing-a-skill) for example requests and what each leaves you with. What goes into the vault is yours.
 
 ## Everyday use
 
