@@ -12,6 +12,7 @@ The agent handles the commands; you provide access and your own answers. An ordi
 
 - [Installation guide](INSTALL.md): the shared procedure for agents and people, including updates and existing vaults. If you do not have an agent yet, start with its prerequisites.
 - [Getting started](docs/getting-started.md): your first real job and everyday use, after installation.
+- [Changelog](CHANGELOG.md): what changed in every published version, including upgrade notes.
 
 Autarkeia runs in **Claude Code or Codex**, using your own account. Claude's ordinary chat and Cowork are not the Claude Code installation described here. The installation guide uses macOS examples; it identifies what needs adapting on other systems.
 
