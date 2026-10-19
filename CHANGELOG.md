@@ -2,6 +2,15 @@
 
 User-visible changes to Autarkeia, newest first. Historical entries through 0.4.9 were reconstructed from published repository history. Dates are the version-introducing commit dates in their recorded timezone, not independently verified publication timestamps. Later changes made without a version bump are labelled separately. The published history starts at 0.3.0; no earlier releases are documented here.
 
+## 0.4.10 — 2026-10-20
+
+- Skills no longer preapprove shell commands and file writes. Your app's permissions govern them; depending on your settings, you may see more approval prompts.
+- Imported emails, documents and reviewer answers remain attributed evidence, not authority to run commands or change rules. Passwords, API keys and tokens are excluded from new memory and review packets; secret scans report filenames without printing matching values.
+- Private-project routing now also covers processed mail and attachments, drafts, friction and reports. Projects that forbid even a pointer stay out of vault-level records; their reminder lines disappear from the overview, so deadlines and urgent items require checking that project’s own records.
+- Grok reviews no longer accept outside material, including notes that quote or copy it. Read-only protection restricts writes; it does not confine reads or prove network isolation. Review paths handle spaces and apostrophes, and new reviews preserve existing files.
+- The transcript reader marks mixed injected/user records as partial with uncertain attribution, rejects conflicting session identities and recovers after malformed record fields without silently treating the scan as complete.
+- **Upgrade:** update the plugin and start a fresh session. Existing vault contracts are not overwritten. Run **health check** to review and approve the new **Source material and credentials** section and private-project wording; see [Older vaults](INSTALL.md#older-vaults). No new prerequisite beyond the reader's existing Python 3 requirement. These changes do not make AI instruction-following a security guarantee.
+
 ## Repository updates — 2026-10-20
 
 - Added one human-step rule to the vault template: finish authorized preparation, give the user the exact remaining action, resume after their report, and confirm the outcome before recording completion. Approval boundaries are unchanged. Existing vaults need the rule added explicitly; INSTALL.md Updates provides the request, and the README links there. This template/documentation update leaves plugin version 0.4.9 unchanged.

@@ -282,7 +282,8 @@ class TranscriptReaderTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, 0)
         text = buf.getvalue().lower()
         for phrase in ("read-only", "does not write", "user_message_candidate", "not proof",
-                       "snapshot", "cursor", "complete", "compaction", "tool evidence"):
+                       "snapshot", "cursor", "complete", "compaction", "tool evidence",
+                       "mixed", "attribution"):
             self.assertIn(phrase, text)
 
     def test_codex_basic_page_is_read_only_and_keeps_roles(self):
@@ -764,6 +765,8 @@ class TranscriptReaderTests(unittest.TestCase):
             }, user("LEAK_DISAGREE")])
             code, payload, out, err = self.invoke(["--runtime", "codex", "--home", str(disagree), "--session-id", SID])
             self.assert_mismatch(payload)
+            self.assertEqual(out, "")
+            self.assertEqual(payload["error"]["details"]["recorded"], SID2)
             self.assertNotIn("LEAK_DISAGREE", out + err)
 
             session_field = Path(tmp) / "field"
@@ -1174,7 +1177,7 @@ class TranscriptReaderTests(unittest.TestCase):
             codex_path(root, records)
             code, page, out, err = self.invoke(["--runtime", "codex", "--home", str(root), "--session-id", SID])
             self.assertEqual(code, 0)
-            self.assertEqual(page["coverage_status"], "retained_snapshot_only")
+            self.assertEqual(page["coverage_status"], "partial")
             self.assertEqual(page["omissions"]["unknown_records"], 0)
             by_id = {item["id"]: item for item in page["items"]}
             for kind in injected_kinds:
@@ -1186,23 +1189,37 @@ class TranscriptReaderTests(unittest.TestCase):
             self.assertEqual(all_three["kind"], "nonhuman_context")
             self.assertEqual(all_three["text"], "")
             self.assertEqual(all_three["content_item_kinds"], injected_kinds)
-            mixed = by_id["k-mixed"]
+            mixed_items = [item for item in page["items"] if item["id"] == "k-mixed"]
+            self.assertEqual(len(mixed_items), 1)
+            mixed = mixed_items[0]
             self.assertEqual(mixed["kind"], "user_message_candidate")
             self.assertEqual(mixed["role"], "user")
-            self.assertIn("GENUINE_USER_SENTENCE", mixed["text"])
+            self.assertEqual(mixed["text"], "INSTR_BLOCK\nGENUINE_USER_SENTENCE")
             self.assertEqual(mixed["content_item_kinds"], ["agents_md.instructions", "user.text"])
-            unknown = by_id["k-unknown"]
+            self.assertEqual(mixed["provenance"], "mixed")
+            unknown_items = [item for item in page["items"] if item["id"] == "k-unknown"]
+            self.assertEqual(len(unknown_items), 1)
+            unknown = unknown_items[0]
             self.assertEqual(unknown["kind"], "user_message_candidate")
             self.assertEqual(unknown["text"], "UNKNOWN_MIX_TEXT")
             self.assertEqual(unknown["content_item_kinds"], ["agents_md.instructions", "mystery.kind"])
+            self.assertEqual(unknown["provenance"], "mixed")
             plain = by_id["k-plain"]
             self.assertEqual(plain["kind"], "user_message_candidate")
             self.assertEqual(plain["text"], "PLAIN_USER_TEXT")
             self.assertEqual(plain["content_item_kinds"], ["user.text"])
+            self.assertNotIn("provenance", plain)
             empty = by_id["k-empty"]
             self.assertEqual(empty["kind"], "user_message_candidate")
             self.assertEqual(empty["text"], "EMPTY_KINDS_USER")
             self.assertEqual(empty["content_item_kinds"], [])
+            self.assertNotIn("provenance", empty)
+            mixed_warnings = [warning for warning in page["warnings"] if warning["code"] == "mixed_provenance"]
+            self.assertEqual(sorted(warning["line"] for warning in mixed_warnings), sorted(
+                item["line"] for item in (mixed, unknown)
+            ))
+            for warning in mixed_warnings:
+                self.assertIn("list position", warning["message"].lower())
             for secret in secrets:
                 self.assertNotIn(secret, out + err)
 
@@ -1964,6 +1981,287 @@ class TranscriptReaderTests(unittest.TestCase):
             self.assertIn("may contain user input", overflow_notes[0]["message"].lower())
             for index in range(25):
                 self.assertNotIn("OVERFLOW_SECRET_%02d" % index, out + err)
+
+    def test_mixed_kinds_ignore_list_position_and_cursor_stays_stable(self):
+        def kinds_user(content, kinds, item_id):
+            record = user("unused", item_id=item_id, content=content)
+            record["payload"]["internal_chat_message_metadata_passthrough"] = {
+                "content_item_kinds": kinds,
+            }
+            return record
+
+        blocks = ["ALPHA_USER_SENTENCE", "BETA_INJECTED_SENTENCE", "GAMMA_TRAILING_SENTENCE"]
+        joined_text = "\n".join(blocks)
+        uneven_kinds = ["agents_md.instructions", "user.text"]
+        records = [
+            meta(),
+            kinds_user(
+                [{"type": "input_text", "text": text} for text in blocks],
+                uneven_kinds,
+                "k-uneven",
+            ),
+            kinds_user(
+                [{"type": "input_text", "text": "ONLY_BLOCK_TEXT"}],
+                ["agents_md.instructions", "user.text"],
+                "k-one-block",
+            ),
+            user("AFTER_BOTH", item_id="k-after"),
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            codex_path(root, records)
+            args = ["--runtime", "codex", "--home", str(root), "--session-id", SID, "--max-chars", "10"]
+            first = self.walk(args)
+            second = self.walk(args)
+            self.assertEqual([page["next_cursor"] for page in first],
+                             [page["next_cursor"] for page in second])
+            self.assertEqual(self.joined(first), self.joined(second))
+            self.assertEqual(self.joined(first), [
+                ("user_message_candidate", "user", joined_text),
+                ("user_message_candidate", "user", "ONLY_BLOCK_TEXT"),
+                ("user_message_candidate", "user", "AFTER_BOTH"),
+            ])
+            uneven = []
+            for page in first:
+                self.assertEqual(page["coverage_status"], "partial")
+                self.assertIn("mixed_provenance", [warning["code"] for warning in page["warnings"]])
+                for warning in page["warnings"]:
+                    if warning["code"] == "mixed_provenance":
+                        self.assertNotIn("ALPHA_USER_SENTENCE", warning["message"])
+                        self.assertNotIn("ONLY_BLOCK_TEXT", warning["message"])
+                for item in page["items"]:
+                    if item["id"] == "k-uneven":
+                        uneven.append(item)
+                        self.assertEqual(item["provenance"], "mixed")
+                        self.assertEqual(item["content_item_kinds"], uneven_kinds)
+                        self.assertEqual(item["kind"], "user_message_candidate")
+                    elif item["id"] == "k-one-block":
+                        self.assertEqual(item["provenance"], "mixed")
+                        self.assertEqual(item["kind"], "user_message_candidate")
+                    elif item["id"] == "k-after":
+                        self.assertNotIn("provenance", item)
+            self.assertGreater(len(uneven), 1)
+            self.assertEqual("".join(item["text"] for item in uneven), joined_text)
+            self.assertTrue(joined_text.startswith("ALPHA_USER_SENTENCE"))
+
+    def test_session_meta_conflict_across_envelopes_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            failures = [
+                ("payload-hides-session-id", {
+                    "timestamp": "2026-08-01T00:00:00Z",
+                    "type": "session_meta",
+                    "session_id": SID2,
+                    "payload": {"id": SID},
+                }, "LEAK_OUTER_SESSION"),
+                ("payload-hides-sessionId", {
+                    "timestamp": "2026-08-01T00:00:00Z",
+                    "type": "session_meta",
+                    "sessionId": SID2,
+                    "payload": {"id": SID},
+                }, "LEAK_OUTER_CAMEL"),
+                ("payload-hides-outer-id", {
+                    "timestamp": "2026-08-01T00:00:00Z",
+                    "type": "session_meta",
+                    "id": SID2,
+                    "payload": {"id": SID},
+                }, "LEAK_OUTER_ID"),
+            ]
+            for name, header, leak in failures:
+                root = base / name
+                codex_path(root, [header, user(leak)])
+                _code, payload, out, err = self.invoke(
+                    ["--runtime", "codex", "--home", str(root), "--session-id", SID])
+                self.assert_mismatch(payload)
+                self.assertEqual(out, "")
+                self.assertEqual(payload["error"]["details"]["recorded"], SID2)
+                self.assertNotIn(leak, out + err)
+
+            structured = [
+                ("payload-id-hides-list", {
+                    "timestamp": "2026-08-01T00:00:00Z",
+                    "type": "session_meta",
+                    "payload": {"id": SID, "session_id": ["LEAK_LIST_SESSION_ID"]},
+                }, "LEAK_LIST_SESSION_ID"),
+                ("payload-id-hides-dict", {
+                    "timestamp": "2026-08-01T00:00:00Z",
+                    "type": "session_meta",
+                    "session_id": {"secret": "LEAK_DICT_SESSION_ID"},
+                    "payload": {"id": SID},
+                }, "LEAK_DICT_SESSION_ID"),
+            ]
+            for name, header, leak in structured:
+                root = base / name
+                codex_path(root, [header, user("LEAK_AFTER_" + leak)])
+                _code, payload, out, err = self.invoke(
+                    ["--runtime", "codex", "--home", str(root), "--session-id", SID])
+                self.assert_mismatch(payload)
+                self.assertEqual(out, "")
+                self.assertIsNone(payload["error"]["details"]["recorded"])
+                self.assertNotIn(leak, out + err)
+                self.assertNotIn("LEAK_AFTER_" + leak, out + err)
+
+            agree = base / "agree"
+            codex_path(agree, [{
+                "timestamp": "2026-08-01T00:00:00Z",
+                "type": "session_meta",
+                "session_id": SID.upper(),
+                "id": SID,
+                "payload": {"id": SID, "sessionId": SID},
+            }, user("KEEP_AGREE")])
+            code, page, _out, _err = self.invoke(
+                ["--runtime", "codex", "--home", str(agree), "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["items"][0]["text"], "KEEP_AGREE")
+            self.assertEqual(page["session_id"], SID)
+
+            outer_only = base / "outer-only"
+            codex_path(outer_only, [{
+                "timestamp": "2026-08-01T00:00:00Z",
+                "type": "session_meta",
+                "session_id": SID,
+                "payload": {"cwd": "/tmp/not-a-selector"},
+            }, user("KEEP_OUTER_ONLY")])
+            code, page, _out, _err = self.invoke(
+                ["--runtime", "codex", "--home", str(outer_only), "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["items"][0]["text"], "KEEP_OUTER_ONLY")
+
+    def test_list_and_dict_discriminants_skip_and_recover(self):
+        codex_leaks = (
+            "TYPE_LIST_SECRET", "CODEX_BAD_TYPE_BODY",
+            "TYPE_DICT_SECRET", "CODEX_BAD_TYPE_DICT_BODY",
+            "PAYLOAD_LIST_SECRET", "CODEX_BAD_PAYLOAD_BODY",
+            "PAYLOAD_DICT_SECRET", "CODEX_BAD_PAYLOAD_DICT_BODY",
+            "ROLE_LIST_SECRET", "CODEX_BAD_ROLE_BODY",
+            "ROLE_DICT_SECRET", "CODEX_BAD_ROLE_DICT_BODY",
+            "EVENT_LIST_SECRET", "CODEX_BAD_EVENT_BODY",
+            "EVENT_DICT_SECRET", "CODEX_BAD_EVENT_DICT_BODY",
+            "PAYLOAD_ENVELOPE_LIST_SECRET", "PAYLOAD_ENVELOPE_DICT_SECRET",
+            "CODEX_CONTENT_DICT_TYPE", "CODEX_CONTENT_DICT_BODY",
+            "CODEX_CONTENT_LIST_BODY",
+            "BLOCK_LIST_SECRET", "CODEX_BAD_BLOCK_BODY",
+            "BLOCK_DICT_SECRET", "CODEX_BAD_BLOCK_DICT_BODY",
+        )
+        claude_leaks = (
+            "TYPE_LIST_SECRET", "CLAUDE_BAD_TYPE_BODY",
+            "TYPE_DICT_SECRET", "CLAUDE_BAD_TYPE_DICT_BODY",
+            "ROLE_LIST_SECRET", "CLAUDE_BAD_ROLE_BODY",
+            "ROLE_DICT_SECRET", "CLAUDE_BAD_ROLE_DICT_BODY",
+            "BLOCK_LIST_SECRET", "CLAUDE_BAD_BLOCK_BODY",
+            "BLOCK_DICT_SECRET", "CLAUDE_BAD_BLOCK_DICT_BODY",
+            "CLAUDE_CONTENT_DICT_TYPE", "CLAUDE_CONTENT_DICT_BODY",
+            "CLAUDE_CONTENT_LIST_BODY",
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            codex_path(root / "codex", [
+                meta(),
+                {"timestamp": "2026-08-01T00:00:01Z", "type": ["TYPE_LIST_SECRET"], "payload": {
+                    "type": "message", "role": "user",
+                    "content": [{"type": "input_text", "text": "CODEX_BAD_TYPE_BODY"}],
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": {"bad": "TYPE_DICT_SECRET"}, "payload": {
+                    "type": "message", "role": "user",
+                    "content": [{"type": "input_text", "text": "CODEX_BAD_TYPE_DICT_BODY"}],
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item", "payload": {
+                    "type": ["PAYLOAD_LIST_SECRET"], "role": "user",
+                    "content": [{"type": "input_text", "text": "CODEX_BAD_PAYLOAD_BODY"}],
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item", "payload": {
+                    "type": {"bad": "PAYLOAD_DICT_SECRET"}, "role": "user",
+                    "content": [{"type": "input_text", "text": "CODEX_BAD_PAYLOAD_DICT_BODY"}],
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item", "payload": {
+                    "type": "message", "role": ["ROLE_LIST_SECRET"],
+                    "content": [{"type": "input_text", "text": "CODEX_BAD_ROLE_BODY"}],
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item", "payload": {
+                    "type": "message", "role": {"bad": "ROLE_DICT_SECRET"},
+                    "content": [{"type": "input_text", "text": "CODEX_BAD_ROLE_DICT_BODY"}],
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "event_msg", "payload": {
+                    "type": ["EVENT_LIST_SECRET"], "message": "CODEX_BAD_EVENT_BODY",
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "event_msg", "payload": {
+                    "type": {"bad": "EVENT_DICT_SECRET"}, "message": "CODEX_BAD_EVENT_DICT_BODY",
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item",
+                 "payload": ["PAYLOAD_ENVELOPE_LIST_SECRET"]},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item",
+                 "payload": {"note": "PAYLOAD_ENVELOPE_DICT_SECRET"}},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item", "payload": {
+                    "type": "message", "role": "user",
+                    "content": {"type": ["CODEX_CONTENT_DICT_TYPE"], "text": "CODEX_CONTENT_DICT_BODY"},
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item", "payload": {
+                    "type": "message", "role": "user",
+                    "content": [["CODEX_CONTENT_LIST_BODY"]],
+                }},
+                {"timestamp": "2026-08-01T00:00:01Z", "type": "response_item", "payload": {
+                    "type": "message", "role": "user", "content": [
+                        {"type": ["BLOCK_LIST_SECRET"], "text": "CODEX_BAD_BLOCK_BODY"},
+                        {"type": {"bad": "BLOCK_DICT_SECRET"}, "text": "CODEX_BAD_BLOCK_DICT_BODY"},
+                        {"type": "input_text", "text": "CODEX_KEEP_SIBLING"},
+                    ],
+                }},
+                user("CODEX_KEEP_NEXT"),
+            ])
+            code, page, out, err = self.invoke(
+                ["--runtime", "codex", "--home", str(root / "codex"), "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "partial")
+            self.assertEqual([item["text"] for item in page["items"]],
+                             ["CODEX_KEEP_SIBLING", "CODEX_KEEP_NEXT"])
+            self.assertIn("unknown_record", [warning["code"] for warning in page["warnings"]])
+            self.assertIn("unknown_content_block", [warning["code"] for warning in page["warnings"]])
+            self.assertIn("missing_metadata", [warning["code"] for warning in page["warnings"]])
+            for leak in codex_leaks:
+                self.assertNotIn(leak, out + err)
+
+            claude_path(root / "claude", [
+                {"type": ["TYPE_LIST_SECRET"], "uuid": "bad-type-list", "sessionId": SID,
+                 "timestamp": "2026-08-01T00:00:01Z",
+                 "message": {"role": "user", "content": "CLAUDE_BAD_TYPE_BODY"}},
+                {"type": {"bad": "TYPE_DICT_SECRET"}, "uuid": "bad-type-dict", "sessionId": SID,
+                 "timestamp": "2026-08-01T00:00:01Z",
+                 "message": {"role": "user", "content": "CLAUDE_BAD_TYPE_DICT_BODY"}},
+                {"type": "user", "uuid": "bad-role-list", "sessionId": SID,
+                 "timestamp": "2026-08-01T00:00:02Z",
+                 "message": {"role": ["ROLE_LIST_SECRET"], "content": "CLAUDE_BAD_ROLE_BODY"}},
+                {"type": "user", "uuid": "bad-role-dict", "sessionId": SID,
+                 "timestamp": "2026-08-01T00:00:02Z",
+                 "message": {"role": {"bad": "ROLE_DICT_SECRET"}, "content": "CLAUDE_BAD_ROLE_DICT_BODY"}},
+                {"type": "user", "uuid": "bad-blocks", "sessionId": SID,
+                 "timestamp": "2026-08-01T00:00:03Z",
+                 "message": {"role": "user", "content": [
+                     {"type": ["BLOCK_LIST_SECRET"], "text": "CLAUDE_BAD_BLOCK_BODY"},
+                     {"type": {"bad": "BLOCK_DICT_SECRET"}, "text": "CLAUDE_BAD_BLOCK_DICT_BODY"},
+                     {"type": "text", "text": "CLAUDE_KEEP_SIBLING"},
+                 ]}},
+                {"type": "user", "uuid": "bad-content-dict", "sessionId": SID,
+                 "timestamp": "2026-08-01T00:00:03Z",
+                 "message": {"role": "user", "content": {
+                     "type": ["CLAUDE_CONTENT_DICT_TYPE"],
+                     "text": "CLAUDE_CONTENT_DICT_BODY",
+                 }}},
+                {"type": "assistant", "uuid": "bad-content-list", "sessionId": SID,
+                 "timestamp": "2026-08-01T00:00:03Z",
+                 "message": {"role": "assistant", "content": [["CLAUDE_CONTENT_LIST_BODY"]]}},
+                cuser("CLAUDE_KEEP_NEXT", "ok-next", "bad-blocks"),
+            ])
+            code, page, out, err = self.invoke(
+                ["--runtime", "claude", "--home", str(root / "claude"), "--session-id", SID])
+            self.assertEqual(code, 0)
+            self.assertEqual(page["coverage_status"], "partial")
+            self.assertEqual([item["text"] for item in page["items"]],
+                             ["CLAUDE_KEEP_SIBLING", "CLAUDE_KEEP_NEXT"])
+            self.assertIn("unknown_record", [warning["code"] for warning in page["warnings"]])
+            self.assertIn("unknown_content_block", [warning["code"] for warning in page["warnings"]])
+            self.assertIn("missing_metadata", [warning["code"] for warning in page["warnings"]])
+            for leak in claude_leaks:
+                self.assertNotIn(leak, out + err)
 
 
 if __name__ == "__main__":

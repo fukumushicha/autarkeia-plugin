@@ -133,7 +133,7 @@ codex plugin marketplace upgrade autarkeia-plugin
 codex plugin add autarkeia@autarkeia-plugin
 ```
 
-Save active work, then reopen Claude or start a fresh Codex session. Repeat the installation checks above. Never copy the template over your existing vault. New skills and fixes arrive with the plugin; **health check** offers only the specific older-rule changes it knows about, with your approval.
+Save active work, then reopen Claude or start a fresh Codex session. Repeat the installation checks above. Never copy the template over your existing vault. New skills and fixes arrive with the plugin. Your existing contract is not replaced. **Health check** proposes the specific template updates it knows how to compare, including the v0.4.10 safety additions; it does not automatically synchronize the whole contract. Approve only the proposed changes you want.
 
 **Human-step rule (2026-10-20):** after updating the marketplace above, ask your agent: “Add only the ‘When a human step is needed’ bullet from the updated vault template to my vault's rules, preserving everything else.” The template is `~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template/AGENTS.md` for Claude Code or `~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template/AGENTS.md` for Codex. Read that exact bullet, show it for approval, then add it once to the vault's own `AGENTS.md` (or its older `CLAUDE.md` contract). If the updated template does not contain the heading, report that the rule could not be retrieved; do not reconstruct it from a summary. **Health check does not insert this rule.**
 
@@ -146,6 +146,8 @@ A vault made before v0.4.2 has its rules in `CLAUDE.md` and no `AGENTS.md`. It k
 A vault made before v0.4.5 still offers `git init` as a backup in its rules, and its example of a private project uses an older name. Say **health check**: it shows the current lines and replaces only those after your yes, leaving everything you wrote yourself.
 
 Distill’s bundled local transcript reader requires Python 3 (`python3 --version`). It does not change retention or turn on history recording. If Python or retained history is unavailable, extraction reports partial coverage. Older vault rules may still list checkpoint: the skill has been removed, but do not delete earlier checkpoint records. Update that obsolete skill-table row only with the owner’s approval, preserving their other rules. Handover remains available.
+
+A vault made before v0.4.10 may lack **Source material and credentials**. The updated skills already apply those rules when invoked; ordinary conversations need the contract additions too. Say **health check** to compare and approve that section and the private-project urgent-log/overview wording, or ask your agent to show those exact additions from `vault-template/AGENTS.md`. Preserve your own rules; never replace the whole contract. Updating the plugin does not automatically make this change.
 
 ## Troubleshooting
 

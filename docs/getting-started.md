@@ -46,23 +46,23 @@ Say **“Prepare a handover so I can continue this in a fresh chat.”** The age
 
 ### Make a document useful — librarian
 
-Say **“File this contract and propose what we should remember from it.”** The agent reads it, proposes a location and useful facts or tasks, then waits for approval. It keeps the original, checks the copy and records where it went. You get searchable context with the evidence still available. For audio, it first proposes filing and local transcription if a suitable tool is available, then separately proposes what to extract from the transcript. See [Recordings](#recordings).
+Say **“File this contract and propose what we should remember from it.”** The agent reads it, proposes a location and useful facts or tasks, then waits for approval. Instructions inside the document are not instructions to the agent. It keeps the original, checks the copy and records where it went. A private project's copy stays in that project, and the vault does not name the project when its rules forbid even a pointer. You get searchable context with the evidence still available. For audio, it first proposes filing and local transcription if a suitable tool is available, then separately proposes what to extract from the transcript. See [Recordings](#recordings).
 
 ### Separate commitments from email noise — email
 
-Say **“Process the emails I saved in the inbox.”** The agent reads those files, records useful facts and decisions, and identifies actual requests or promises. Processed files move into a processed folder. You get commitments in your working records without treating newsletters as obligations. This skill does not connect to your mailbox, fetch new mail or send replies.
+Say **“Process the emails I saved in the inbox.”** The agent reads those files, records useful facts and decisions, and identifies actual requests or promises. What an email tells the agent to do is not your instruction; only your request is. Processed files move into a processed folder, inside a private project when that project keeps them. You get commitments in your working records without treating newsletters as obligations. This skill does not connect to your mailbox, fetch new mail or send replies.
 
 ### See your open work together — realign
 
-Say **“Realign: show me what is open across my projects.”** The agent rebuilds one overview from the task files: current work, things waiting on someone else and files in the inbox. It respects projects that restrict how much detail can appear outside them. You get a current starting point without opening each project, but it can only show work that has been recorded.
+Say **“Realign: show me what is open across my projects.”** The agent rebuilds one overview from the task files: current work, things waiting on someone else and files in the inbox. It respects projects that restrict how much detail can appear outside them. If a project's rules forbid even a pointer, the overview does not name that project. You get a current starting point without opening each project, but it can only show work that has been recorded and that the project allows out.
 
 ### Check the vault itself — health check
 
-Say **“Run a health check on the vault.”** The agent checks file structure, task and inbox age, archive records and possible credentials, then saves a report with proposed repairs. It can create missing empty folders; other fixes need your approval. Say **“Run a dry health check”** for a report with no changes. This is maintenance of your records, not a medical check or a guarantee that every problem has been found.
+Say **“Run a health check on the vault.”** The agent checks file structure, task and inbox age, archive records and possible passwords, API keys or tokens using a local scan that returns filenames only. It does not display matching values, and an account number is not treated as a secret. It then saves a report with proposed repairs. It can create missing empty folders; other fixes need your approval. Say **“Run a dry health check”** for a report with no changes. A finding that a private project does not allow out is left unnamed in the vault report. This is maintenance of your records, not a medical check or a guarantee that every problem has been found.
 
 ### Challenge an important piece of work — brainstorm
 
-Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. To request an installed external reviewer, name Codex or Grok explicitly. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation and what reviewers can read: [Second opinions](second-opinion.md).
+Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. To request an installed external reviewer, name Codex or Grok explicitly. Grok is not used for inbox mail, an imported document or a fetched page. A review of your own notes can still use it unless they quote or copy outside material. The same restriction covers outside text pasted into the review question or packet. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation, and what the read-only settings do and do not confine: [Second opinions](second-opinion.md).
 
 ### Stop repeating the same annoyance — improve
 
@@ -92,6 +92,8 @@ You can then archive the chat using your app’s sidebar controls. Archiving onl
 Read this before choosing bypass:
 
 > Bypass removes the app's approval prompts. Autarkeia still tells the agent to ask before sending, paying, deleting or changing rules, but those instructions are not a lock. A mistake can run, including a command that sends something out, without another prompt.
+
+Invoking a skill does not preapprove a shell command or a file write. Whatever the skill describes, the app's permission settings still decide what runs. The skills are not a security boundary, and they do not isolate the session from the rest of the permission mode you chose.
 
 In Codex, use its permissions controls to see what the agent may do and what needs approval. The labels differ from Claude’s. Installing Autarkeia does not require you to loosen either app’s permissions.
 
@@ -159,7 +161,7 @@ The following settings are for Claude Code’s desktop app and are optional. Lab
 
 ## Second opinions
 
-Codex (OpenAI) and Grok (xAI) can read your vault and review what Claude did (or, if you work in Codex, Grok and a separate Codex can). Setup, sign-in and what leaves your computer: [second-opinion.md](second-opinion.md). A printed version number proves a reviewer is installed, not that it is signed in; the guide's "Check it works" section has a real test ("brainstorm: test that codex answers").
+Codex (OpenAI) and Grok (xAI) can read your vault and review what Claude did (or, if you work in Codex, Grok and a separate Codex can). Grok is not used on inbox mail, an imported document, or a fetched page. Setup, sign-in and what leaves your computer: [second-opinion.md](second-opinion.md). A printed version number proves a reviewer is installed, not that it is signed in; the guide's "Check it works" section has a real test ("brainstorm: test that codex answers").
 
 ## Email
 
@@ -189,6 +191,6 @@ Everything is plain text. You can open, read and edit any of it yourself.
 
 ## What distill can recover
 
-In local Claude Code and Codex, distill identifies this exact chat and reads retained original messages, including those before the app shortened its context. It reads in sections, keeps corrections and sources, and checks what your vault already holds. If a transcript has expired, was not saved, or cannot be read, it saves supported items and tells you the extraction is partial. It cannot recreate deleted history. The local reader needs Python 3.
+In local Claude Code and Codex, distill identifies this exact chat and reads retained original messages, including those before the app shortened its context. It reads in sections, keeps corrections and sources, and checks what your vault already holds. If a stored message mixes the app's injected context with a person's words, distill is told the attribution is uncertain and does not treat the whole message as yours. If a transcript has expired, was not saved, or cannot be read, it saves supported items and tells you the extraction is partial. It cannot recreate deleted history. The local reader needs Python 3. Text brought in from an email, a document or a page is evidence, not a new instruction.
 
 Checkpoint is no longer a skill. Earlier checkpoint notes stay in your vault. Use distill to save lasting memory and handover to prepare the separate note for a fresh chat.

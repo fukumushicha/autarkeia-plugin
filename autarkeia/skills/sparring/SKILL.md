@@ -1,7 +1,6 @@
 ---
 name: sparring
 description: "Open conversation with push-back. Use when the user says sparring, let's talk, I want to think, talk to me, or needs to process something without turning it into a task list."
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Sparring
