@@ -1,5 +1,9 @@
 # Changelog
 
+## Repository updates — 2026-10-20
+
+- Corrected the Codex update instructions: a standard GitHub installation already receives background updates when Codex starts. No separate updater, schedule or hook is needed. Added fresh-chat guidance, local-folder and pinned-source exceptions, and kept the manual commands for an immediate update. Verified native behavior with Codex CLI 0.163.0. Documentation only; plugin version remains 0.4.11 and existing vault rules are unchanged.
+
 User-visible changes to Autarkeia, newest first. Historical entries through 0.4.9 were reconstructed from published repository history. Dates are the version-introducing commit dates in their recorded timezone, not independently verified publication timestamps. Later changes made without a version bump are labelled separately. The published history starts at 0.3.0; no earlier releases are documented here.
 
 ## 0.4.11 — 2026-10-20

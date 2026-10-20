@@ -145,7 +145,19 @@ Save active work, then reopen Claude or start a fresh Codex session. Repeat the 
 
 **Human-step rule (2026-10-20):** after updating the marketplace above, ask your agent: “Add only the ‘When a human step is needed’ bullet from the updated vault template to my vault's rules, preserving everything else.” The template is `~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template/AGENTS.md` for Claude Code or `~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template/AGENTS.md` for Codex. Read that exact bullet, show it for approval, then add it once to the vault's own `AGENTS.md` (or its older `CLAUDE.md` contract). If the updated template does not contain the heading, report that the rule could not be retrieved; do not reconstruct it from a summary. **Health check does not insert this rule.**
 
-**Automatic updates in Claude Code:** off by default for this plugin. If the owner wants them, type `/plugin`, open **Marketplaces**, choose `autarkeia-plugin`, then **Enable auto-update**. Claude fetches updates at session start and uses them in the next session. This does not change the vault’s rules. The Codex path here is the manual update procedure above; do not assume Claude’s menu exists in Codex.
+### Automatic updates
+
+**Codex:** already automatic for the GitHub installation in this guide. When Codex starts, it checks configured Git marketplaces in the background and refreshes installed plugins when their source changes. There is nothing extra to enable or schedule for Autarkeia. This was verified with Codex CLI 0.163.0 using the app-server that also powers the desktop app. It is a startup check, not a continuously running update service.
+
+Allow the background check to finish, then start a fresh chat to use the updated skills. To update immediately and verify the result, use the two Codex commands above and check the installed version. An offline or failed check is not a completed update. Updating the plugin does not overwrite your vault, projects or their rules.
+
+This applies to a configured **Git** marketplace following the repository's default branch. A downloaded folder or other local marketplace is not pulled from GitHub; a marketplace pinned to a particular tag or commit does not follow new releases. Inspect the configured source before changing it. No extra updater script, Python version or hook approval is needed for Codex's built-in update behavior.
+
+If an older open chat reports that a bundled helper is missing after an update, save your work and start a fresh chat. Codex can replace the cached plugin files while other chats are still open. Do not copy scripts between cached versions or overwrite the vault to repair this.
+
+**Claude Code:** automatic updates are off by default for this plugin. If the owner wants them, type `/plugin`, open **Marketplaces**, choose `autarkeia-plugin`, then **Enable auto-update**. Claude fetches updates at session start and uses them in the next session. This does not change the vault’s rules. Do not look for Claude's menu in Codex.
+
+Technical references: [Codex marketplace configuration](https://developers.openai.com/plugins/build/plugins), [native marketplace auto-upgrade](https://github.com/openai/codex/pull/17425), and [open-chat cache replacement](https://github.com/openai/codex/issues/31383).
 
 ## Older vaults
 
