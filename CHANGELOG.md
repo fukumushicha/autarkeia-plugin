@@ -2,6 +2,10 @@
 
 User-visible changes to Autarkeia, newest first. Historical entries through 0.4.9 were reconstructed from published repository history. Dates are the version-introducing commit dates in their recorded timezone, not independently verified publication timestamps. Later changes made without a version bump are labelled separately. The published history starts at 0.3.0; no earlier releases are documented here.
 
+## Repository updates — 2026-10-20
+
+- Added an automated release check for matching versions, dated release notes, preservation of earlier release headings on version bumps, and changelog updates for shipped changes. The required GitHub check blocks merging when these checks fail. No plugin version change.
+
 ## 0.4.10 — 2026-10-20
 
 - Skills no longer preapprove shell commands and file writes. Your app's permissions govern them; depending on your settings, you may see more approval prompts.
