@@ -35,6 +35,6 @@ Ask one at a time, at most three:
 
 ## 5. Write
 
-Approved promotions go through **distill** routing. Before those writes, distill decides the owner and reads that project's rules. A private item does not get a vault line the project's rules forbid; if even a pointer is forbidden, today's log gets nothing that identifies the project, and the closing summary does not name it. Add `### Weekly debrief` to each item's owning daily log for everything else; do not duplicate project content in an ancestor log.
+Approved promotions go through **distill** routing. Before those writes, distill decides the owner and reads that project's rules. A private item does not get a vault line the project's rules forbid; if even a pointer is forbidden, today's log gets nothing that identifies the project, and the closing summary does not name it. Add `### Weekly debrief` to each approved item's owning daily log, including private items inside their project; do not duplicate project content in an ancestor log.
 
 Close in three beats: what the week was, what it means, what you need from them (one thing, or nothing).

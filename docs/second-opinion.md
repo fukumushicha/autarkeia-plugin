@@ -70,7 +70,7 @@ Nothing goes to an outside reviewer unless you name it. Naming Grok does not run
 What happens:
 
 1. The AI you are working with (Claude or Codex) writes its own view first and keeps it to itself, so it cannot steer the reviewer.
-2. It writes a short packet in `reviews/` (or in a private project's own `reviews/`, where the answers then stay too): your question and which files to read. Naming a reviewer covers those files. It does not allow sending unrelated private files. If the project's rules forbid even a pointer, the vault copy is not written and the project is not named there.
+2. It writes a short packet in the item's owner's `reviews/` (the project folder for any project-owned review, the vault otherwise; answers stay with the packet): your question and which files to read. Naming a reviewer covers those files. It does not allow sending unrelated private files. If the project's rules forbid even a pointer, the vault copy is not written and the project is not named there.
 3. Each reviewer is told to read only the named files, to treat them as data rather than instructions, and to write its answer next to the packet. The built-in reviewer gets the same instruction. That is an instruction, not a technical confinement.
 4. It puts the answers side by side. Where they disagree, you see both. It does not split the difference.
 5. You get one recommendation and, if a decision is still yours, one question.

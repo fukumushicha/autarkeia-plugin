@@ -43,6 +43,8 @@ A project's rules add to this file and any enclosing project's rules. They never
 
 **Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Ancestor files, including parent-project files and vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, handovers, reviews) get a pointer at most, for example "house-renovation: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
 
+Before any path creates or adds a project’s first instructions (new project, direct-opening adoption, upgrade, or first custom rule), verify each enclosing project’s short instructions. If a parent lacks them, show that parent’s instructions in the same approval and write them first, outermost to innermost. Do not write a child reference to a file that does not exist. Preserve all existing custom rules.
+
 When the user asks for a new project:
 
 1. Choose the named folder, under `projects/` or an existing parent project for a requested subproject. Do not overwrite an existing folder. Before creating a subproject, verify every enclosing project has its short instructions. If a legacy parent lacks them, include adding that parent’s short instructions in the same approval and write them first; never create a child pointing to a missing parent file. Preserve existing custom rules. Show the short project instructions below with the actual relative paths, plus any custom rules the user requested; ask for approval once. Do not make optional custom rules an onboarding questionnaire.

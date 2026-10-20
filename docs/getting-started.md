@@ -138,7 +138,7 @@ What helps:
 A recording of an appointment or a call is an original, like a scanned letter.
 
 1. Get the file onto your computer (on a Mac, share or AirDrop a voice memo from your phone).
-2. Drop it in the vault's `inbox/` and say **librarian**. This is better than attaching a medical recording in the chat.
+2. Drop it in the active project's `inbox/`, or the vault's `inbox/` for a vault-owned recording, and say **librarian**. You can also give its exact path. This is better than attaching a medical recording in the chat.
 3. It files the audio, then proposes a transcript. That needs a transcription tool already on your computer (Whisper is one); it runs on your computer, takes a while for a long recording, and stops if you close the laptop. If there is none, it says so. It will not install one or send the audio online without your yes.
 
 The transcript itself is read by your AI like any other file, so it goes to the company running that AI (Anthropic for Claude, OpenAI for Codex). Transcribing locally keeps the audio on your computer; it does not keep the transcript there.

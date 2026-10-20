@@ -55,7 +55,7 @@ When you are Codex, "send to codex" still runs the Codex command below: a separa
 
 ### Codex
 
-From the resolved vault or active project folder. Use the exact review folder chosen in step 1 for packet and output; do not default back to vault reviews. The prompt goes in through standard input. `-s read-only` selects the sandbox that restricts filesystem writes. It does not limit what Codex can read, and `-C` does not confine the process. Quote the real vault path and the real output and packet paths as in step 1. Example shape, with a slug and a path that has a space:
+From the resolved vault or active project folder. Use the exact review folder chosen in step 1 for packet and output; do not default back to vault reviews. The prompt goes in through standard input. `-s read-only` selects the sandbox that restricts filesystem writes. It does not limit what Codex can read, and `-C` does not confine the process. Quote the real working folder and the chosen output and packet paths as in step 1. Example shape, with a slug and a path that has a space:
 
 ```bash
 codex exec -C '/Users/Ada/My Vault/projects/shop' --skip-git-repo-check -s read-only -o '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-codex.md' - < '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-packet.md'
