@@ -75,7 +75,7 @@ See [Choosing a skill](docs/getting-started.md#choosing-a-skill) for example req
 
 ## Everyday use
 
-When a task needs something only you can do, the agent prepares what it can within your authorization, gives you the exact remaining action, and continues after you report the result. It records completion only when the outcome is confirmed. Existing approvals still apply. New vaults include this rule. For an existing vault, ask: “Add only the ‘When a human step is needed’ rule from the current vault template to my vault's rules, preserving everything else.” Updating the plugin alone does not rewrite your vault's rules.
+When a task needs something only you can do, the agent prepares what it can within your authorization, gives you the exact remaining action, and continues after you report the result. It records completion only when the outcome is confirmed. Existing approvals still apply. New vaults include this rule. For an existing vault, follow the [human-step rule update instructions](INSTALL.md#updates) after updating the marketplace. Updating the plugin alone does not rewrite your vault's rules.
 
 Work in your vault folder. Say **setup** for the first session, **distill** before closing a session, **daily debrief** at the end of a day and **weekly debrief** at the end of a week. Say **librarian** to file a document or recording. [Getting started](docs/getting-started.md) explains these habits, projects and what is in your vault.
 
