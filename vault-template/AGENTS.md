@@ -20,7 +20,7 @@ Whoever syncs or backs up this folder holds a copy of everything in it, health r
 
 | File | What belongs here |
 |---|---|
-| `memory/daily/YYYY-MM-DD.md` | What happened, as it happens. Everything lands here first, except what a project's rules keep inside the project (see Projects). |
+| `memory/daily/YYYY-MM-DD.md` | What happened for this owner. Project entries go in the project's daily log; this vault log gets a permitted pointer at most (see Projects). |
 | `memory/facts.md` | What is currently true. |
 | `memory/decisions.md` | What was chosen, and why. |
 | `memory/tasks.md` | What is still to do. |
@@ -31,25 +31,51 @@ Whoever syncs or backs up this folder holds a copy of everything in it, health r
 | `inbox/` | Drop a file or an email here. |
 | `reviews/` | Second-opinion writeups. |
 
-Do not invent new memory files. Do not write durable facts into Claude's hidden project memory.
+Do not invent new memory files beyond the owner-relative files described here. Do not write durable facts into Claude's hidden project memory.
 
 ## Projects
 
 Everything starts here, in this vault. When one piece of work or life grows a shape of its own, it becomes a project: `projects/<name>/`. Make one only when the user asks ("new project ..."), never in advance.
 
-A project has its own memory: `projects/<name>/memory/` with `facts.md`, `decisions.md` and `tasks.md`. Sooner or later it should also have its own rules: `projects/<name>/AGENTS.md`, with a `CLAUDE.md` next to it that holds only the line `@AGENTS.md`. A project needs its own rules when other people are involved, when it is private in its own way, or when it needs its own tone, its own deadlines to watch, or things that never leave it.
+A project has its own memory: `projects/<name>/memory/` with `facts.md`, `decisions.md` and `tasks.md`. Its `AGENTS.md` identifies its vault and parent; `CLAUDE.md` next to it holds only `@AGENTS.md`. Custom rules are optional: add them when other people are involved, when it is private in its own way, or when it needs its own tone, deadlines or things that never leave it.
 
-A project's rules add to this file. They never loosen **When you must ask** or the clause about a body.
+A project's rules add to this file and any enclosing project's rules. They never loosen either, including **When you must ask** or the clause about a body. A subproject is an ordinary project inside its parent, for example `projects/company/shop/`; no special kind or depth limit.
 
-**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, handovers, reviews) get a pointer at most, for example "house-renovation: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
+**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Ancestor files, including parent-project files and vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, handovers, reviews) get a pointer at most, for example "house-renovation: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
+
+Before any path creates or adds a project’s first instructions (new project, direct-opening adoption, upgrade, or first custom rule), verify each enclosing project’s short instructions. If a parent lacks them, show that parent’s instructions in the same approval and write them first, outermost to innermost. Do not write a child reference to a file that does not exist. Preserve all existing custom rules.
 
 When the user asks for a new project:
 
-1. Create `projects/<name>/memory/` with the three files, each with a one-line heading.
-2. Ask one question: does this project need its own rules yet? Who else is involved, what stays inside it, what should I watch?
-3. If they want rules now, show the rules in their words, then write `projects/<name>/AGENTS.md` and its `CLAUDE.md` after yes. If not, skip it; do not create an empty rules file. Ask again when the project shows it needs them.
+1. Choose the named folder, under `projects/` or an existing parent project for a requested subproject. Do not overwrite an existing folder. Before creating a subproject, verify every enclosing project has its short instructions. If a legacy parent lacks them, include adding that parent’s short instructions in the same approval and write them first; never create a child pointing to a missing parent file. Preserve existing custom rules. Show the short project instructions below with the actual relative paths, plus any custom rules the user requested; ask for approval once. Do not make optional custom rules an onboarding questionnaire.
+2. After yes, create its `memory/` with the three files, each with a one-line heading; write its `AGENTS.md` and a `CLAUDE.md` holding only `@AGENTS.md`. Create other folders only when used.
 
-Before working on a project or writing to it, read its `AGENTS.md` if it has one. Always open this vault folder in Claude Code or Codex, not a project folder.
+Example project instructions for `projects/company/shop/`:
+
+```markdown
+# This folder is a project
+
+Vault instructions: ../../../AGENTS.md
+Parent project instructions: ../AGENTS.md
+
+Before working, resolve these paths from this folder and read the vault, then
+all enclosing project instructions, then these rules. Verify the vault contract
+and its memory files, and that this project is anywhere under the vault’s projects/ folder.
+If a reference is missing, ambiguous or inconsistent, stop before writes and
+ask for correction; never create another vault or search the disk for one.
+This project is the default focus. Project work stays here; personal matters
+belong to the vault, subject to all inherited privacy and approval rules.
+Read parent instructions, not unrelated parent or sibling memory.
+Use this project's memory/daily/ for its log, creating it when first needed.
+```
+
+For a first-level project, the vault path is `../../AGENTS.md` and the parent line is `Parent project instructions: none (direct child of the vault's projects/ folder)`. Use the actual contract filename for a legacy vault. Relative paths survive moving the entire vault; moving a project separately may need a correction approved by its owner. Do not follow symlinks out of the vault.
+
+**Which folder to open.** Start in the vault. Open a project for focused work: the agent knows what “save this” and “what next?” refer to without the project name each time. Open the vault for planning across projects, whole-life reflection, or deciding where something belongs. You can explicitly switch focus in a chat; read that scope's instructions first. Opening a folder sets focus, not technical privacy or access permissions.
+
+Before reading project memory or writing, read the vault and enclosing project instructions, then its own `AGENTS.md`. Older projects without this short instruction file still work from the vault; offer to add it with approval before opening them directly. A project has `memory/facts.md` too, so that file alone never proves a folder is the vault. A missing or unclear vault reference means stop before writes, not create vault folders in the project.
+
+Project work, including full daily notes, stays in that project's files. Clearly personal or cross-project facts belong to the vault, unless applicable privacy rules keep them inside the project. Decide per item; ask only when unclear. Reading and listing use the current focus. Every write or move uses the item’s owner: the actual project folder for project work, the resolved vault for personal items. Vault-level paths always refer to the resolved vault. Daily/weekly debrief, realign and health check use the current focus; ask for the whole vault or open it for a combined view. Setup stays vault-only. Read the plugin's `references/project-sessions.md` when available for the skill-specific details.
 
 ## Commands
 
@@ -141,4 +167,4 @@ A document arrives: drop it in `inbox/` and say **librarian**. Do not build fold
 
 ## Session rhythm
 
-Read `memory/facts.md`, `memory/tasks.md`, and `PRIORITIES.md` at the start if the question needs history. Read `NEXT-ACTIONS.md` at the start if it exists: it carries permitted open-work pointers and due dates of projects that allow them. Projects that forbid even a pointer are absent: their deadlines and urgent items require checking that project's own records when working there. The vault overview cannot promise to surface those deadlines. Suggest **realign** once if it says `Generated: never`, is more than a week old, or any `memory/tasks.md` or `projects/*/memory/tasks.md` changed after it (compare with `ls -lt`). If they stop without saving, ask once: "Save this before we stop?"
+Read the active scope's `memory/facts.md`, `memory/tasks.md`, and `PRIORITIES.md` if present and the question needs history. Read its `NEXT-ACTIONS.md` if it exists: it carries permitted open-work pointers and due dates of descendant projects that allow them. Projects that forbid even a pointer are absent: their deadlines and urgent items require checking that project's own records when working there. No overview can promise to surface those deadlines. Suggest **realign** once if it says `Generated: never`, is more than a week old, or a permitted task file in this scope or its descendant projects changed after it. Discover descendants as in `references/project-sessions.md`, excluding stored document/archive copies; do not read private memory just to test freshness. If they stop without saving, ask once: "Save this before we stop?"
