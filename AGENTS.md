@@ -28,9 +28,18 @@ Before publishing a release, install it once in each app from the pushed branch 
 
 ## Every release has a changelog entry
 
-Updating `CHANGELOG.md` is mandatory for every future plugin release. A release is not ready to merge or publish without its entry. This is a contributor and reviewer requirement; no automated release gate is currently configured.
+Updating `CHANGELOG.md` is mandatory for every future plugin release. A release is not ready to merge or publish without its entry. The `Release changelog` GitHub check validates the release on every pull request to `master` and every push to it. The check must pass before merging; do not bypass or remove it to publish a release.
 
 - Add or finalize the entry in the same commit that changes the version. Use `## X.Y.Z — YYYY-MM-DD`, newest version first, with the exact version shared by the manifests and README. Verify the date from the clock when preparing the release; correct it if publication moves to another date.
 - Explain the user-visible changes and their practical effect. Call out removals, breaking changes, new prerequisites and any action existing users must take. Record only changes included in the release, never planned work or unverified outcomes.
 - Keep notable changes published without a plugin version bump as separately dated follow-ups under the current version, or as a clearly labelled repository-only update. Do not retroactively imply they were included in the original release. A documentation-only change does not require a version bump solely for the changelog.
 - Before merge or publication, the author and reviewer compare the entry with the changes since the previous version, check version/date consistency and upgrade guidance, and confirm the README still links to the changelog. Missing or stale notes block release completion, just like missing required documentation.
+
+Run the checks locally before pushing:
+
+```sh
+python3 scripts/check-changelog.py --base-ref origin/master
+python3 -m unittest discover -s scripts -p 'test_*.py'
+```
+
+The automated check requires matching versions in all four manifest fields and the README title, a matching newest dated changelog section with a substantive bullet, and a new section when the version increases. Changes under `autarkeia/`, `vault-template/`, or `tools/` without a version increase still require a changelog change. It rejects malformed or placeholder-only current release notes. Reviewers remain responsible for the accuracy and completeness of the prose; repository administrators can deliberately change protection settings.
