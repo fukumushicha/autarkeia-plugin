@@ -75,6 +75,8 @@ See [Choosing a skill](docs/getting-started.md#choosing-a-skill) for example req
 
 ## Everyday use
 
+When a task needs something only you can do, the agent prepares what it can within your authorization, gives you the exact remaining action, and continues after you report the result. It records completion only when the outcome is confirmed. Existing approvals still apply. New vaults include this rule. For an existing vault, ask: “Add only the ‘When a human step is needed’ rule from the current vault template to my vault's rules, preserving everything else.” Updating the plugin alone does not rewrite your vault's rules.
+
 Work in your vault folder. Say **setup** for the first session, **distill** before closing a session, **daily debrief** at the end of a day and **weekly debrief** at the end of a week. Say **librarian** to file a document or recording. [Getting started](docs/getting-started.md) explains these habits, projects and what is in your vault.
 
 Daily debrief stays within four questions. It uses relevant records already in your vault, helps you recall a lightly recorded day, and keeps private-project answers in the right place. Say **“Include reflection in this debrief”** to add what you would do differently and what you feel satisfied with; reflection is off by default. Later saves respect what you approved or declined. See [Daily debrief](docs/getting-started.md#close-the-day--daily-debrief).
