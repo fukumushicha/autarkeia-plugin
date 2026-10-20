@@ -42,4 +42,6 @@ python3 scripts/check-changelog.py --base-ref origin/master
 python3 -m unittest discover -s scripts -p 'test_*.py'
 ```
 
-The automated check requires matching versions in all four manifest fields and the README title, a matching newest dated changelog section with a substantive bullet, and a new section when the version increases. Changes under `autarkeia/`, `vault-template/`, or `tools/` without a version increase still require a changelog change. It rejects malformed or placeholder-only current release notes. Reviewers remain responsible for the accuracy and completeness of the prose; repository administrators can deliberately change protection settings.
+The automated check requires matching versions in all four manifest fields and the README title, a matching newest dated changelog section with a substantive bullet, and a new section when the version increases while preserving every prior release heading. A numeric version displayed in the marketplace description must match too. Changes under `autarkeia/`, `vault-template/`, or `tools/` without a version increase still require a changelog change. It rejects malformed or placeholder-only current release notes. Reviewers remain responsible for the accuracy and completeness of the prose; repository administrators can deliberately change protection settings.
+
+Edits to the validator, its tests, or `.github/workflows/` change the gate itself and require explicit reviewer attention: each pull request runs its proposed copy of these files.

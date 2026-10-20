@@ -4,7 +4,7 @@ User-visible changes to Autarkeia, newest first. Historical entries through 0.4.
 
 ## Repository updates — 2026-10-20
 
-- Added an automated release check for matching versions, dated release notes, and changelog updates for shipped changes. The required GitHub check blocks merging when these checks fail. No plugin version change.
+- Added an automated release check for matching versions, dated release notes, preservation of earlier release headings on version bumps, and changelog updates for shipped changes. The required GitHub check blocks merging when these checks fail. No plugin version change.
 
 ## 0.4.10 — 2026-10-20
 

@@ -74,6 +74,7 @@ class ReleaseNoteContractTest(unittest.TestCase):
         version: str = "0.4.9",
         *,
         metadata_version: str | None = None,
+        metadata_description: str | None = None,
         entry_version: str | None = None,
         claude_version: str | None = None,
         codex_version: str | None = None,
@@ -101,7 +102,12 @@ class ReleaseNoteContractTest(unittest.TestCase):
         if marketplace_raw is None:
             marketplace = {
                 "name": "autarkeia-plugin",
-                "metadata": {"description": "Autarkeia", "version": metadata_version},
+                "metadata": {
+                    "description": (
+                        "Autarkeia" if metadata_description is None else metadata_description
+                    ),
+                    "version": metadata_version,
+                },
                 "plugins": plugins,
             }
             self._put(f"{MARKETPLACE}", json.dumps(marketplace, indent=2) + "\n")
@@ -448,6 +454,27 @@ class ReleaseNoteContractTest(unittest.TestCase):
         self.write_tree(readme="# Autarkeia 0.4.9\n")
         self.assert_fails(self.run_check(), "README.md", "first title")
 
+    def test_stale_marketplace_description_fails(self) -> None:
+        self.write_tree(
+            metadata_description=f"Autarkeia v0.4.8 {EM} a living record of you, in files you own."
+        )
+        self.assert_fails(
+            self.run_check(),
+            "metadata.description",
+            "Autarkeia v0.4.8",
+            "Autarkeia v0.4.9",
+        )
+
+    def test_matching_marketplace_description_passes(self) -> None:
+        self.write_tree(
+            metadata_description=f"Autarkeia v0.4.9 {EM} a living record of you, in files you own."
+        )
+        self.assert_ok(self.run_check())
+
+    def test_generic_marketplace_description_passes(self) -> None:
+        self.write_tree(metadata_description="A living record of you, in files you own.")
+        self.assert_ok(self.run_check())
+
     def test_valid_numeric_version_bump(self) -> None:
         self.write_tree()
         base = self.commit()
@@ -457,6 +484,68 @@ class ReleaseNoteContractTest(unittest.TestCase):
                 [
                     ("0.4.10", "2020-05-05", "- Raised the patch version and recorded the release.\n"),
                     ("0.4.9", "2026-10-19", NOTE),
+                    ("0.4.8", "2026-10-18", OLDER),
+                ]
+            ),
+        )
+        self.assert_ok(self.run_check("--base-ref", base))
+
+    def test_bump_renaming_old_top_fails(self) -> None:
+        self.write_tree()
+        base = self.commit()
+        self.write_tree(
+            "0.4.10",
+            changelog=changelog_text(
+                [
+                    ("0.4.10", "2026-10-21", NOTE),
+                    ("0.4.8", "2026-10-18", OLDER),
+                ]
+            ),
+        )
+        proc = self.run_check("--base-ref", base)
+        self.assert_fails(
+            proc,
+            "version 0.4.9 from the base changelog is missing",
+            "add a new section for 0.4.10",
+            "renaming or removing history",
+        )
+        self.assertNotIn("already has a section", proc.stdout + proc.stderr)
+
+    def test_bump_removing_older_historical_version_fails(self) -> None:
+        self.write_tree()
+        base = self.commit()
+        self.write_tree(
+            "0.4.10",
+            changelog=changelog_text(
+                [
+                    ("0.4.10", "2026-10-21", "- Added a new release and dropped an older heading.\n"),
+                    ("0.4.9", "2026-10-19", NOTE),
+                ]
+            ),
+        )
+        proc = self.run_check("--base-ref", base)
+        self.assert_fails(
+            proc,
+            "version 0.4.8 from the base changelog is missing",
+            "add a new section for 0.4.10",
+            "renaming or removing history",
+        )
+        self.assertNotIn(
+            "version 0.4.9 from the base changelog is missing",
+            proc.stdout + proc.stderr,
+        )
+
+    def test_bump_adding_a_section_keeps_old_identities(self) -> None:
+        # Old dates and prose may change. The version identities must stay.
+        self.write_tree()
+        base = self.commit()
+        self.write_tree(
+            "0.4.10",
+            changelog=changelog_text(
+                [
+                    ("0.4.10", "2026-10-21", "- Added the new release on top of the old headings.\n"),
+                    ("0.4.9", "2026-11-01", "- Reworded the previous release without renaming it.\n"),
+                    ("0.4.8", "2026-09-01", "- Reworded an older release without deleting it.\n"),
                 ]
             ),
         )

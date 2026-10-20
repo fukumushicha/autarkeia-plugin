@@ -22,6 +22,8 @@ VERSION_TEXT = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 README_TITLE = re.compile(
     r"^# Autarkeia v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"
 )
+# "Autarkeia v" plus a number is a displayed version. Other descriptions stay generic.
+DESCRIPTION_VERSION = re.compile(r"^Autarkeia v(?P<ver>\d\S*)")
 VERSION_HEADING = re.compile(
     rf"^## (?P<ver>(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)) {EM_DASH} "
     rf"(?P<date>\d{{4}}-\d{{2}}-\d{{2}})$"
@@ -104,7 +106,7 @@ def main(argv: list[str] | None = None) -> int:
         errors.extend(_check_changelog(changelog, canonical))
 
     if args.base_ref is not None:
-        errors.extend(_check_base(root, args.base_ref, canonical))
+        errors.extend(_check_base(root, args.base_ref, canonical, changelog))
     return _emit(errors)
 
 
@@ -121,6 +123,7 @@ def _collect_versions(
 ) -> tuple[list[str], tuple[int, int, int] | None]:
     errors: list[str] = []
     found: list[tuple[str, tuple[int, int, int]]] = []
+    metadata_description: str | None = None
 
     payload, load_error = _load_json(root / MARKETPLACE, MARKETPLACE)
     if load_error:
@@ -141,6 +144,9 @@ def _collect_versions(
                 metadata.get("version"),
                 missing="version" not in metadata,
             )
+            description = metadata.get("description")
+            if isinstance(description, str):
+                metadata_description = description
         if "plugins" not in payload:
             errors.append(f"{MARKETPLACE}: missing plugins list")
         else:
@@ -182,6 +188,8 @@ def _collect_versions(
     elif len({version for _, version in found}) > 1:
         detail = "; ".join(f"{label} is {_fmt(version)}" for label, version in found)
         errors.append(f"versions differ: {detail}")
+    if metadata_description is not None:
+        errors.extend(_metadata_description_errors(metadata_description, canonical))
     return errors, canonical
 
 
@@ -244,6 +252,28 @@ def _add_version(
         errors.append(f"{label}: {value!r} must be numeric X.Y.Z without leading zeros")
         return
     found.append((label, parsed))
+
+
+def _metadata_description_errors(
+    description: str,
+    canonical: tuple[int, int, int] | None,
+) -> list[str]:
+    """Check a marketplace description that displays ``Autarkeia vX.Y.Z``."""
+    match = DESCRIPTION_VERSION.match(description)
+    if match is None or canonical is None:
+        return []
+    token = match.group("ver")
+    found = _parse_version(token)
+    expected = _fmt(canonical)
+    label = f"{MARKETPLACE} metadata.description"
+    if found == canonical:
+        return []
+    if found is None:
+        return [
+            f"{label}: {token!r} must be numeric X.Y.Z without leading zeros, "
+            f"expected Autarkeia v{expected}"
+        ]
+    return [f"{label}: shows Autarkeia v{_fmt(found)}, expected Autarkeia v{expected}"]
 
 
 def _check_readme(text: str, canonical: tuple[int, int, int] | None) -> list[str]:
@@ -513,6 +543,7 @@ def _check_base(
     root: Path,
     ref: str,
     canonical: tuple[int, int, int] | None,
+    current_changelog: str | None,
 ) -> list[str]:
     if REF_TEXT.fullmatch(ref) is None:
         return [f"invalid base ref {ref!r}"]
@@ -559,7 +590,36 @@ def _check_base(
             f"{CHANGELOG}: version {_fmt(canonical)} already has a section in the base changelog; "
             "the current version section must be newly added"
         ]
-    return []
+    if current_changelog is None:
+        return []
+    current_parser = _ChangelogParser()
+    current_parser.parse(current_changelog)
+    return _retained_history_errors(
+        base_parser.sections,
+        current_parser.sections,
+        canonical,
+    )
+
+
+def _retained_history_errors(
+    base_sections: list[Section],
+    current_sections: list[Section],
+    canonical: tuple[int, int, int],
+) -> list[str]:
+    """Keep every base release identity. Dates and prose may change."""
+    current_versions = {section.version for section in current_sections}
+    errors: list[str] = []
+    seen: set[tuple[int, int, int]] = set()
+    for section in base_sections:
+        version = section.version
+        if version in seen or version in current_versions:
+            continue
+        seen.add(version)
+        errors.append(
+            f"{CHANGELOG}: version {_fmt(version)} from the base changelog is missing; "
+            f"add a new section for {_fmt(canonical)} instead of renaming or removing history"
+        )
+    return errors
 
 
 def _check_unbumped_distribution(root: Path, ref: str) -> list[str]:
