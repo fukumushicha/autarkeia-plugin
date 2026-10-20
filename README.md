@@ -16,6 +16,8 @@ The agent handles the commands; you provide access and your own answers. An ordi
 
 Autarkeia runs in **Claude Code or Codex**, using your own account. Claude's ordinary chat and Cowork are not the Claude Code installation described here. The installation guide uses macOS examples; it identifies what needs adapting on other systems.
 
+**Codex keeps a standard GitHub installation up to date automatically when it starts.** No separate updater is needed. After an update, start a fresh chat; your personal files and rules stay unchanged. See [Automatic updates](INSTALL.md#automatic-updates) for local-copy exceptions, immediate updates and Claude Code's separate setting.
+
 ## Why this exists
 
 A life runs on many fronts at once: work, money, health, family, the things you are building. Each AI chat sees one conversation and forgets it. Nothing connects what you decided in March to what you are asking today.
