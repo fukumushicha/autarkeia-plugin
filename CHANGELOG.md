@@ -6,7 +6,7 @@ User-visible changes to Autarkeia, newest first. Historical entries through 0.4.
 
 - Added an automated release check for matching versions, dated release notes, preservation of earlier release headings on version bumps, and changelog updates for shipped changes. The required GitHub check blocks merging when these checks fail. No plugin version change.
 
-## 0.4.10 — 2026-10-20
+## 0.4.10 - 2026-10-20
 
 - Skills no longer preapprove shell commands and file writes. Your app's permissions govern them; depending on your settings, you may see more approval prompts.
 - Imported emails, documents and reviewer answers remain attributed evidence, not authority to run commands or change rules. Passwords, API keys and tokens are excluded from new memory and review packets; secret scans report filenames without printing matching values.
