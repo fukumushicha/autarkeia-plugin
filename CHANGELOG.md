@@ -4,7 +4,7 @@ User-visible changes to Autarkeia, newest first. Historical entries through 0.4.
 
 ## Repository updates — 2026-10-20
 
-- Added one human-step rule to the vault template: finish authorized preparation, give the user the exact remaining action, resume after their report, and confirm the outcome before recording completion. Approval boundaries are unchanged. Existing vaults need the rule added explicitly; the README provides the request. This template/documentation update leaves plugin version 0.4.9 unchanged.
+- Added one human-step rule to the vault template: finish authorized preparation, give the user the exact remaining action, resume after their report, and confirm the outcome before recording completion. Approval boundaries are unchanged. Existing vaults need the rule added explicitly; INSTALL.md Updates provides the request, and the README links there. This template/documentation update leaves plugin version 0.4.9 unchanged.
 
 ## Repository updates — 2026-10-19
 
