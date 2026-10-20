@@ -36,6 +36,7 @@ PARTIAL_CODES = {
     "encoding_error",
     "unknown_record",
     "unknown_content_block",
+    "mixed_provenance",
 }
 SPEECH_TYPES = {"text", "input_text", "output_text", "refusal", "output_refusal"}
 REASONING_TYPES = {"reasoning", "thinking", "redacted_thinking", "reasoning_summary"}
@@ -183,6 +184,11 @@ claude_queued_command. Assistant text keeps the assistant role. Tool output is i
 only with --include-tools, and each tool record is labeled tool evidence rather than as a
 person speaking. Other attachment subtypes are not read as a person. An attachment subtype
 this program does not handle makes coverage partial, because it may contain user input.
+
+When one record's content kinds mix injected context with any other kind, the original
+text and the original kind list are both kept and the item is marked mixed. Coverage is
+partial. List position is not attribution: a later step must separate the words or hold
+them. Do not treat that joined text as the person's.
 
 coverage_status is retained_snapshot_only when this snapshot was read cleanly, or partial
 when a record was cut off, badly formed, or not understood. It is never a promise that the
@@ -674,28 +680,41 @@ def check_identity(runtime, obj, requested, state):
         check_identity_claude(obj, requested, state)
 
 
-def meta_source(obj):
-    payload = obj.get("payload")
-    if isinstance(payload, dict) and any(key in payload and payload[key] is not None for key in ("id", "session_id", "sessionId")):
-        return payload
-    return obj
+IDENTITY_KEYS = ("id", "session_id", "sessionId")
+
+
+def identity_values(source):
+    if not isinstance(source, dict):
+        return []
+    return [source[key] for key in IDENTITY_KEYS if key in source and source[key] is not None]
+
+
+def same_requested_id(values, requested):
+    # Every identity value in the record has to be the requested id.
+    # One matching envelope must not hide a different value in the other.
+    # A list or dict is not an id and is not copied into the error.
+    if not values:
+        return False
+    disagreeing = None
+    for value in values:
+        norm = norm_uuid(value) if isinstance(value, str) else None
+        if norm is None:
+            mismatch(requested, value if isinstance(value, str) else None)
+        if norm != requested and disagreeing is None:
+            disagreeing = value
+    if disagreeing is not None:
+        mismatch(requested, disagreeing)
+    return True
 
 
 def check_identity_codex(obj, requested, state):
     if obj.get("type") == "session_meta":
-        source = meta_source(obj)
-        values = [source[key] for key in ("id", "session_id", "sessionId") if key in source and source[key] is not None]
-        if not values:
-            return
-        norms = []
-        for value in values:
-            norm = norm_uuid(value) if isinstance(value, str) else None
-            if norm is None:
-                mismatch(requested, value)
-            norms.append(norm)
-        if len(set(norms)) != 1 or norms[0] != requested:
-            mismatch(requested, values[0])
-        state.identity_ok = True
+        payload = obj.get("payload") if isinstance(obj.get("payload"), dict) else None
+        values = identity_values(obj)
+        if payload is not None:
+            values.extend(identity_values(payload))
+        if same_requested_id(values, requested):
+            state.identity_ok = True
         return
     for source in (obj, obj.get("payload") if isinstance(obj.get("payload"), dict) else {}):
         if not isinstance(source, dict):
@@ -705,7 +724,8 @@ def check_identity_codex(obj, requested, state):
                 value = source[key]
                 norm = norm_uuid(value) if isinstance(value, str) else None
                 if norm != requested:
-                    mismatch(requested, value)
+                    # A list or dict is not an id. Do not copy it into the error.
+                    mismatch(requested, value if isinstance(value, str) else None)
 
 
 def is_queued_command_record(obj):
@@ -718,11 +738,15 @@ def is_queued_command_record(obj):
 def claude_record_is_conversational(obj):
     # A prompt-mode queued_command is conversational even when the file has no
     # ordinary user record. Sidechain and compaction stay out of that check.
+    # A list or dict in the type field is not a record name.
     if obj.get("isSidechain") is True:
         return False
-    if obj.get("type") in {"user", "assistant", "system"}:
+    record_type = obj.get("type")
+    if not isinstance(record_type, str):
+        return False
+    if record_type in {"user", "assistant", "system"}:
         return True
-    if obj.get("isCompactSummary") is True or obj.get("type") in {"summary", "compact_summary"}:
+    if obj.get("isCompactSummary") is True or record_type in {"summary", "compact_summary"}:
         return False
     return is_queued_command_record(obj)
 
@@ -736,12 +760,12 @@ def check_identity_claude(obj, requested, state):
             state.missing_identity = True
             return
         if norm != requested:
-            mismatch(requested, session_id)
+            mismatch(requested, session_id if isinstance(session_id, str) else None)
         return
     if session_id is not None:
         norm = norm_uuid(session_id) if isinstance(session_id, str) else None
         if norm != requested:
-            mismatch(requested, session_id)
+            mismatch(requested, session_id if isinstance(session_id, str) else None)
 
 
 def obj_line(obj):
@@ -967,10 +991,12 @@ def warn_emitted(meta, state, runtime):
 
 
 def is_attachment(block):
-    if block.get("type") in ATTACHMENT_TYPES:
+    btype = block.get("type")
+    if isinstance(btype, str) and btype in ATTACHMENT_TYPES:
         return True
     source = block.get("source")
-    if isinstance(source, dict) and source.get("type") in {"base64", "url"} and block.get("type") == "image":
+    source_type = source.get("type") if isinstance(source, dict) else None
+    if isinstance(source_type, str) and source_type in {"base64", "url"} and btype == "image":
         return True
     return False
 
@@ -1008,12 +1034,20 @@ def suppressed_summary(obj):
 
 
 def is_boundary(runtime, obj):
+    record_type = obj.get("type")
+    if not isinstance(record_type, str):
+        record_type = None
     if runtime == "codex":
-        if obj.get("type") in {"compacted", "compaction"}:
+        if record_type in {"compacted", "compaction"}:
             return True
         payload = obj.get("payload") if isinstance(obj.get("payload"), dict) else {}
-        return obj.get("type") == "event_msg" and payload.get("type") in {"context_compacted", "compacted", "compaction"}
-    return obj.get("type") in {"compact_boundary", "compaction", "compacted"} or obj.get("subtype") == "compact_boundary"
+        event_type = payload.get("type")
+        if not isinstance(event_type, str):
+            return False
+        return record_type == "event_msg" and event_type in {"context_compacted", "compacted", "compaction"}
+    if obj.get("subtype") == "compact_boundary":
+        return True
+    return record_type in {"compact_boundary", "compaction", "compacted"}
 
 
 def boundary_units(obj, line, item_id, parent_id, state, runtime):
@@ -1073,7 +1107,7 @@ def render_tool_body(value, state, line):
                 parts.append(block)
             elif isinstance(block, dict) and is_attachment(block):
                 state.attachment(line, block.get("type"))
-            elif isinstance(block, dict) and block.get("type") in SPEECH_TYPES and isinstance(block.get("text"), str):
+            elif isinstance(block, dict) and isinstance(block.get("type"), str) and block.get("type") in SPEECH_TYPES and isinstance(block.get("text"), str):
                 parts.append(block["text"])
             else:
                 try:
@@ -1085,7 +1119,7 @@ def render_tool_body(value, state, line):
         if is_attachment(value):
             state.attachment(line, value.get("type"))
             return "[attachment omitted]"
-        if value.get("type") in SPEECH_TYPES and isinstance(value.get("text"), str):
+        if isinstance(value.get("type"), str) and value.get("type") in SPEECH_TYPES and isinstance(value.get("text"), str):
             return value["text"]
         try:
             return json.dumps(redact(value), ensure_ascii=False, sort_keys=True)
@@ -1149,6 +1183,10 @@ def content_units(content, role, kind, meta, state, include_tools):
                 state.unknown_block(meta["line"], None)
                 continue
             btype = block.get("type")
+            # A list or dict is not a block type. Skip that block and keep going.
+            if isinstance(btype, (list, dict)):
+                state.unknown_block(meta["line"], None)
+                continue
             if btype in SPEECH_TYPES:
                 piece = speech_piece(block)
                 if not isinstance(piece, str) or piece == "":
@@ -1182,6 +1220,9 @@ def units_for(runtime, obj, line, state, include_tools):
 
 def units_for_codex(obj, line, state, include_tools):
     record_type = obj.get("type")
+    if isinstance(record_type, (list, dict)):
+        state.unknown_record(line, None)
+        return []
     payload = obj.get("payload") if isinstance(obj.get("payload"), dict) else None
     if record_type == "session_meta":
         return []
@@ -1210,6 +1251,9 @@ def units_for_codex(obj, line, state, include_tools):
 
 def units_for_event(obj, payload, line, state, runtime):
     event_type = payload.get("type")
+    if isinstance(event_type, (list, dict)):
+        state.unknown_record(line, None)
+        return []
     if has_delegation_marker(payload):
         return nonhuman_units(obj, line, payload.get("id"), None, state, runtime)
     if event_type in MIRROR_EVENTS:
@@ -1240,10 +1284,23 @@ def content_item_kinds_of(payload):
     return list(kinds)
 
 
-def all_injected_context(kinds):
+def classify_kinds(kinds):
+    # Kinds label the whole record. They are not a parallel list of content blocks,
+    # so a kind's position must not be read as the block at that position.
     if not kinds:
-        return False
-    return all(isinstance(kind, str) and kind in INJECTED_CONTEXT_KINDS for kind in kinds)
+        return None
+    injected = False
+    other = False
+    for kind in kinds:
+        if isinstance(kind, str) and kind in INJECTED_CONTEXT_KINDS:
+            injected = True
+        else:
+            other = True
+    if injected and other:
+        return "mixed"
+    if injected:
+        return "injected"
+    return None
 
 
 def with_kinds(units, kinds):
@@ -1256,6 +1313,9 @@ def with_kinds(units, kinds):
 
 def units_for_response(obj, payload, line, state, include_tools):
     payload_type = payload.get("type")
+    if isinstance(payload_type, (list, dict)):
+        state.unknown_record(line, None)
+        return []
     item_id = payload.get("id") if isinstance(payload.get("id"), str) else None
     if payload_type in CODEX_CONTEXT_TELEMETRY:
         state.omissions["telemetry"] += 1
@@ -1268,9 +1328,13 @@ def units_for_response(obj, payload, line, state, include_tools):
     if payload_type == "message":
         role = payload.get("role")
         kinds = content_item_kinds_of(payload)
+        kind_class = classify_kinds(kinds)
         # Every kind is known injected context: do not extract that text as a person.
-        if all_injected_context(kinds):
+        if kind_class == "injected":
             return with_kinds(nonhuman_units(obj, line, item_id, None, state, "codex"), kinds)
+        if isinstance(role, (list, dict)):
+            state.coverage_gap("Line %s has a message role that is not text." % line, line)
+            return []
         if role in {"developer", "system"}:
             state.omissions["developer_or_system"] += 1
             return []
@@ -1279,6 +1343,17 @@ def units_for_response(obj, payload, line, state, include_tools):
         kind = "user_message_candidate" if role == "user" else "assistant_message"
         meta = meta_for(obj, line, item_id, None)
         units = content_units(payload.get("content"), role, kind, meta, state, include_tools)
+        if kind_class == "mixed":
+            # Keep every block's text. Do not zip kinds onto blocks by index.
+            for unit in units:
+                unit["provenance"] = "mixed"
+            state.warn(
+                "mixed_provenance",
+                "Line %s mixes injected context with other content kinds. Original text "
+                "and kinds are kept. Which words are the person's is uncertain, and list "
+                "position is not proof. Hold this attribution." % line,
+                line,
+            )
         if units:
             warn_emitted(meta, state, "codex")
         return with_kinds(units, kinds)
@@ -1311,7 +1386,10 @@ def only_tool_content(obj):
     if not isinstance(content, list) or not content:
         return False
     for block in content:
-        if not isinstance(block, dict) or block.get("type") not in TOOL_TYPES:
+        if not isinstance(block, dict):
+            return False
+        btype = block.get("type")
+        if not isinstance(btype, str) or btype not in TOOL_TYPES:
             return False
     return True
 
@@ -1395,7 +1473,11 @@ def units_for_claude(obj, line, state, include_tools):
     if obj.get("isSidechain") is True:
         state.omissions["sidechain"] += 1
         return []
-    if obj.get("isCompactSummary") is True or obj.get("type") in {"summary", "compact_summary"}:
+    record_type = obj.get("type")
+    if isinstance(record_type, (list, dict)):
+        state.unknown_record(line, None)
+        return []
+    if obj.get("isCompactSummary") is True or record_type in {"summary", "compact_summary"}:
         state.omissions["synthetic_or_meta"] += 1
         return []
     if obj.get("type") == "attachment":
@@ -1413,7 +1495,6 @@ def units_for_claude(obj, line, state, include_tools):
             return []
         state.omissions["synthetic_or_meta"] += 1
         return []
-    record_type = obj.get("type")
     if record_type == "system":
         state.omissions["developer_or_system"] += 1
         return []
@@ -1431,6 +1512,10 @@ def units_for_claude(obj, line, state, include_tools):
     role = message.get("role")
     # A missing role, an unsupported role, or a recognized role that disagrees
     # with the envelope is a coverage gap. Neither field becomes a human candidate.
+    # A list or dict is a bad role, not a person, and it must not raise.
+    if isinstance(role, (list, dict)):
+        state.coverage_gap("Line %s has a message role that is not text." % line, line)
+        return []
     if role not in {"user", "assistant"}:
         state.coverage_gap("Line %s has an unsupported or missing message role." % line, line)
         return []
@@ -1623,7 +1708,7 @@ def item_dict(unit, text, offset, continued):
         "continued": continued,
         "segment": unit["segment"],
     }
-    for key in ("content_item_kinds", "source_kind", "origin_kind", "source_uuid", "delivery_id"):
+    for key in ("content_item_kinds", "provenance", "source_kind", "origin_kind", "source_uuid", "delivery_id"):
         if key in unit:
             item[key] = unit[key]
     return item

@@ -1,4 +1,4 @@
-# Autarkeia v0.4.9
+# Autarkeia v0.4.10
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -30,7 +30,7 @@ Two layers keep it honest. The record is the originals, untouched. The story is 
 
 **How this differs from a personal agent.** The personal agents you have heard of, Instinct, Meta's Muse and the ones that will follow, learn you inside their own service. The memory sits on the company's computer. You usually cannot open it, correct it or take it with you; what you tell the agent may be used to train the next version unless you opt out; and when the company changes direction, or a better model appears somewhere else, the years of context stay behind.
 
-Here the memory is a folder on your own disk. You can open every file and see exactly what the AI knows about you. The model is only the reader: Claude today, something else when something else is better, and the folder does not care. The AI reads what it needs from it, and what it reads goes to the company that runs that AI (Anthropic for Claude, OpenAI for Codex), the same as your chats. Nothing is handed to anyone else, deleted, sent, posted or paid without your yes. Those are rules the AI follows, not a lock; how much it may do without asking is set in the app (see [Getting started](docs/getting-started.md), permission modes).
+Here the memory is a folder on your own disk. You can open every file and see exactly what the AI knows about you. The model is only the reader: Claude today, something else when something else is better, and the folder does not care. The AI reads what it needs from it, and what it reads goes to the company that runs that AI (Anthropic for Claude, OpenAI for Codex), the same as your chats. Nothing is handed to anyone else, deleted, sent, posted or paid without your yes. Those are rules the AI follows, not a lock; how much it may do without asking is set in the app (see [Getting started](docs/getting-started.md), permission modes). Starting a skill does not preapprove a shell command or a file write. The app's own permission settings still govern. The skills are instructions, not a security boundary.
 
 The two are not enemies. You can keep a personal agent for errands and keep your life here. The question is only where the record of you lives: on their side or yours.
 
@@ -51,7 +51,7 @@ The name comes from the Greek *autarkeia*: self-sufficiency, having what you nee
 
 ## Skills
 
-Skills are repeatable ways of working with your agent. Ask in ordinary language; the agent follows a defined process, reads the relevant records, and saves the result when the workflow calls for it. You do not need to learn special commands.
+Skills are repeatable ways of working with your agent. Ask in ordinary language; the agent follows a defined process, reads the relevant records, and saves the result when the workflow calls for it. You do not need to learn special commands. Invoking a skill does not preapprove shell commands or file writes, and it does not isolate the session. Permission stays with the app.
 
 | Skill | What it does | What you gain |
 |---|---|---|
@@ -63,7 +63,7 @@ Skills are repeatable ways of working with your agent. Ask in ordinary language;
 | **Librarian** | Proposes where to file a document and what to remember, then preserves the original and saves approved facts or tasks. Can also arrange local transcription of recordings. | Documents become useful context for future work, with the original evidence available to check. |
 | **Email** | Reads emails saved into the vault, extracts useful information and separates real commitments from information. Does not open your mailbox or send replies. | Important requests enter your working records without every newsletter becoming another obligation. |
 | **Realign** | Combines open tasks across projects into one overview of current work, waiting items and the inbox. | You can see what needs attention without opening every project separately. |
-| **Health check** | Checks for missing files, old unfinished tasks, archive inconsistencies and possible credentials; reports problems and proposes repairs. | You can catch maintenance problems before they make the system harder to rely on. |
+| **Health check** | Checks for missing files, old unfinished tasks, archive inconsistencies and possible passwords, API keys or tokens using a local scan that returns filenames only; reports problems and proposes repairs. It does not display matching values or treat an account number as that kind of secret. | You can catch maintenance problems before they make the system harder to rely on. |
 | **Brainstorm** | Gets a separate AI review of a decision, document or piece of work, then compares the findings and explains disagreements. | Another chance to spot weak assumptions, mistakes and overlooked alternatives before acting. Agreement is not proof. |
 | **Improve** | Records recurring friction and proposes changes for your approval. | Annoyances can lead to deliberate improvements instead of recurring indefinitely or triggering unapproved changes. |
 | **Outbound writing** | Drafts or proofreads a message using relevant facts from your records and your own voice, without sending it. | Less time reconstructing context and composing replies, while you control what goes out in your name. |

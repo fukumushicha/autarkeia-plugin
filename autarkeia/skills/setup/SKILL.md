@@ -1,7 +1,6 @@
 ---
 name: setup
 description: "First session in a new vault: who this is for, what comes first, one job, one real cycle. Use when the user says setup, set up, first session, new vault, start here, or begin."
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Setup

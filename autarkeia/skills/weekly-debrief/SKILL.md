@@ -1,7 +1,6 @@
 ---
 name: weekly-debrief
 description: "End-of-week review: rebuild the work picture, promote what should last, check priorities, ask a few questions. Use when the user says weekly debrief, weekly review, or week in review."
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Weekly debrief
@@ -34,6 +33,6 @@ Ask one at a time, at most three:
 
 ## 5. Write
 
-Approved promotions go through **distill** routing. Add `### Weekly debrief` to today's daily log.
+Approved promotions go through **distill** routing. Before those writes, distill decides the owner and reads that project's rules. A private item does not get a vault line the project's rules forbid; if even a pointer is forbidden, today's log gets nothing that identifies the project, and the closing summary does not name it. Add `### Weekly debrief` to today's daily log for everything else.
 
 Close in three beats: what the week was, what it means, what you need from them (one thing, or nothing).
