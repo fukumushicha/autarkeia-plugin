@@ -5,7 +5,7 @@ description: "Get a structured second opinion on a decision, a document, or some
 
 # Brainstorm
 
-Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. Unqualified paths below belong to the active scope; explicit vault-level paths belong to the resolved vault. Ownership and privacy rules still decide each item’s destination.
+Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. For reading and listing, unqualified paths below belong to the active scope. For every write or move, first choose the item’s owner, then resolve the path under that owner; clearly personal items use the vault, project items use their actual project folder. Explicit vault-level paths always use the resolved vault. Never append a vault-relative project path to the opened project. Privacy rules still apply.
 
 A second mind on one thing. Not a committee. Not a product meeting.
 
@@ -55,10 +55,10 @@ When you are Codex, "send to codex" still runs the Codex command below: a separa
 
 ### Codex
 
-From the vault folder. The prompt goes in through standard input. `-s read-only` selects the sandbox that restricts filesystem writes. It does not limit what Codex can read, and `-C` does not confine the process. Quote the real vault path and the real output and packet paths as in step 1. Example shape, with a slug and a path that has a space:
+From the resolved vault or active project folder. Use the exact review folder chosen in step 1 for packet and output; do not default back to vault reviews. The prompt goes in through standard input. `-s read-only` selects the sandbox that restricts filesystem writes. It does not limit what Codex can read, and `-C` does not confine the process. Quote the real vault path and the real output and packet paths as in step 1. Example shape, with a slug and a path that has a space:
 
 ```bash
-codex exec -C '/Users/Ada/My Vault' --skip-git-repo-check -s read-only -o '/Users/Ada/My Vault/reviews/YYYY-MM-DD-short-name-codex.md' - < '/Users/Ada/My Vault/reviews/YYYY-MM-DD-short-name-packet.md'
+codex exec -C '/Users/Ada/My Vault/projects/shop' --skip-git-repo-check -s read-only -o '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-codex.md' - < '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-packet.md'
 ```
 
 ### Grok
@@ -72,7 +72,7 @@ First check where the vault really is: run `pwd -P`, and `realpath` on each file
 Quote the real paths as in step 1. Example shape:
 
 ```bash
-grok --prompt-file '/Users/Ada/My Vault/reviews/YYYY-MM-DD-short-name-packet.md' --no-memory --disable-web-search --max-turns 40 --permission-mode bypassPermissions --sandbox read-only > '/Users/Ada/My Vault/reviews/YYYY-MM-DD-short-name-grok.md'
+grok --prompt-file '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-packet.md' --no-memory --disable-web-search --max-turns 40 --permission-mode bypassPermissions --sandbox read-only > '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-grok.md'
 ```
 
 Grok sometimes stops on its first step. If that happens, run it once more into a file whose name ends in `-grok-2.md`, keeping the first file. Quote that path the same way.

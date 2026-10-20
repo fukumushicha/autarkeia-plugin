@@ -5,7 +5,7 @@ description: "File a document or a recording: keep a copy, extract what should l
 
 # Librarian
 
-Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. Unqualified paths below belong to the active scope; explicit vault-level paths belong to the resolved vault. Ownership and privacy rules still decide each item’s destination.
+Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. For reading and listing, unqualified paths below belong to the active scope. For every write or move, first choose the item’s owner, then resolve the path under that owner; clearly personal items use the vault, project items use their actual project folder. Explicit vault-level paths always use the resolved vault. Never append a vault-relative project path to the opened project. Privacy rules still apply.
 
 A document is not memory until something true is taken out of it.
 
@@ -46,11 +46,11 @@ Longer version, if the plugin's `references/health.md` is reachable: read it.
 
 **If it is a recording** (a voice memo, a call, an appointment):
 
-1. Decide whose it is, as above (a project whose rules keep its content inside gets everything inside `projects/<name>/`, and the vault gets nothing that identifies the project when even a pointer is forbidden).
+1. Decide whose it is, as above (a project-owned recording and its transcript both stay in the actual project folder, and the vault gets nothing that identifies the project when even a pointer is forbidden).
 2. First proposal, before any transcript exists: where the audio goes (an original: the area by what it is about, a doctor's visit under Health and the person), and how it will be transcribed. Check for a local transcription tool (`command -v whisper`, `command -v whisper-cli`, `command -v mlx_whisper`). If one is there, propose using it on this computer; a long recording takes a while and closing the laptop stops it; do not guess how long. If none is there and no transcript exists, say so: file the audio if they want, and stop there. Do not install anything, and never send the audio to an online transcription service without their yes. Wait for yes.
 3. After yes: file the audio like any original (hash, register row, copy check). Then the transcript:
    - **A transcript that arrived with it** (from a clinic, an app, another person) is a received original: file it unchanged in the archive like any original, with the register row naming the recording it belongs to. Do not add a header to it.
-   - **A transcript made here** is a working document in the owner's `docs/` (under `projects/<name>/` when the project keeps it), named after the recording, with a first line pointing at the audio's archive path and the tool that made it; its register row names the same. Do not file it in the vault when the project keeps it.
+   - **A transcript made here** is a working document in the owner's `docs/` (under the actual project folder when the project owns it), named after the recording, with a first line pointing at the audio's archive path and the tool that made it; its register row names the same. Do not file it in the vault when the project owns it.
 4. Read the transcript. Second proposal: the specific facts, decisions and tasks to take out, as for any document. Wait for yes.
 5. Extraction after yes: keep who said what (doctor, patient, someone else) and keep what was unclear marked as unclear. A name, dose, value or date taken from a recording points at the transcript and the place in it; never promote a misheard word into a fact. A doctor's recording is a doctor's note: the body rules above hold.
 

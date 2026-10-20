@@ -5,7 +5,7 @@ description: "Extract and route session memory into the vault so the next sessio
 
 # Distill
 
-Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. Unqualified paths below belong to the active scope; explicit vault-level paths belong to the resolved vault. Ownership and privacy rules still decide each item’s destination.
+Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. For reading and listing, unqualified paths below belong to the active scope. For every write or move, first choose the item’s owner, then resolve the path under that owner; clearly personal items use the vault, project items use their actual project folder. Explicit vault-level paths always use the resolved vault. Never append a vault-relative project path to the opened project. Privacy rules still apply.
 
 Write what changed. The chat is not the memory.
 
@@ -52,7 +52,7 @@ Before any write, decide the owner of each item and read that project's `AGENTS.
 
 Each item goes to its owner’s `memory/daily/YYYY-MM-DD.md` first (create if needed; add at the end) under `### Session (HH:MM)`. Project work is logged in the project even when not private; personal information is logged in the vault. Do not copy the whole mixed conversation into either log.
 
-Then also:
+Then also, resolving every path in this table under that item’s owner (the vault for personal items, the actual project folder for project items):
 
 | Kind | File |
 |---|---|
@@ -61,7 +61,7 @@ Then also:
 | Task | `memory/tasks.md` as `- [ ] **title** -- one line. *(added: YYYY-MM-DD)*` |
 | Observation | daily log only |
 
-If `projects/<name>/memory/` exists and the item is clearly that project, follow the rules already read, then write there instead of the vault facts, decisions and tasks. Leave a one-line pointer in the vault daily log only when those rules allow a pointer (no duplicate content is needed). If they forbid even a pointer, the daily log gets nothing that identifies the project.
+For a project item, use its actual resolved project folder for every table entry and its log. `projects/<name>/` is a path from the vault, including any parent projects; never append it to the open project. For a personal item, use the resolved vault for every table entry and its log. Leave a one-line pointer in the vault daily log only when those rules allow a pointer (no duplicate content is needed). If they forbid even a pointer, the daily log gets nothing that identifies the project.
 
 A new rule for a project (who may see it, what never leaves it, how to talk about it, what to watch) goes into that project's `AGENTS.md`, not into its facts. It is a change to the project's rules: show it, write after yes. If the project has no `AGENTS.md` yet, include the short vault/parent instructions from the vault contract and show them for approval too; create a `CLAUDE.md` next to it holding only `@AGENTS.md`. Preserve an existing custom Claude file instead of overwriting it.
 
@@ -69,7 +69,7 @@ Before each append, re-read the live insertion point. If the same claim is alrea
 
 If the new text **changes** something already written: same topic and newer, mark the old line `superseded YYYY-MM-DD:` with the new sentence, so the file says which one is current; a different aspect of the same topic is not a change, both stay; a contradiction you cannot settle from a source is written as neither, noted in that owner's log, and asked. When a pointer is forbidden, the vault log does not name the project. Never delete the old line. Full rules, and what wins between a project's entry and the vault's: `references/layers.md`.
 
-A task line holds current state only: what it is, the next step, a pointer to the history if there is one. A status change replaces the old status. Done items move to `memory/tasks-archive.md` now.
+A task line holds current state only: what it is, the next step, a pointer to the history if there is one. A status change replaces the old status. Done items move to that same owner’s `memory/tasks-archive.md` now, never to the currently opened folder by default.
 
 An action they agreed to or asked for that could not be finished is not left as a note: it becomes a task with a next step and, when known, a date, or that owner's log says it was dropped. Something merely noticed stays an observation there. When a pointer is forbidden, the vault log does not name the project. Do not invent a person responsible or a deadline for it.
 

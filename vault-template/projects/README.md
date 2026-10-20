@@ -2,7 +2,7 @@ Projects live here, one folder each, made when you ask ("new project ..."), neve
 
 ```
 projects/<name>/
-  AGENTS.md        its own rules, once it needs them
+  AGENTS.md        vault/parent references, plus optional custom rules
   CLAUDE.md        one line: @AGENTS.md
   memory/
     facts.md
@@ -10,4 +10,4 @@ projects/<name>/
     tasks.md
 ```
 
-Everything starts in the vault itself. A project gets its own memory when it grows a shape of its own, and its own rules when it needs them: other people involved, something private, its own tone or deadlines. A project's rules add to the vault's `AGENTS.md`; they never loosen it.
+Start in the vault. Open a project for focused work; open the vault for planning across projects and whole-life reflection. New projects get short instructions identifying their vault and parent, shown for approval before creation. Custom rules are optional. A subproject follows the same pattern inside its parent; add a legacy parent’s missing instructions with approval before creating the child. Read the vault contract’s Projects section for the exact text. Project work and full daily notes stay in the project. Parent rules and vault rules always hold; a child may add stricter rules, never loosen them. Older projects without these instructions still work from a vault session.

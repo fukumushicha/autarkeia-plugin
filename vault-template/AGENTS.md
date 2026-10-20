@@ -41,11 +41,11 @@ A project has its own memory: `projects/<name>/memory/` with `facts.md`, `decisi
 
 A project's rules add to this file and any enclosing project's rules. They never loosen either, including **When you must ask** or the clause about a body. A subproject is an ordinary project inside its parent, for example `projects/company/shop/`; no special kind or depth limit.
 
-**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, handovers, reviews) get a pointer at most, for example "house-renovation: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
+**Private projects.** When a project's rules keep its content inside it, that content is written only in the project's own files. Ancestor files, including parent-project files and vault-level files (the daily log, `memory/facts.md`, `memory/tasks.md`, `NEXT-ACTIONS.md`, handovers, reviews) get a pointer at most, for example "house-renovation: two items saved in the project", and nothing at all if the rules forbid even that. Decide where an item belongs, and read that project's rules, before the first write.
 
 When the user asks for a new project:
 
-1. Choose the named folder, under `projects/` or an existing parent project for a requested subproject. Do not overwrite an existing folder. Show the short project instructions below with the actual relative paths, plus any custom rules the user requested; ask for approval once. Do not make optional custom rules an onboarding questionnaire.
+1. Choose the named folder, under `projects/` or an existing parent project for a requested subproject. Do not overwrite an existing folder. Before creating a subproject, verify every enclosing project has its short instructions. If a legacy parent lacks them, include adding that parent’s short instructions in the same approval and write them first; never create a child pointing to a missing parent file. Preserve existing custom rules. Show the short project instructions below with the actual relative paths, plus any custom rules the user requested; ask for approval once. Do not make optional custom rules an onboarding questionnaire.
 2. After yes, create its `memory/` with the three files, each with a one-line heading; write its `AGENTS.md` and a `CLAUDE.md` holding only `@AGENTS.md`. Create other folders only when used.
 
 Example project instructions for `projects/company/shop/`:
@@ -58,7 +58,7 @@ Parent project instructions: ../AGENTS.md
 
 Before working, resolve these paths from this folder and read the vault, then
 all enclosing project instructions, then these rules. Verify the vault contract
-and its memory files, and that this project is inside its projects/ folder.
+and its memory files, and that this project is anywhere under the vault’s projects/ folder.
 If a reference is missing, ambiguous or inconsistent, stop before writes and
 ask for correction; never create another vault or search the disk for one.
 This project is the default focus. Project work stays here; personal matters
@@ -73,7 +73,7 @@ For a first-level project, the vault path is `../../AGENTS.md` and the parent li
 
 Before reading project memory or writing, read the vault and enclosing project instructions, then its own `AGENTS.md`. Older projects without this short instruction file still work from the vault; offer to add it with approval before opening them directly. A project has `memory/facts.md` too, so that file alone never proves a folder is the vault. A missing or unclear vault reference means stop before writes, not create vault folders in the project.
 
-Project work, including full daily notes, stays in that project's files. Clearly personal or cross-project facts belong to the vault, unless applicable privacy rules keep them inside the project. Decide per item; ask only when unclear. Unqualified file paths in a project session refer to the project; vault-level paths refer to the resolved vault. Daily/weekly debrief, realign and health check use the current focus; ask for the whole vault or open it for a combined view. Setup stays vault-only. Read the plugin's `references/project-sessions.md` when available for the skill-specific details.
+Project work, including full daily notes, stays in that project's files. Clearly personal or cross-project facts belong to the vault, unless applicable privacy rules keep them inside the project. Decide per item; ask only when unclear. Reading and listing use the current focus. Every write or move uses the item’s owner: the actual project folder for project work, the resolved vault for personal items. Vault-level paths always refer to the resolved vault. Daily/weekly debrief, realign and health check use the current focus; ask for the whole vault or open it for a combined view. Setup stays vault-only. Read the plugin's `references/project-sessions.md` when available for the skill-specific details.
 
 ## Commands
 

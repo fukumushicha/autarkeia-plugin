@@ -188,14 +188,14 @@ Existing projects need their short vault/parent instructions before being opened
 | `AGENTS.md` | The vault's rules: how to talk to you, how to work (act then report, one recommendation and one question, a record is a claim until the file is opened, when you contradict the record it asks once and keeps both lines, never guess a date), what needs your yes, what never leaves. Every session reads it: Codex and Grok directly, Claude through `CLAUDE.md`. Change rules here, or ask your agent to. |
 | `CLAUDE.md` | One line, `@AGENTS.md`. It points Claude at the rules. Leave it alone. |
 | `PRIORITIES.md` | What comes first in your life, in order. You write it; the weekly debrief checks your week against it. |
-| `NEXT-ACTIONS.md` | Open work across the vault and every project. **realign** rebuilds it; do not edit it by hand. |
-| `memory/daily/` | One file per day. Everything lands here first, except the details of a project whose rules keep them inside it. |
+| `NEXT-ACTIONS.md` | Open work across the vault and permitted descendant projects; projects that forbid even a pointer are absent. **realign** rebuilds it; do not edit it by hand. |
+| `memory/daily/` | One file per day. Vault-owned entries land here first. Project entries go in their own daily logs; the vault gets a permitted pointer at most. |
 | `memory/facts.md`, `decisions.md`, `tasks.md` | What is true, what was chosen and why, what is still to do. |
 | `docs/` | Working documents: what you or the AI wrote (handover notes and transcripts too), listed in `docs/register.md`. |
 | `archive/` | Originals from outside, exactly as they arrived, in up to eight areas by part of life (official documents, money and tax, health, homes, travel, companies and projects, photos and memories, archive records). Each area has its own register with a hash per file. An area appears when its first document does. |
 | `inbox/` | Drop a file or an email here, then say **librarian** or **email**. |
 | `reviews/` | Second opinions and health-check reports. |
-| `projects/<name>/` | A project, once you have one: its own `memory/`, and its own `AGENTS.md` and `CLAUDE.md` once it has its own rules. |
+| `projects/<name>/` | A project, once you have one: its own `memory/`, plus short `AGENTS.md` vault/parent instructions and a `CLAUDE.md` entry file. Custom rules are optional. |
 
 Everything is plain text. You can open, read and edit any of it yourself.
 

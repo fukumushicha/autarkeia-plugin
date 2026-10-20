@@ -5,7 +5,7 @@ description: "End-of-week review: rebuild the work picture, promote what should 
 
 # Weekly debrief
 
-Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. Unqualified paths below belong to the active scope; explicit vault-level paths belong to the resolved vault. Ownership and privacy rules still decide each item’s destination.
+Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. For reading and listing, unqualified paths below belong to the active scope. For every write or move, first choose the item’s owner, then resolve the path under that owner; clearly personal items use the vault, project items use their actual project folder. Explicit vault-level paths always use the resolved vault. Never append a vault-relative project path to the opened project. Privacy rules still apply.
 
 Step back and see the week.
 
