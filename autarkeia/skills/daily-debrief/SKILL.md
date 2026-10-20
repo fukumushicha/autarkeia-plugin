@@ -5,17 +5,19 @@ description: "End-of-day review: read relevant filed records, ask a few question
 
 # Daily debrief
 
+Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. Unqualified paths below belong to the active scope; explicit vault-level paths belong to the resolved vault. Ownership and privacy rules still decide each item’s destination.
+
 A short close. The user speaks. You write only what they approve.
 
 **Mode: ask first.**
 
 ## Read before asking
 
-Confirm `memory/facts.md` exists. Read the vault's `AGENTS.md`; for an older vault without it, read the substantive `CLAUDE.md`. Run `date "+%Y-%m-%d"`. Use the user's local date unless they name another date. Use that target date throughout, including the daily log and questions.
+Use the resolved active scope. A project debrief covers that project; a vault debrief covers the person's day. Read the inherited instructions. Run `date "+%Y-%m-%d"`. Use the user's local date unless they name another date. Use that target date throughout, including the daily log and questions.
 
 Read the target date's daily log if it exists, and `memory/tasks.md`. Then follow only a specific file pointer in that log, or a filed record the user explicitly names for this debrief, when needed to avoid asking something the record already answers. Read only the relevant passage, not every transcript in full. If the log already answers the factual question, do not reopen the source just to ask it again.
 
-This is a closed reading scope: files inside this vault only. Do not search the whole vault, unfiled `inbox/` items, the rest of the machine, or connected calendar, mailbox or meeting services. A link or symlink outside the vault does not expand that scope. A register's filing date or a filename is not proof of when an event happened. No pointer means no additional source to read, not that nothing happened.
+This is a closed reading scope: files inside the active scope only, within the resolved vault. Do not search the whole vault, unfiled `inbox/` items, the rest of the machine, or connected calendar, mailbox or meeting services. A link or symlink outside the active scope does not expand that scope. A register's filing date or a filename is not proof of when an event happened. No pointer means no additional source to read, not that nothing happened.
 
 Before reading a record in a project, read that project's `AGENTS.md` if it exists and obey its access and privacy rules. A pointer is not permission to disregard them. Do not bring private details into a vault-level summary or question if the project's rules prohibit that. Do not read off-the-record material or mine a document about someone else for the user's day. If a named record cannot be read within these rules, say so briefly without revealing forbidden details; leave its outcome unconfirmed.
 
@@ -53,7 +55,7 @@ An adjustment named in reflection is an **observation**, not an agreed action or
 
 Show one proposed list: facts, decisions, tasks to add or mark done, working friction, and items that stay only in the day's log. Identify reflection observations as log-only, not commitments. Wait for yes or edits before **any** debrief write. If they decline or skip an item, do not save its content, even as a note about the refusal. If they decline saving altogether, write nothing.
 
-Write with the same files and format as **distill**, subject to the debrief's approved list and the reflection exception above. Put approved non-private answers under `### Close of day` in the target date's daily log. A private-project answer goes only to its owning project's files; the vault log gets at most a permitted pointer, or nothing when even a pointer is forbidden. Keep the original source's attribution; never label an AI summary or someone else's words as the user's words.
+Write with the same files and format as **distill**, subject to the debrief's approved list and the reflection exception above. Put approved answers under `### Close of day` in the target date's owning daily log, deciding the owner per item even in a focused project debrief. A private-project answer goes only to its owning project's files; the vault log gets at most a permitted pointer, or nothing when even a pointer is forbidden. Keep the original source's attribution; never label an AI summary or someone else's words as the user's words.
 
 Approved friction about the way the system works also goes to `memory/ops/friction.md` using **improve**'s format, unless it belongs to a project whose rules keep it inside. Then it follows that project's rules: the project's own friction file, a vault pointer only when a pointer is allowed, and nothing that identifies the project when even a pointer is forbidden. Do not change the questions above to route this. A personal reflection is not system friction. Capture only; propose and change nothing.
 

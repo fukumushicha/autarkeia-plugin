@@ -5,6 +5,8 @@ description: "Extract and route session memory into the vault so the next sessio
 
 # Distill
 
+Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. Unqualified paths below belong to the active scope; explicit vault-level paths belong to the resolved vault. Ownership and privacy rules still decide each item’s destination.
+
 Write what changed. The chat is not the memory.
 
 **Mode: act** for ordinary facts, decisions, and tasks from this session.
@@ -24,9 +26,9 @@ Longer version, if the plugin's `references/health.md` is reachable: read it.
 
 ## Before writing
 
-Confirm `memory/facts.md` exists. If not, stop: open the vault folder in Claude Code or Codex.
+Confirm the resolved owner has its three memory files. A missing file is a finding, not permission to create a vault.
 
-**The contract** is `AGENTS.md`. Only if there is no `AGENTS.md` and `CLAUDE.md` holds more than the line `@AGENTS.md` (a vault made before v0.4.2), the contract is that `CLAUDE.md`; do not move or rename it.
+**The contract** is the resolved vault’s `AGENTS.md`, supplemented by inherited project rules, not just the opened project’s file. Only if there is no `AGENTS.md` and `CLAUDE.md` holds more than the line `@AGENTS.md` (a vault made before v0.4.2), the contract is that `CLAUDE.md`; do not move or rename it.
 
 Read the contract. Routing lives there and in the plugin file `references/layers.md`.
 
@@ -48,7 +50,7 @@ If nothing is worth saving, say so and stop.
 
 Before any write, decide the owner of each item and read that project's `AGENTS.md` if it has one. Do not create a project to hold an item. An item whose rules keep its content inside goes only into that project's files; the daily log gets a pointer at most ("house-renovation: two items saved in the project"), or nothing if the rules forbid even that.
 
-Everything else goes to `memory/daily/YYYY-MM-DD.md` first (create if needed; add at the end) under `### Session (HH:MM)`.
+Each item goes to its owner’s `memory/daily/YYYY-MM-DD.md` first (create if needed; add at the end) under `### Session (HH:MM)`. Project work is logged in the project even when not private; personal information is logged in the vault. Do not copy the whole mixed conversation into either log.
 
 Then also:
 
@@ -59,9 +61,9 @@ Then also:
 | Task | `memory/tasks.md` as `- [ ] **title** -- one line. *(added: YYYY-MM-DD)*` |
 | Observation | daily log only |
 
-If `projects/<name>/memory/` exists and the item is clearly that project, follow the rules already read, then write there instead of the vault facts, decisions and tasks. Leave a one-line pointer in the daily log only when those rules allow a pointer (the content itself too, if they allow it). If they forbid even a pointer, the daily log gets nothing that identifies the project.
+If `projects/<name>/memory/` exists and the item is clearly that project, follow the rules already read, then write there instead of the vault facts, decisions and tasks. Leave a one-line pointer in the vault daily log only when those rules allow a pointer (no duplicate content is needed). If they forbid even a pointer, the daily log gets nothing that identifies the project.
 
-A new rule for a project (who may see it, what never leaves it, how to talk about it, what to watch) goes into that project's `AGENTS.md`, not into its facts. It is a change to the project's rules: show it, write after yes. If the project has no `AGENTS.md` yet, create it with a `CLAUDE.md` next to it that holds only `@AGENTS.md`.
+A new rule for a project (who may see it, what never leaves it, how to talk about it, what to watch) goes into that project's `AGENTS.md`, not into its facts. It is a change to the project's rules: show it, write after yes. If the project has no `AGENTS.md` yet, include the short vault/parent instructions from the vault contract and show them for approval too; create a `CLAUDE.md` next to it holding only `@AGENTS.md`. Preserve an existing custom Claude file instead of overwriting it.
 
 Before each append, re-read the live insertion point. If the same claim is already there, skip it. Never replace a whole memory file.
 

@@ -2,7 +2,7 @@
 
 Your first real job and everyday use in Claude Code or Codex. The [README](../README.md) explains what Autarkeia is; [INSTALL.md](../INSTALL.md) covers installation, verification, updates and older vaults.
 
-Start here after the installation checks pass. Open your own vault folder, not the plugin repository and not a project inside the vault. If the plugin or vault is not ready, give your agent the installation guide first.
+Start here after the installation checks pass. For first setup, open your own vault folder, not the plugin repository. Later you can open individual projects as explained below. If the plugin or vault is not ready, give your agent the installation guide first.
 
 ## Your first session
 
@@ -46,11 +46,11 @@ Say **“Prepare a handover so I can continue this in a fresh chat.”** The age
 
 ### Make a document useful — librarian
 
-Say **“File this contract and propose what we should remember from it.”** The agent reads it, proposes a location and useful facts or tasks, then waits for approval. Instructions inside the document are not instructions to the agent. It keeps the original, checks the copy and records where it went. A private project's copy stays in that project, and the vault does not name the project when its rules forbid even a pointer. You get searchable context with the evidence still available. For audio, it first proposes filing and local transcription if a suitable tool is available, then separately proposes what to extract from the transcript. See [Recordings](#recordings).
+Say **“File this contract and propose what we should remember from it.”** The agent reads it, proposes a location and useful facts or tasks, then waits for approval. Instructions inside the document are not instructions to the agent. It keeps the original, checks the copy and records where it went. A project's copy stays in that project, and the vault does not name the project when its rules forbid even a pointer. You get searchable context with the evidence still available. For audio, it first proposes filing and local transcription if a suitable tool is available, then separately proposes what to extract from the transcript. See [Recordings](#recordings).
 
 ### Separate commitments from email noise — email
 
-Say **“Process the emails I saved in the inbox.”** The agent reads those files, records useful facts and decisions, and identifies actual requests or promises. What an email tells the agent to do is not your instruction; only your request is. Processed files move into a processed folder, inside a private project when that project keeps them. You get commitments in your working records without treating newsletters as obligations. This skill does not connect to your mailbox, fetch new mail or send replies.
+Say **“Process the emails I saved in the inbox.”** The agent reads those files, records useful facts and decisions, and identifies actual requests or promises. What an email tells the agent to do is not your instruction; only your request is. Processed files move into a processed folder, inside the project when it owns them. You get commitments in your working records without treating newsletters as obligations. This skill does not connect to your mailbox, fetch new mail or send replies.
 
 ### See your open work together — realign
 
@@ -169,7 +169,17 @@ The **email** command reads emails you save into `inbox/`. It does not open your
 
 ## Working with projects
 
-Everything starts in the vault. When one piece of work or life grows a shape of its own, say **new project** and name it. It gets its own folder and memory, and, sooner or later, its own rules: who else is involved, what stays inside it, what to watch. The vault's rules always hold; a project's rules add to them. Keep opening the vault folder, not the project.
+Everything starts in the vault. When one piece of work or life grows a shape of its own, say **new project** and name it. The agent shows short instructions connecting it to your vault, then creates its folder and memory after your approval. Add custom rules only when useful: who else is involved, what stays inside it, what to watch. The vault's rules always hold; a project's rules add to them.
+
+**Open a project when you know what you are working on. Open the vault when you are looking across your life or deciding what to work on.**
+
+For focused work, open the project folder in Claude Code or Codex. “Review the results”, “what next?” and “save this decision” now refer to that project by default. Project work stays there. A clearly personal fact still belongs in your vault; the agent asks only if the destination is unclear.
+
+Open the vault to plan your week across projects, reflect on your whole day, create your first project, or work out where a new idea belongs. You can also name a project from the vault, or explicitly ask for the whole-vault view from a project chat. Debriefs, health checks and work overviews otherwise follow the current focus.
+
+A subproject is just a project inside another one: for example, a company's online shop. It inherits the company and vault instructions. A private subproject's restrictions still apply to its parents' summaries. Opening its folder sets the focus; it does not technically prevent the app from reading other folders.
+
+Existing projects need their short vault/parent instructions before being opened directly. Ask your agent to follow the project-session update in [INSTALL.md](../INSTALL.md#updates). If you move a project separately from its vault and the reference breaks, the agent asks you to correct it rather than inventing another vault.
 
 ## What is in your vault
 

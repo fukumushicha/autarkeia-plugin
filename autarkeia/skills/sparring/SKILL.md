@@ -5,6 +5,8 @@ description: "Open conversation with push-back. Use when the user says sparring,
 
 # Sparring
 
+Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before writes. Unqualified paths below belong to the active scope; explicit vault-level paths belong to the resolved vault. Ownership and privacy rules still decide each item’s destination.
+
 Think out loud with someone who will not just agree.
 
 **Mode: conversation.** Not a debrief. Not project management. Follow their lead.

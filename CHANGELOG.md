@@ -2,6 +2,13 @@
 
 User-visible changes to Autarkeia, newest first. Historical entries through 0.4.9 were reconstructed from published repository history. Dates are the version-introducing commit dates in their recorded timezone, not independently verified publication timestamps. Later changes made without a version bump are labelled separately. The published history starts at 0.3.0; no earlier releases are documented here.
 
+## 0.4.11 — 2026-10-20
+
+- Open an individual project for focused work without naming it every time; open the vault for planning across projects and whole-life reflection. Project instructions point to the vault and parent rules, with relative paths that survive moving the whole vault.
+- Subprojects follow the same rules. Work overviews and health checks include permitted descendant projects, while private projects remain subject to their existing no-pointer rules.
+- Project work and full notes stay with the project; clearly personal information belongs to the vault. Debriefs and other skills follow the current focus. Setup remains vault-only.
+- **Upgrade:** update the plugin, then approve the small vault/project instruction changes in [INSTALL.md](INSTALL.md#updates) before opening existing projects directly. Custom rules and files are preserved; projects without the additions still work from the vault. No new commands or software prerequisites. Folder selection sets focus, not technical read isolation; app permissions still apply.
+
 ## Repository updates — 2026-10-20
 
 - Added an automated release check for matching versions, dated release notes, preservation of earlier release headings on version bumps, and changelog updates for shipped changes. The required GitHub check blocks merging when these checks fail. No plugin version change.

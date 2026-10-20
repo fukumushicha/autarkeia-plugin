@@ -1,10 +1,10 @@
 # Where memory goes
 
-One vault. The chat is not memory.
+One vault, with projects when needed. The chat is not memory. Resolve the vault and active scope using `references/project-sessions.md` before reading or writing. Paths below are relative to the item’s owner, not blindly to the opened folder.
 
 | File | What belongs here |
 |---|---|
-| `memory/daily/YYYY-MM-DD.md` | Everything that happened. Write here first, except what a project's rules keep inside the project: then a pointer at most, or nothing at all if the rules forbid even a pointer. |
+| `memory/daily/YYYY-MM-DD.md` | What happened for this owner. Write project entries in the project log; the vault gets a pointer at most, or nothing if even a pointer is forbidden. |
 | `memory/facts.md` | What is currently true. Newest at the top. |
 | `memory/decisions.md` | What was chosen, and why. Newest at the top. |
 | `memory/tasks.md` | What is still to do. Done items leave this file. |
@@ -18,7 +18,7 @@ One vault. The chat is not memory.
 | `memory/ops/friction.md` | Things that keep going wrong, from **improve**. Propose only. |
 | `memory/ops/improvement-proposals.md` | Proposals from **improve**. Nothing here is applied without you saying yes. |
 
-If `projects/<name>/memory/` exists, that project owns its own facts, decisions, and tasks. Before every write, decide the owner and read that project's `AGENTS.md` if it exists. The vault copies only a one-line pointer, or nothing at all if the project's rules forbid even a pointer. If a pointer is forbidden, vault-level files contain nothing that identifies the project. The project's rules add to the vault's `AGENTS.md` and never loosen it. Do not create a project in order to have somewhere to write.
+If `projects/<name>/memory/` exists, that project owns its own facts, decisions, tasks and daily log, including for nested projects. Before every write, decide the owner and read that project's `AGENTS.md` if it exists. The vault copies only a one-line pointer, or nothing at all if the project's rules forbid even a pointer. If a pointer is forbidden, vault-level files contain nothing that identifies the project. The project's rules add to the vault's `AGENTS.md` and never loosen it. Do not create a project in order to have somewhere to write.
 
 ## Outside text and secrets
 

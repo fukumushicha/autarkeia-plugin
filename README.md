@@ -1,4 +1,4 @@
-# Autarkeia v0.4.10
+# Autarkeia v0.4.11
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -77,7 +77,9 @@ See [Choosing a skill](docs/getting-started.md#choosing-a-skill) for example req
 
 When a task needs something only you can do, the agent prepares what it can within your authorization, gives you the exact remaining action, and continues after you report the result. It records completion only when the outcome is confirmed. Existing approvals still apply. New vaults include this rule. For an existing vault, follow the [human-step rule update instructions](INSTALL.md#updates) after updating the marketplace. Updating the plugin alone does not rewrite your vault's rules.
 
-Work in your vault folder. Say **setup** for the first session, **distill** before closing a session, **daily debrief** at the end of a day and **weekly debrief** at the end of a week. Say **librarian** to file a document or recording. [Getting started](docs/getting-started.md) explains these habits, projects and what is in your vault.
+Start in your vault folder. Open a project when you know what you are working on; open the vault when you are looking across your life or deciding what to work on. The project supplies the focus, so you do not have to name it every time. Subprojects inherit their parents’ rules. Opening a folder does not enforce privacy or restrict what the app can read. Existing vaults need the small [project-session instruction update](INSTALL.md#updates) before directly opening projects.
+
+Debriefs and work overviews follow your current focus; open the vault for the whole-life view. Say **setup** for the first session, **distill** before closing a session, **daily debrief** at the end of a day and **weekly debrief** at the end of a week. Say **librarian** to file a document or recording. [Getting started](docs/getting-started.md) explains these habits, projects and what is in your vault.
 
 Daily debrief stays within four questions. It uses relevant records already in your vault, helps you recall a lightly recorded day, and keeps private-project answers in the right place. Say **“Include reflection in this debrief”** to add what you would do differently and what you feel satisfied with; reflection is off by default. Later saves respect what you approved or declined. See [Daily debrief](docs/getting-started.md#close-the-day--daily-debrief).
 

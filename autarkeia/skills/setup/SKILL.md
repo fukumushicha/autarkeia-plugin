@@ -5,6 +5,8 @@ description: "First session in a new vault: who this is for, what comes first, o
 
 # Setup
 
+Before reading memory or writing, read the bundled `references/project-sessions.md` (from this skill directory: `../../references/project-sessions.md`) and resolve the vault and active project. Read the vault and parent instructions before project rules. Do not infer a vault from `memory/facts.md`; if the reference or instructions cannot be read, stop before memory writes. A new destination without instructions may follow the explicit installation path below with owner approval. Unqualified paths below belong to the active scope; explicit vault-level paths belong to the resolved vault. Ownership and privacy rules still decide each item’s destination.
+
 The first session. Four steps, in order, then stop. This is not a questionnaire and it does not build a system. It puts one real thing in the vault and shows that the next session will see it.
 
 **Mode: ask, then act.** Each step is a question. Their answer is the approval: write it, with no second round. Their own life into their own vault is the ordinary case. Two exceptions: the contract change in step 1 is shown first and written after yes; and everything the contract lists under **When you must ask** (another person, anything off the record, anything that would leave this vault) is asked before it is written.
@@ -14,6 +16,8 @@ The first session. Four steps, in order, then stop. This is not a questionnaire 
 **Every answer lands in today's daily log first**, as one line in the setup block below, and only then in its own file. That is the order the contract sets.
 
 ## Before starting
+
+Setup is vault-only. If opened in a project, identify its vault using the project instructions, explain that first setup runs in a fresh chat opened at that vault, and stop. Do not create vault folders or repeat personal onboarding in the project. A fresh destination without instructions follows the installation procedure below; it is not automatically a vault.
 
 **The contract** is `AGENTS.md`. Only if there is no `AGENTS.md` and `CLAUDE.md` holds more than the line `@AGENTS.md` (a vault made before v0.4.2), the contract is that `CLAUDE.md`; do not move or rename it.
 
