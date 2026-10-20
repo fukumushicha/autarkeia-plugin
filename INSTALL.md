@@ -133,7 +133,9 @@ codex plugin marketplace upgrade autarkeia-plugin
 codex plugin add autarkeia@autarkeia-plugin
 ```
 
-Save active work, then reopen Claude or start a fresh Codex session. Repeat the installation checks above. Never copy the template over your existing vault. New skills and fixes arrive with the plugin; changes to your vault’s own rules are shown for approval through **health check**.
+Save active work, then reopen Claude or start a fresh Codex session. Repeat the installation checks above. Never copy the template over your existing vault. New skills and fixes arrive with the plugin; **health check** offers only the specific older-rule changes it knows about, with your approval.
+
+**Human-step rule (2026-10-20):** after updating the marketplace above, ask your agent: “Add only the ‘When a human step is needed’ bullet from the updated vault template to my vault's rules, preserving everything else.” The template is `~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template/AGENTS.md` for Claude Code or `~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template/AGENTS.md` for Codex. Read that exact bullet, show it for approval, then add it once to the vault's own `AGENTS.md` (or its older `CLAUDE.md` contract). If the updated template does not contain the heading, report that the rule could not be retrieved; do not reconstruct it from a summary. **Health check does not insert this rule.**
 
 **Automatic updates in Claude Code:** off by default for this plugin. If the owner wants them, type `/plugin`, open **Marketplaces**, choose `autarkeia-plugin`, then **Enable auto-update**. Claude fetches updates at session start and uses them in the next session. This does not change the vault’s rules. The Codex path here is the manual update procedure above; do not assume Claude’s menu exists in Codex.
 

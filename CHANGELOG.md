@@ -2,6 +2,10 @@
 
 User-visible changes to Autarkeia, newest first. Historical entries through 0.4.9 were reconstructed from published repository history. Dates are the version-introducing commit dates in their recorded timezone, not independently verified publication timestamps. Later changes made without a version bump are labelled separately. The published history starts at 0.3.0; no earlier releases are documented here.
 
+## Repository updates — 2026-10-20
+
+- Added one human-step rule to the vault template: finish authorized preparation, give the user the exact remaining action, resume after their report, and confirm the outcome before recording completion. Approval boundaries are unchanged. Existing vaults need the rule added explicitly; INSTALL.md Updates provides the request, and the README links there. This template/documentation update leaves plugin version 0.4.9 unchanged.
+
 ## Repository updates — 2026-10-19
 
 - Added this history and made changelog updates mandatory in the contributor release rules. This documentation-only update does not change the plugin version.
