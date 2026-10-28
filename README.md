@@ -1,4 +1,4 @@
-# Autarkeia v0.4.11
+# Autarkeia v0.4.12
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -59,7 +59,7 @@ Skills are repeatable ways of working with your agent. Ask in ordinary language;
 |---|---|---|
 | **Setup** | Asks about you, your priorities and one real job, then saves the first conversation about that work. | A useful starting point built around your life, without designing a whole system first. |
 | **Distill** | Reads the retained conversation and saves important facts, decisions and tasks in the right place. | Less background to repeat in future chats, and useful decisions that survive the conversation. |
-| **Daily debrief** | Reads relevant filed records before asking about your day, decisions and unfinished work, then saves what you approve. Reflection is optional. | A record of what matters while it is fresh, without writing a journal from scratch. |
+| **Daily debrief** | Reads relevant filed records, and the day's saved conversation with an assistant you use outside the vault, before asking about your day, decisions and unfinished work, then saves what you approve. Reflection is optional. | A record of what matters while it is fresh, without writing a journal from scratch. |
 | **Weekly debrief** | Reviews the week’s records and open work against your priorities, then asks what to carry forward. | A chance to notice when daily activity is pulling you away from what matters and choose your next focus. |
 | **Handover** | Writes a briefing for a fresh chat: the goal, progress, relevant files and next step. | You can change conversations without reconstructing the whole task yourself. |
 | **Librarian** | Proposes where to file a document and what to remember, then preserves the original and saves approved facts or tasks. Can also arrange local transcription of recordings. | Documents become useful context for future work, with the original evidence available to check. |

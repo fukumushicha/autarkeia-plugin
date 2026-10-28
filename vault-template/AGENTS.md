@@ -29,6 +29,7 @@ Whoever syncs or backs up this folder holds a copy of everything in it, health r
 | `docs/` | Working documents: what they or an AI wrote, and copies filed for reference. |
 | `archive/` | Originals from outside (statements, contracts, scans, exports), kept exactly as they arrived. Layout: `archive/README.md`. |
 | `inbox/` | Drop a file or an email here. |
+| `memory/exports/` | A day's conversation with an outside assistant (a phone assistant, a chat app), saved unchanged as `YYYY-MM-DD-<source>.md`. Optional. The daily debrief reads that day's files. |
 | `reviews/` | Second-opinion writeups. |
 
 Do not invent new memory files beyond the owner-relative files described here. Do not write durable facts into Claude's hidden project memory.
@@ -163,7 +164,7 @@ First time in this folder: say **setup**.
 
 Do the real thing here, in conversation. Say **distill** before you close. Next time, ask something that needs last time — that is the whole test.
 
-A document arrives: drop it in `inbox/` and say **librarian**. Do not build folders in advance. Let the shape come from what is actually there after a few weeks.
+A document arrives: drop it in `inbox/` and say **librarian**. Do not build folders in advance; `memory/exports/` appears with the first saved conversation. Let the shape come from what is actually there after a few weeks.
 
 ## Session rhythm
 

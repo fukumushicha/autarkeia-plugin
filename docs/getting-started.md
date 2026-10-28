@@ -28,6 +28,8 @@ Say **“Distill this session.”** The agent reads the retained conversation, c
 
 Say **“Let’s do a daily debrief.”** You can name a past date too. The agent reads that day's log and tasks, and follows a relevant filed-record pointer only when it would otherwise ask you to repeat what the record already says. It stays inside your vault; it does not open your calendar, mailbox or meeting service. Private-project answers stay in their project.
 
+If you keep an assistant outside the vault, the debrief also reads that day's saved conversation from `memory/exports/`; see [An assistant outside the vault](#an-assistant-outside-the-vault). What it proposes to keep is routed item by item: a project matter to that project's memory, the rest to the vault, each with a line pointing back to the export. A project debrief reads only that project's exports, so the vault debrief is where a mixed day gets sorted. For a long day, say **“librarian, extract today's export”** for a full pass.
+
 If little of the day was recorded, it helps you recall what stands out, without demanding a full diary. It asks one question at a time, at most four including follow-ups, about events, decisions, unfinished work or working friction. Say **“skip”** or stop whenever you want. It shows proposed additions and writes only after your approval.
 
 Reflection is optional and off by default. Say **“Include reflection in this debrief”** to add two short questions: what you would do differently and what you are satisfied with, by your own standard. These replace other questions within the same four-question limit. Saying **“nothing”** is a complete answer. An adjustment is a reflection, not a new task, unless you explicitly ask for a task and approve it.
@@ -62,7 +64,7 @@ Say **“Run a health check on the vault.”** The agent checks file structure, 
 
 ### Challenge an important piece of work — brainstorm
 
-Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. To request an installed external reviewer, name Codex or Grok explicitly. Grok is not used for inbox mail, an imported document or a fetched page. A review of your own notes can still use it unless they quote or copy outside material. The same restriction covers outside text pasted into the review question or packet. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation, and what the read-only settings do and do not confine: [Second opinions](second-opinion.md).
+Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. To request an installed external reviewer, name Codex or Grok explicitly; you choose what it reads. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation, and what the read-only settings do and do not confine: [Second opinions](second-opinion.md).
 
 ### Stop repeating the same annoyance — improve
 
@@ -159,9 +161,17 @@ The following settings are for Claude Code’s desktop app and are optional. Lab
 - **Notifications**: useful when several sessions run at once and one is waiting for you.
 - **Plugin updates**: see the [installation guide](../INSTALL.md#updates) for manual and automatic updates.
 
+## An assistant outside the vault
+
+Many people also talk to an assistant on their phone or in a chat app during the day. That conversation is part of the day, so the vault can hold it. Ask that assistant for the day's conversation as one Markdown file; if it can do so on its own, a request like this works:
+
+> Each evening, give me today's conversation with you as one Markdown file named with the date, with a header saying which period it covers and what was left out. Keep both sides of the conversation, without reconstructing anything.
+
+If it cannot, copy the conversation into a text file yourself. Save the file into your vault's `memory/exports/` as `YYYY-MM-DD-<source>.md`, for example `2026-10-28-instinct.md`, or drop it in `inbox/` and say **librarian**. Nothing is configured, the folder may stay empty for months, and a second assistant is just another source word. The next vault debrief reads the day's files, treats the assistant's statements as its reports, quotes you only where the file marks your words, and proposes what to keep, with each item routed to its owner. The file is read like any other file in the vault: it goes to the company running the model you work with. Autarkeia does not fetch it from the assistant.
+
 ## Second opinions
 
-Codex (OpenAI) and Grok (xAI) can read your vault and review what Claude did (or, if you work in Codex, Grok and a separate Codex can). Grok is not used on inbox mail, an imported document, or a fetched page. Setup, sign-in and what leaves your computer: [second-opinion.md](second-opinion.md). A printed version number proves a reviewer is installed, not that it is signed in; the guide's "Check it works" section has a real test ("brainstorm: test that codex answers").
+Codex (OpenAI) and Grok (xAI) can read your vault and review what Claude did (or, if you work in Codex, Grok and a separate Codex can). You choose what each reviewer reads. Setup, sign-in and what leaves your computer: [second-opinion.md](second-opinion.md). A printed version number proves a reviewer is installed, not that it is signed in; the guide's "Check it works" section has a real test ("brainstorm: test that codex answers").
 
 ## Email
 
@@ -194,6 +204,7 @@ Existing projects need their short vault/parent instructions before being opened
 | `docs/` | Working documents: what you or the AI wrote (handover notes and transcripts too), listed in `docs/register.md`. |
 | `archive/` | Originals from outside, exactly as they arrived, in up to eight areas by part of life (official documents, money and tax, health, homes, travel, companies and projects, photos and memories, archive records). Each area has its own register with a hash per file. An area appears when its first document does. |
 | `inbox/` | Drop a file or an email here, then say **librarian** or **email**. |
+| `memory/exports/` | A day's conversation with an assistant outside the vault, saved unchanged, one file per day and source. Optional; read by the daily debrief. |
 | `reviews/` | Second opinions and health-check reports. |
 | `projects/<name>/` | A project, once you have one: its own `memory/`, plus short `AGENTS.md` vault/parent instructions and a `CLAUDE.md` entry file. Custom rules are optional. |
 
