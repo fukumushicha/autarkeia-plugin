@@ -119,6 +119,8 @@ Report the app and plugin version, vault location, checks that passed, and anyth
 
 ## Updates
 
+**Outside exports (0.4.12).** The vault rules gained one optional location, `memory/exports/`, for a day's conversation with an assistant you use outside the vault: one row in the Files table of the vault template, no folder until the first file. An existing vault needs that row before its debrief reads the folder, because the rules forbid memory files the table does not list. After updating the plugin, open the vault and ask: “Add the `memory/exports/` row from the updated vault template's Files table to my vault's rules, preserving everything else.” The template is `~/.claude/plugins/marketplaces/autarkeia-plugin/vault-template/AGENTS.md` for Claude Code or `~/.codex/.tmp/marketplaces/autarkeia-plugin/vault-template/AGENTS.md` for Codex. Show the row, add it after approval, and create no folder; it appears with the first saved file. **Health check** proposes this row when it is missing. Users without an outside assistant need nothing.
+
 **Project sessions (0.4.11).** Updating the plugin does not overwrite your vault or project instructions. For an existing vault, open the vault and ask:
 
 > Update my vault for project-folder sessions. Show the changes from the current template's Projects and Session rhythm sections, preserving my own rules, and apply them after I approve. For the existing projects I want to open directly, show and add the short vault/parent instructions and Claude entry file. Keep their existing custom rules. Do not move my files.

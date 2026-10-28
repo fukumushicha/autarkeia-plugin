@@ -62,10 +62,10 @@ In your vault, say:
 |---|---|
 | **second opinion on** this decision | The built-in reviewer: Claude, or Codex if you work in Codex |
 | **send to codex** | Codex (when you already work in Codex: a separate, read-only Codex; same company, fresh context) |
-| **send to grok** | Grok, for your own notes unless they quote or copy outside material. Not for inbox mail, imported documents or fetched pages |
+| **send to grok** | Grok |
 | **all reviewers** | Every reviewer that can take this material |
 
-Nothing goes to an outside reviewer unless you name it. Naming Grok does not run it on outside material. (When you work in Codex, the built-in reviewer is itself a Codex, so a plain second opinion is read by OpenAI, like everything else in that session.) If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
+Nothing goes to an outside reviewer unless you name it. (When you work in Codex, the built-in reviewer is itself a Codex, so a plain second opinion is read by OpenAI, like everything else in that session.) If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
 
 What happens:
 
@@ -80,7 +80,7 @@ A review takes from one to several minutes per reviewer.
 ## What to know before you use it
 
 - **Read-only restricts writes, not reads.** Codex is started with `-s read-only` and Grok with `--sandbox read-only`. Those flags select technical write restrictions, subject to the tool’s writable exceptions. They do not limit which files can be read, and starting the command in your vault folder does not confine it. A reviewer may open other files than the ones named. The same is true of the built-in reviewer: it is told to read only the named files, and that instruction is not a technical confinement.
-- **Grok's shell can still reach the internet.** The read-only setting does not turn the network off. Autarkeia does not run Grok on outside material: mail in the inbox, a document that was imported, or a page that was fetched. A hidden instruction in that kind of file could ask it to send what it read somewhere else. Notes, drafts, handovers and logs that quote or copy outside material count as outside material too, including files under any `inbox/` or `archive/` folder, including a project's own. Your own notes without that material can still go to Grok. The rule also covers outside text pasted into the review question or packet. This rule limits what Autarkeia gives Grok; it does not technically prevent Grok opening other vault files. If Grok is the wrong reviewer, Autarkeia can offer the built-in reviewer or Codex. That offer does not mean the other reviewer has been proved sealed off.
+- **Grok's shell can still reach the internet.** The read-only setting does not turn the network off. You choose what Grok reviews, including mail, imported documents and fetched pages. Know that a hidden instruction inside such a file could ask a reviewer with network access to send what it read somewhere else; the reviewer prompt tells Grok to treat file contents as evidence, and that is an instruction, not a technical guarantee.
 - **Naming a reviewer covers the files the review is about.** It does not allow sending unrelated private files. If the thing is about your health, another person, or anything you said was off the record, Autarkeia asks you before sending it out, even after you named the reviewer.
 - **The other company sees what the reviewer reads.** Whatever files Codex or Grok open are sent to OpenAI or xAI under your account, just as your conversations with Claude go to Anthropic.
 - **Keep your vault in an ordinary folder**, such as Documents. Grok's read-only setting leaves temporary folders writable (`/tmp`, `/var/folders`, `~/.grok` and similar), so Autarkeia will not run Grok on a vault stored there.

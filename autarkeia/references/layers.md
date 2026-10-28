@@ -14,6 +14,7 @@ One vault, with projects when needed. The chat is not memory. Resolve the vault 
 | `archive/` | Originals from outside, exactly as they arrived, by area of life. Each area has its own `register.md` with a hash per file. Layout and rules: `references/archive.md`. |
 | `memory/tasks-archive.md` | Done tasks, with the date they were done. |
 | `inbox/` | Drop files and emails here. |
+| `memory/exports/` | One day's conversation with an outside assistant, saved unchanged as `YYYY-MM-DD-<source>.md`. Optional; the folder appears with the first file. The daily debrief reads the day's files; the assistant's words are its reports, the user's own correction and an archive original outrank them. |
 | `reviews/` | Second-opinion packets from **brainstorm**. |
 | `memory/ops/friction.md` | Things that keep going wrong, from **improve**. Propose only. |
 | `memory/ops/improvement-proposals.md` | Proposals from **improve**. Nothing here is applied without you saying yes. |

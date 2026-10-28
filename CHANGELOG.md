@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.12 — 2026-10-28
+
+- The daily debrief reads a day's conversation with an assistant you use outside the vault (a phone assistant, a chat app) when you save it as `memory/exports/YYYY-MM-DD-<source>.md`. No configuration, no sender or subject rule: the folder is created with the first file, and a second assistant is another source word. The file is read as a transcript: the assistant's statements are its reports, your words are quoted only where the file marks them, header gaps are carried, nothing is recited back, and the export may answer a debrief question but never adds one. What you approve is routed item by item to its owner (a project matter to that project's memory, the rest to the vault). A vault debrief reads the vault's folder; a project debrief reads only that project's.
+- The librarian files such a conversation unchanged into `memory/exports/` with no extraction and no register row; a differing file for the same day and source is kept beside it. Service exports (statements, mailboxes, portals) stay archive originals. Health check does not create the folder or move the file.
+- **Removed:** the rule that kept Grok reviews off outside material (inbox mail, imported documents, fetched pages and notes quoting them). You choose what any reviewer reads. The disclosure that Grok's shell can reach the network stays in the second-opinion guide.
+- **Upgrade:** update the plugin, then add the one `memory/exports/` row to your vault rules as described in [INSTALL.md](INSTALL.md#updates); health check proposes it too. No new command or prerequisite. Users without an outside assistant need nothing.
+
 ## Repository updates — 2026-10-20
 
 - Corrected the Codex update instructions: a standard GitHub installation already receives background updates when Codex starts. No separate updater, schedule or hook is needed. Added fresh-chat guidance, local-folder and pinned-source exceptions, and kept the manual commands for an immediate update. Verified native behavior with Codex CLI 0.163.0. Documentation only; plugin version remains 0.4.11 and existing vault rules are unchanged.
