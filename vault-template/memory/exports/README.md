@@ -1,1 +1,0 @@
-Save here a day's conversation with an assistant you use outside this vault (a phone assistant, a chat app), one file per day and source, unchanged: `2026-10-28-instinct.md`. The daily debrief reads that day's files. Nothing is configured; the folder may stay empty.
