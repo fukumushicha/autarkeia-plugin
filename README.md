@@ -1,4 +1,4 @@
-# Autarkeia v0.4.12
+# Autarkeia v0.4.13
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -47,7 +47,7 @@ The ideas behind it:
 - **Questions instead of blank pages.** The daily and weekly debriefs ask you a few questions and write down the answers. Nobody has to keep a journal.
 - **Your priorities, written down.** `PRIORITIES.md` holds what matters to you, in order, and the weekly review checks your week against it.
 - **No structure built in advance.** Folders and projects appear when real use needs them, not because a template said so. A project gets its own rules when it needs them, not before.
-- **You decide; it operates.** It writes your notes without asking every time. It never sends, posts, pays or deletes without your yes.
+- **You decide; it operates.** It writes your notes without asking every time. It never sends, posts, pays, deletes or sets up a job to run later on its own without your yes.
 
 The name comes from the Greek *autarkeia*: self-sufficiency, having what you need within your own reach.
 
@@ -78,6 +78,8 @@ See [Choosing a skill](docs/getting-started.md#choosing-a-skill) for example req
 ## Everyday use
 
 When a task needs something only you can do, the agent prepares what it can within your authorization, gives you the exact remaining action, and continues after you report the result. It records completion only when the outcome is confirmed. Existing approvals still apply. New vaults include this rule. For an existing vault, follow the [human-step rule update instructions](INSTALL.md#updates) after updating the marketplace. Updating the plugin alone does not rewrite your vault's rules.
+
+A job your app runs later on its own (a scheduled task) spends your plan's limits while you are away. The agent asks before setting one up unless you asked for it, writes a lasting one into your vault, and reminds you at **distill** when a job comes back into the chat you are about to archive. Existing vaults need the [scheduled-job rule update](INSTALL.md#updates).
 
 Start in your vault folder. Open a project when you know what you are working on; open the vault when you are looking across your life or deciding what to work on. The project supplies the focus, so you do not have to name it every time. Subprojects inherit their parents’ rules. Opening a folder does not enforce privacy or restrict what the app can read. Existing vaults need the small [project-session instruction update](INSTALL.md#updates) before directly opening projects.
 

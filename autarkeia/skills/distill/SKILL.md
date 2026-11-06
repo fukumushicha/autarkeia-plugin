@@ -44,7 +44,9 @@ Respect debrief dispositions when reading the conversation: its approved list co
 
 Scan those sources for facts, decisions, constraints, tasks, and observations worth keeping. Skip small talk and recap. If history is missing or incomplete, extract only supported items from what is available and report partial coverage; never claim a complete scan.
 
-If nothing is worth saving, say so and stop.
+If this chat has a scheduled job that comes back into it, set up or discussed here, the closing sentence also says so and says to give the job its own saved instructions or stop it before the chat is archived. Saving memory does not move or stop the job; do not change the job yourself. Do not raise schedules when none came up in this chat.
+
+If nothing is worth saving, say so (with the scheduled-job sentence, if it applies) and stop.
 
 ## Write
 

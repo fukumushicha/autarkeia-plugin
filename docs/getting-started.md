@@ -82,7 +82,9 @@ Say **“I want to think through whether this project still matters to me.”** 
 
 Say **distill**. It writes what this session changed into files: today's log in `memory/daily/`, plus facts, decisions and tasks. Open the vault in your file manager (Finder on macOS) and look: that is the memory. The chat is not.
 
-You can then archive the chat using your app’s sidebar controls. Archiving only hides the chat from the list. It is not the vault's `archive/` folder, which is where original documents are kept.
+You can then archive the chat using your app’s sidebar controls. Archiving hides the chat from the list; it is not the vault's `archive/` folder, which is where original documents are kept. If a scheduled job comes back into that chat, it is easy to lose track of once the chat is hidden: first give a job that should keep running its own saved instructions, or stop it. Saving your memory does not move the job.
+
+The agent asks before setting up a job that runs later on its own, unless you asked for that job, and writes a lasting one into your vault's facts. A job that runs while you are away spends your plan's limits. If your plan buys extra usage or credits automatically when you reach a limit, check whether that is on and what spending limit applies.
 
 ## Permission modes: how often it asks you
 
@@ -106,7 +108,7 @@ Where your app offers an effort setting, it sets how long and how carefully it w
 - **Medium** for everyday work.
 - **High** or above for something that matters and must be right, especially reviewing work an earlier session did. A fresh session at high effort is a good reviewer.
 
-Higher effort uses more of your plan's limits. Check your app’s usage or account controls for the available limits.
+Higher effort uses more of your plan's limits. If your plan buys extra usage automatically when you reach a limit, high effort can reach that spend without another question. Check your app’s usage or account controls.
 
 ## One task per session
 
@@ -133,7 +135,7 @@ What helps:
 - **Copy, do not move.** Keep the old copies until you decide. Nothing is deleted without your yes.
 - **Earlier AI output is marked as such**, not treated as fact. Rules from another tool are material to read, not rules to adopt.
 - **One person, one project.** A family member's papers belong in their own project, not yours.
-- **Knowledge moves; automations stay.** Facts and documents come into the vault. Connections (Gmail in another app, scheduled jobs, databases) keep running where they are.
+- **Knowledge moves; automations stay.** Facts and documents come into the vault. Connections (Gmail in another app, scheduled jobs, databases) keep running where they are; bringing work in does not start a new scheduled job.
 
 ## Recordings
 
