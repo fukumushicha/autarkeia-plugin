@@ -32,6 +32,8 @@ If you keep an assistant outside the vault, the debrief also reads that day's sa
 
 If little of the day was recorded, it helps you recall what stands out, without demanding a full diary. It asks one question at a time, at most four including follow-ups, about events, decisions, unfinished work or working friction. Say **“skip”** or stop whenever you want. It shows proposed additions and writes only after your approval.
 
+The questions are for you, not a report the agent owes you: your answers are what the vault learns about how you work and decide, and later sparring and debriefs draw on them. A first week of answers is enough to notice the difference. If a question does not land, say **“skip”**; a skipped question costs nothing.
+
 Reflection is optional and off by default. Say **“Include reflection in this debrief”** to add two short questions: what you would do differently and what you are satisfied with, by your own standard. These replace other questions within the same four-question limit. Saying **“nothing”** is a complete answer. An adjustment is a reflection, not a new task, unless you explicitly ask for a task and approve it.
 
 For a lasting preference, say **“Make reflection part of my daily debriefs.”** The agent shows a proposed vault-rule change and saves it after your yes. Say **“Skip reflection tonight”** for a one-off change, or ask to turn the saved preference off. No new settings file is needed.
@@ -64,7 +66,7 @@ Say **“Run a health check on the vault.”** The agent checks file structure, 
 
 ### Challenge an important piece of work — brainstorm
 
-Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. To request an installed external reviewer, name Codex or Grok explicitly; you choose what it reads. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation, and what the read-only settings do and do not confine: [Second opinions](second-opinion.md).
+Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. To request an installed external reviewer, name it explicitly: Codex or Grok when you work in Claude Code, Claude or Grok when you work in Codex; you choose what it reads. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation, and what the read-only settings do and do not confine: [Second opinions](second-opinion.md).
 
 ### Stop repeating the same annoyance — improve
 
@@ -98,6 +100,8 @@ Read this before choosing bypass:
 > Bypass removes the app's approval prompts. Autarkeia still tells the agent to ask before sending, paying, deleting or changing rules, but those instructions are not a lock. A mistake can run, including a command that sends something out, without another prompt.
 
 Invoking a skill does not preapprove a shell command or a file write. Whatever the skill describes, the app's permission settings still decide what runs. The skills are not a security boundary, and they do not isolate the session from the rest of the permission mode you chose.
+
+Read each approval prompt before answering it. Declining one is not an error, but the agent then works without that folder, file or command and may report "not found" or an incomplete result for that reason. If you declined by mistake, say so and ask it to try again; it asks again.
 
 In Codex, use its permissions controls to see what the agent may do and what needs approval. The labels differ from Claude’s. Installing Autarkeia does not require you to loosen either app’s permissions.
 
@@ -173,7 +177,7 @@ If it cannot, copy the conversation into a text file yourself. Save the file int
 
 ## Second opinions
 
-Codex (OpenAI) and Grok (xAI) can read your vault and review what Claude did (or, if you work in Codex, Grok and a separate Codex can). You choose what each reviewer reads. Setup, sign-in and what leaves your computer: [second-opinion.md](second-opinion.md). A printed version number proves a reviewer is installed, not that it is signed in; the guide's "Check it works" section has a real test ("brainstorm: test that codex answers").
+Codex (OpenAI) and Grok (xAI) can read your vault and review what Claude did; if you work in Codex, Claude (Anthropic) and Grok can review what Codex did. You choose what each reviewer reads. Setup, sign-in and what leaves your computer: [second-opinion.md](second-opinion.md). A printed version number proves a reviewer is installed, not that it is signed in; the guide's "Check it works" section has a real test ("brainstorm: test that codex answers", or claude, or grok).
 
 ## Email
 

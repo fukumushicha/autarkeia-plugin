@@ -1,4 +1,4 @@
-# Autarkeia v0.4.13
+# Autarkeia v0.4.14
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -41,7 +41,7 @@ The test for every line in this README: when a friend asks what you are building
 The ideas behind it:
 
 - **Models come and go; your memory should not.** AI models are replaced every few months. The files stay. Any capable model can read them, so a better model inherits everything instead of starting over.
-- **Use the best model for the job, with everything it needs to know.** The vault belongs to no vendor. Claude Code or Codex runs it day to day, with the same skills; Codex and Grok can read the same files for a second opinion.
+- **Use the best model for the job, with everything it needs to know.** The vault belongs to no vendor. Claude Code or Codex runs it day to day, with the same skills; a model from another company (Codex and Grok for Claude users, Claude and Grok for Codex users) can read the same files for a second opinion.
 - **Plain files over databases.** You can open, read, back up and move every file yourself. Nothing is locked in an app, and you can see exactly what the AI knows about you.
 - **Keep the original next to the summary.** Documents stay as they arrived. A future model can re-read them and pull out what today's missed.
 - **Questions instead of blank pages.** The daily and weekly debriefs ask you a few questions and write down the answers. Nobody has to keep a journal.
@@ -66,7 +66,7 @@ Skills are repeatable ways of working with your agent. Ask in ordinary language;
 | **Email** | Reads emails saved into the vault, extracts useful information and separates real commitments from information. Does not open your mailbox or send replies. | Important requests enter your working records without every newsletter becoming another obligation. |
 | **Realign** | Combines open tasks across projects into one overview of current work, waiting items and the inbox. | You can see what needs attention without opening every project separately. |
 | **Health check** | Checks for missing files, old unfinished tasks, archive inconsistencies and possible passwords, API keys or tokens using a local scan that returns filenames only; reports problems and proposes repairs. It does not display matching values or treat an account number as that kind of secret. | You can catch maintenance problems before they make the system harder to rely on. |
-| **Brainstorm** | Gets a separate AI review of a decision, document or piece of work, then compares the findings and explains disagreements. | Another chance to spot weak assumptions, mistakes and overlooked alternatives before acting. Agreement is not proof. |
+| **Brainstorm** | Gets a separate AI review of a decision, document or piece of work, then compares the findings and explains disagreements. Can hand the review to a model from another company you have installed: Codex or Grok from Claude Code, Claude or Grok from Codex. | Another chance to spot weak assumptions, mistakes and overlooked alternatives before acting. Agreement is not proof. |
 | **Improve** | Records recurring friction and proposes changes for your approval. | Annoyances can lead to deliberate improvements instead of recurring indefinitely or triggering unapproved changes. |
 | **Outbound writing** | Drafts or proofreads a message using relevant facts from your records and your own voice, without sending it. | Less time reconstructing context and composing replies, while you control what goes out in your name. |
 | **Sparring** | Helps you think through a question, challenges assumptions and points out tensions with your stated priorities. | Space to think with someone who pushes back, without automatically creating another task list. |
