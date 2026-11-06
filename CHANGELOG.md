@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.14 — 2026-11-06
+
+- **Claude as an outside reviewer for Codex users.** Brainstorm can hand a review to Claude Code (**send to claude**) the way it hands one to Codex or Grok: plan mode with only Claude's built-in reading tools and none of your configured connectors, packet in, answer file out, model and effort only when you name them. Until now a Codex user had no documented route to a reviewer from another company other than Grok. The second-opinion guide gains Claude's install, sign-in, test and plan caveat, and says what "all reviewers" means. In Claude Code, "send to claude" remains the built-in reviewer. Claude Code is optional; Codex users who want it install it themselves.
+- **Getting started**, from a first-week onboarding call: what the debrief questions are for and that skipping one is allowed; read each approval prompt, because declining one leaves that folder or command unused; brainstorm names the reviewers available in each app.
+- No change to the vault template or to existing vault rules. Update the plugin; nothing else to do.
+
 ## 0.4.13 — 2026-11-06
 
 - The agent asks before creating, changing or stopping a job your app runs later on its own (a scheduled or recurring task), because it runs while you are away and spends your plan's limits. Your own explicit request for that job is the approval; a job that would send, post or pay needs the same yes as doing that once.
