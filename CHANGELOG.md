@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.13 — 2026-11-06
+
+- The agent asks before creating, changing or stopping a job your app runs later on its own (a scheduled or recurring task), because it runs while you are away and spends your plan's limits. Your own explicit request for that job is the approval; a job that would send, post or pay needs the same yes as doing that once.
+- A job meant to outlast the chat gets its own saved instructions that name your vault or project, instead of coming back into a chat you will archive. A job tied to a chat is for a short follow-up, or for when you want that chat kept open. Before creating one, the agent checks your facts for an existing copy; afterwards it records the lasting job there (what it reads, what it may change or send, where results appear) and updates that line when the job changes or stops. The vault cannot see the app's job list, so a job deleted in the app can leave its line behind.
+- **Distill** mentions a scheduled job that comes back into the current chat, even when there is nothing to save, and says to give it its own instructions or stop it before you archive the chat. It never changes the job itself.
+- Getting started no longer says archiving a chat only hides it: a job tied to that chat is easy to lose track of once hidden. It adds a conditional note on plans that buy extra usage automatically: check whether that is on, and its spending limit, before unattended jobs or high effort reach it.
+- **Upgrade:** update the plugin; the distill reminder arrives with it. Then add the two scheduled-job bullets to your vault rules as described in [INSTALL.md](INSTALL.md#updates); health check proposes them too. Existing scheduled jobs are not changed. No new command or prerequisite.
+
 ## 0.4.12 — 2026-10-28
 
 - The daily debrief reads a day's conversation with an assistant you use outside the vault (a phone assistant, a chat app) when you save it as `memory/exports/YYYY-MM-DD-<source>.md`. No configuration, no sender or subject rule: the folder is created with the first file, and a second assistant is another source word. The file is read as a transcript: the assistant's statements are its reports, your words are quoted only where the file marks them, header gaps are carried, nothing is recited back, and the export may answer a debrief question but never adds one. What you approve is routed item by item to its owner (a project matter to that project's memory, the rest to the vault). A vault debrief reads the vault's folder; a project debrief reads only that project's.
