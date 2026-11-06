@@ -84,7 +84,7 @@ Say **distill**. It writes what this session changed into files: today's log in 
 
 You can then archive the chat using your app’s sidebar controls. Archiving hides the chat from the list; it is not the vault's `archive/` folder, which is where original documents are kept. If a scheduled job comes back into that chat, it is easy to lose track of once the chat is hidden: first give a job that should keep running its own saved instructions, or stop it. Saving your memory does not move the job.
 
-The agent asks before setting up a job that runs later on its own, unless you asked for that job, and writes a lasting one into your vault's facts. A job that runs while you are away spends your plan's limits. If your plan buys extra usage or credits automatically when you reach a limit, check whether that is on and what spending limit applies.
+The agent asks before setting up a job that runs later on its own, unless you asked for that job, and writes a lasting one into your vault's facts. Existing vaults need the two scheduled-job rules from [INSTALL.md’s Updates section](../INSTALL.md#updates); updating the plugin alone adds the distill reminder. A job that runs while you are away spends your plan's limits. If your plan buys extra usage or credits automatically when you reach a limit, check whether that is on and what spending limit applies.
 
 ## Permission modes: how often it asks you
 
