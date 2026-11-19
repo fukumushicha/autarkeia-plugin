@@ -1,4 +1,4 @@
-# Autarkeia v0.4.14
+# Autarkeia v0.4.15
 
 A living record of you, in files you own. It remembers your past, runs your present, and carries you forward with whatever AI is best at the time.
 
@@ -66,7 +66,7 @@ Skills are repeatable ways of working with your agent. Ask in ordinary language;
 | **Email** | Reads emails saved into the vault, extracts useful information and separates real commitments from information. Does not open your mailbox or send replies. | Important requests enter your working records without every newsletter becoming another obligation. |
 | **Realign** | Combines open tasks across projects into one overview of current work, waiting items and the inbox. | You can see what needs attention without opening every project separately. |
 | **Health check** | Checks for missing files, old unfinished tasks, archive inconsistencies and possible passwords, API keys or tokens using a local scan that returns filenames only; reports problems and proposes repairs. It does not display matching values or treat an account number as that kind of secret. | You can catch maintenance problems before they make the system harder to rely on. |
-| **Brainstorm** | Gets a separate AI review of a decision, document or piece of work, then compares the findings and explains disagreements. Can hand the review to a model from another company you have installed: Codex or Grok from Claude Code, Claude or Grok from Codex. | Another chance to spot weak assumptions, mistakes and overlooked alternatives before acting. Agreement is not proof. |
+| **Brainstorm** | Gets a separate AI review of a decision, document or piece of work, then compares the findings and explains disagreements. Ask for Astra, Sol, Opus or Fable by name in either app, or name an installed reviewer from another company. | Another chance to spot weak assumptions, mistakes and overlooked alternatives before acting. Agreement is not proof. |
 | **Improve** | Records recurring friction and proposes changes for your approval. | Annoyances can lead to deliberate improvements instead of recurring indefinitely or triggering unapproved changes. |
 | **Outbound writing** | Drafts or proofreads a message using relevant facts from your records and your own voice, without sending it. | Less time reconstructing context and composing replies, while you control what goes out in your name. |
 | **Sparring** | Helps you think through a question, challenges assumptions and points out tensions with your stated priorities. | Space to think with someone who pushes back, without automatically creating another task list. |

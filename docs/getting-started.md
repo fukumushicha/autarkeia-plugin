@@ -66,7 +66,7 @@ Say **“Run a health check on the vault.”** The agent checks file structure, 
 
 ### Challenge an important piece of work — brainstorm
 
-Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. To request an installed external reviewer, name it explicitly: Codex or Grok when you work in Claude Code, Claude or Grok when you work in Codex; you choose what it reads. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation, and what the read-only settings do and do not confine: [Second opinions](second-opinion.md).
+Say **“Get a second opinion on this proposal.”** When the app supports it, a separate agent of the same model family reviews the material; the lead then compares the findings and explains disagreements. Say **“Brainstorm this with Astra”** to use the latest available Astra, or name **Sol**, **Opus**, or **Fable**. These family requests work in either app if the reviewer’s command-line app is available. You choose what it reads. A second AI can catch mistakes the first missed, but agreement does not prove the answer is right. Installation, and what the read-only settings do and do not confine: [Second opinions](second-opinion.md).
 
 ### Stop repeating the same annoyance — improve
 

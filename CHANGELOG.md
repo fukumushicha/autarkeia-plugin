@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.15 — 2026-11-19
+
+- **Name the reviewer family in Brainstorm.** “Brainstorm this with Astra” selects the latest available Astra from your Codex model catalog. Sol works the same way. Opus and Fable use Claude Code’s current model for that family on your account. All four requests work from either app when the matching command-line app is installed. Brainstorm reports the actual model and tells you when a requested family cannot be used.
+- **Upgrade.** Update the plugin. Astra and Sol family lookup uses Python 3 and a Codex CLI with model catalog support. The usual built-in review still works for a plain second opinion.
+
 ## 0.4.14 — 2026-11-06
 
 - **Claude as an outside reviewer for Codex users.** Brainstorm can hand a review to Claude Code (**send to claude**) the way it hands one to Codex or Grok: plan mode with only Claude's built-in reading tools and none of your configured connectors, packet in, answer file out, model and effort only when you name them. Until now a Codex user had no documented route to a reviewer from another company other than Grok. The second-opinion guide gains Claude's install, sign-in, test and plan caveat, and says what "all reviewers" means. In Claude Code, "send to claude" remains the built-in reviewer. Claude Code is optional; Codex users who want it install it themselves.
