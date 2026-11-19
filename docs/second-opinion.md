@@ -2,15 +2,15 @@
 
 The `brainstorm` skill gets you a second opinion on a decision, a document, or something an agent just did. Out of the box it asks a second Claude, which has a fresh context but the same training as the first. That catches slips; it does not catch the blind spots both share. If you work in Codex rather than Claude Code, the built-in reviewer is a second Codex instead, and the same holds.
 
-For a real second opinion, add a model from another company. Autarkeia can hand the review to **Codex** (OpenAI), **Claude** (Anthropic, when you work in Codex) or **Grok** (xAI). Each runs on your Mac and reads files in your vault itself, so the reviewer checks the actual file rather than trusting a summary of it. The read-only settings below restrict file writes. They do not confine which files can be read or, by themselves, prove network isolation.
+For a real second opinion, add a model from another company. Autarkeia can hand the review to **Codex** (OpenAI), **Claude** (Anthropic) or **Grok** (xAI). Each runs on your Mac and reads files in your vault itself, so the reviewer checks the actual file rather than trusting a summary of it. The read-only settings below restrict file writes. They do not confine which files can be read or, by themselves, prove network isolation.
 
 ## What you need
 
 | | What it is | Account |
 |---|---|---|
 | **Claude Code** or **Codex** | The app you already run Autarkeia in. Hosts the built-in reviewer: a second Claude, or a second Codex. | Your Claude or ChatGPT account |
-| **Codex CLI** | OpenAI's command-line agent | A ChatGPT account. OpenAI says Codex is included across ChatGPT plans, Free included, with usage limits that vary by plan. |
-| **Claude Code** (for Codex users) | Anthropic's command-line agent | A paid Claude plan (Pro or above). Which models a plan can use differs by plan; the review falls back to your plan's default when a named model is not available. |
+| **Codex CLI** | OpenAI's command-line agent. Family lookup for Astra and Sol also uses Python 3. | A ChatGPT account. OpenAI says Codex is included across ChatGPT plans, Free included, with usage limits that vary by plan. |
+| **Claude Code** | Anthropic's command-line agent | A paid Claude plan (Pro or above). Available models depend on the plan. |
 | **Grok Build** | xAI's command-line agent | An xAI account (sign in through the browser), or an xAI API key. Check x.ai for which plans include it. |
 
 You can install any of them, or none. With none, `brainstorm` still works with the built-in reviewer. A reviewer from the same company as the model you work in (a second Codex for a Codex user, Claude for a Claude Code user) is not an outside-company opinion, even when it runs as a separate command. **All reviewers** means every installed reviewer from another company than the one you work in, plus the built-in reviewer.
@@ -27,7 +27,7 @@ curl -fsSL https://chatgpt.com/codex/install.sh | sh
 
 Then run `codex` once, choose **Sign in with ChatGPT**, and finish the sign-in in your browser. Type `/quit` to leave.
 
-**Claude Code**, if you work in Codex (official guide: https://code.claude.com/docs/en/setup):
+**Claude Code**, if you need to install it (official guide: https://code.claude.com/docs/en/setup):
 
 ```bash
 curl -fsSL https://claude.ai/install.sh | bash
@@ -75,11 +75,13 @@ In your vault, say:
 |---|---|
 | **second opinion on** this decision | The built-in reviewer: Claude, or Codex if you work in Codex |
 | **send to codex** | Codex (when you already work in Codex: a separate, read-only Codex; same company, fresh context) |
-| **send to claude** | Claude, when you work in Codex (in Claude Code it is the built-in reviewer). Add **use opus** or **high effort** to choose; otherwise your Claude Code default applies. |
+| **send to claude** | Claude with your Claude Code default when you work in Codex. In Claude Code, this uses the built-in reviewer. |
+| **Brainstorm this with Astra** or **Sol** | The newest visible model in the named family from your Codex model catalog, in either app. |
+| **Brainstorm this with Opus** or **Fable** | The model that Claude Code currently resolves for that family on your account, in either app. |
 | **send to grok** | Grok |
-| **all reviewers** | Every reviewer that can take this material |
+| **all reviewers** | The built-in reviewer and every installed reviewer from another company that can take this material. |
 
-Nothing goes to an outside reviewer unless you name it. (When you work in Codex, the built-in reviewer is itself a Codex, so a plain second opinion is read by OpenAI, like everything else in that session.) If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
+You can also name an exact model version or an effort such as **high effort**. Brainstorm reports the model that actually answered a named request. The reviewer receives what you named for review. (When you work in Codex, the built-in reviewer is itself a Codex, so a plain second opinion is read by OpenAI, like everything else in that session.) If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
 
 What happens:
 
@@ -97,13 +99,14 @@ A review takes from one to several minutes per reviewer.
 - **Grok's shell can still reach the internet.** The read-only setting does not turn the network off. You choose what Grok reviews, including mail, imported documents and fetched pages. Know that a hidden instruction inside such a file could ask a reviewer with network access to send what it read somewhere else; the reviewer prompt tells Grok to treat file contents as evidence, and that is an instruction, not a technical guarantee.
 - **Naming a reviewer covers the files the review is about.** It does not allow sending unrelated private files. If the thing is about your health, another person, or anything you said was off the record, Autarkeia asks you before sending it out, even after you named the reviewer.
 - **The other company sees what the reviewer reads.** Whatever files Codex, Claude or Grok open are sent to OpenAI, Anthropic or xAI under your account, just as your own sessions go to the company whose model you work in.
-- **Claude's models depend on your plan.** If you ask for a model your Claude plan does not include, the review says so and runs once more on your plan's default. Choosing a plan or model is yours; Autarkeia does not pick one for you.
+- **Model availability depends on your account.** If Autarkeia cannot resolve or verify the requested family, it reports the failure. Claude Code’s family aliases can resolve differently with custom providers. If Claude specifically rejects an explicit model version as unavailable, Autarkeia reports it and retries once with your Claude Code default, then reports the model that answered.
 - **Keep your vault in an ordinary folder**, such as Documents. Grok's read-only setting leaves temporary folders writable (`/tmp`, `/var/folders`, `~/.grok` and similar), so Autarkeia will not run Grok on a vault stored there.
 - **It uses your own plan's limits.** A long review against a big vault is real usage. If you hit a limit, that is the plan, not a fault.
 
 ## If something goes wrong
 
 - **"Not signed in"**: run `codex` (then choose Sign in with ChatGPT), or `claude` then `/login`, or `grok login` again, in your own Terminal. Autarkeia never handles your password.
+- **Astra or Sol lookup fails** — Check that Python 3 and a current Codex CLI are available in the app and that Codex is signed in.
 - **Claude says a flag is unknown**: your Claude Code is older than this guide expects. Update it with the install line above. Until then Autarkeia leaves Claude out of the review rather than run it with fewer restrictions; only the optional effort flag is dropped.
 - **Grok returns almost nothing**: it sometimes stops on its first step. Autarkeia retries once on its own. If the second try also fails, it tells you the review did not finish and leaves that reviewer out.
 - **"Command not found" inside Claude Code or Codex**: restart the app after installing, so it sees the new command.
