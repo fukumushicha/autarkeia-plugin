@@ -62,7 +62,7 @@ class CatalogClient:
             if "error" in reply:
                 error = reply["error"]
                 code = error.get("code") if isinstance(error, dict) else None
-                detail = f" (code {code})" if type(code) is int else ""
+                detail = f" (code {code})" if method != "account/read" and type(code) is int else ""
                 raise CatalogError(f"Codex rejected {method}{detail}")
             if not isinstance(reply.get("result"), dict):
                 raise CatalogError(f"invalid Codex response to {method}")
@@ -74,6 +74,13 @@ def resolve_model(client, family):
         "clientInfo": {"name": "autarkeia_brainstorm", "version": "1"},
     })
     client.send({"method": "initialized"})
+    auth = client.request("account/read", {"refreshToken": False})
+    requires_auth = auth.get("requiresOpenaiAuth")
+    account = auth.get("account")
+    if not isinstance(requires_auth, bool) or (account is not None and not isinstance(account, dict)):
+        raise CatalogError("invalid Codex account status")
+    if requires_auth and account is None:
+        raise CatalogError("Codex is not signed in; this provider requires OpenAI authentication")
 
     pattern = re.compile(rf"gpt-([0-9]+(?:\.[0-9]+)*)-{family}")
     candidates = []
@@ -83,8 +90,7 @@ def resolve_model(client, family):
         page = client.request("model/list", params)
         models = page.get("data")
         cursor = page.get("nextCursor")
-        if (not isinstance(models, list) or "nextCursor" not in page
-                or (cursor is not None and not isinstance(cursor, str))):
+        if not isinstance(models, list) or (cursor is not None and not isinstance(cursor, str)):
             raise CatalogError("invalid model/list page")
         for entry in models:
             if (not isinstance(entry, dict) or not isinstance(entry.get("model"), str)

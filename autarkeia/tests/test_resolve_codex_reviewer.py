@@ -47,9 +47,13 @@ init = read()
 assert init["method"] == "initialize"
 write({"id": init["id"], "result": {}})
 assert read() == {"method": "initialized"}
+request = read()
+if request["method"] == "account/read":
+    assert request["params"] == {"refreshToken": False}
+    write({"id": request["id"], "result": json.loads(os.environ["TEST_CODEX_ACCOUNT"])})
+    request = read()
 cursor = None
 for response in json.loads(os.environ["TEST_MODEL_PAGES"]):
-    request = read()
     assert request["method"] == "model/list"
     assert request["params"].get("cursor") == cursor
     assert request["params"]["includeHidden"] is False
@@ -59,11 +63,15 @@ for response in json.loads(os.environ["TEST_MODEL_PAGES"]):
     write({"method": "account/updated", "params": {}})
     write({"id": request["id"], "result": response})
     cursor = response.get("nextCursor")
+    if cursor is not None:
+        request = read()
 """
         )
         codex.chmod(0o700)
 
-    def resolve(self, family, pages):
+    def resolve(self, family, pages, *, account=None):
+        if account is None:
+            account = {"account": {"type": "chatgpt"}, "requiresOpenaiAuth": True}
         return subprocess.run(
             [sys.executable, str(RESOLVER), family],
             cwd=self.workspace,
@@ -72,6 +80,7 @@ for response in json.loads(os.environ["TEST_MODEL_PAGES"]):
                 "PATH": f"{self.root}{os.pathsep}{os.environ['PATH']}",
                 "TEST_REVIEW_WORKSPACE": str(self.workspace),
                 "TEST_MODEL_PAGES": json.dumps(pages),
+                "TEST_CODEX_ACCOUNT": json.dumps(account),
             },
             capture_output=True,
             text=True,
@@ -99,6 +108,40 @@ for response in json.loads(os.environ["TEST_MODEL_PAGES"]):
         result = self.resolve("astra", [
             page([{"model": "gpt-10.1-astra"}]),
         ])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "gpt-10.1-astra\n")
+
+    def test_last_page_can_omit_cursor(self):
+        result = self.resolve("astra", [
+            page([model("gpt-10.1-astra")], "next"),
+            {"data": [model("gpt-10.2-astra")]},
+        ])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "gpt-10.2-astra\n")
+
+    def test_invalid_cursor_discards_selection_from_earlier_page(self):
+        result = self.resolve("astra", [
+            page([model("gpt-10.1-astra")], "next"),
+            page([model("gpt-10.2-astra")], 2),
+        ])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("invalid model/list page", result.stderr)
+
+    def test_signed_out_openai_account_ignores_bundled_catalog(self):
+        result = self.resolve(
+            "astra", [page([model("gpt-6-astra")])],
+            account={"account": None, "requiresOpenaiAuth": True},
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("not signed in", result.stderr)
+
+    def test_provider_that_does_not_require_openai_auth_can_supply_models(self):
+        result = self.resolve(
+            "astra", [page([model("gpt-10.1-astra")])],
+            account={"account": None, "requiresOpenaiAuth": False},
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout, "gpt-10.1-astra\n")
 

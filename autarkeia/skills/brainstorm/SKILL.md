@@ -21,7 +21,7 @@ The file, decision, or output they pointed at. Read it. If it is a claim about t
 |---|---|---|
 | Sub-agent | when your app can start one | A fresh copy of the model you are running on: a Claude sub-agent in Claude Code, a Codex sub-agent in Codex. Same family as you. Independent context, not an independent mind. The instruction to read only named files is an instruction, not a technical confinement. |
 | Codex | they named Codex, Astra or Sol, or asked for all reviewers | OpenAI's agent, run on their own ChatGPT sign-in. Reads the vault itself. |
-| Claude | they named Opus or Fable in either app, or named Claude or all reviewers in Codex | Anthropic's agent (Claude Code), run on their own Claude sign-in. Reads the vault itself. In Claude Code, "send to claude" on its own is the sub-agent above; say so once. |
+| Claude | they named Opus, Fable, or Claude with a model in either app, or named Claude or all reviewers in Codex | Anthropic's agent (Claude Code), run on their own Claude sign-in. Reads the vault itself. In Claude Code, "send to claude" on its own is the sub-agent above; say so once. |
 | Grok | they said grok, or all reviewers | xAI's agent, run on their own xAI sign-in. Reads the vault itself. |
 
 Run `command -v codex`, `command -v claude` and `command -v grok` to see what is installed. "All reviewers" means every installed reviewer from another company than the model you are running on, plus the sub-agent.
@@ -64,7 +64,7 @@ From the resolved vault or active project folder. Use the exact review folder ch
 codex exec -C '/Users/Ada/My Vault/projects/shop' --skip-git-repo-check -s read-only -o '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-codex.md' - < '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-packet.md'
 ```
 
-For **Astra** or **Sol** without a version, run the bundled helper using Python 3. Resolve its absolute path from the plugin root two directories above this loaded skill's directory. Run it in the same resolved project or vault folder and with the same Codex installation and environment as the review. It reads the current model catalog without sending the packet and prints the selected model ID. For example:
+For **Astra** or **Sol** without a version, run the bundled helper using Python 3. Resolve its absolute path from the plugin root two directories above this loaded skill's directory. Run it in the same resolved project or vault folder and with the same Codex installation, account, provider and environment as the review. It checks the existing sign-in status and reads the current model catalog without sending the packet. On success it prints the model ID. For example:
 
 ```bash
 python3 '/absolute/plugin/root/bin/resolve-codex-reviewer.py' astra
@@ -72,9 +72,11 @@ python3 '/absolute/plugin/root/bin/resolve-codex-reviewer.py' astra
 
 On success, pass the returned ID as one separately quoted argument to `--model` in the review command above. For a versioned request, pass the requested Codex model ID directly. If the user specified effort, pass `-c 'model_reasoning_effort="high"'` with the requested level. Without a named model or effort, use the command as shown. For a named model, check the Codex CLI run header for the model and any model warning or substitution. A catalog result or CLI argument only shows what was selected. If discovery fails, the family is missing, the CLI rejects the model, or the run identifies a different model, say what happened and leave Codex out for that request. If the CLI evidence doesn't establish the run's identity, report it as unverified and leave it out of the synthesis. Do not fall back to the host's model, another family, or a different version. An incomplete response can still be retried with the same selected model.
 
+If the app blocks lookup or launch, or blocks access to its configured Codex installation or account, report the failure. Never switch installations, login, `CODEX_HOME` or provider to work around it.
+
 ### Claude
 
-Use this route from Codex when Claude is the reviewer, and from either app when the user names an Opus or Fable model. From the resolved vault or active project folder, use the exact review folder from step 1. The packet goes in through standard input and the answer comes out on standard output. `--permission-mode plan` and `--tools "Read,Glob,Grep"` restrict Claude to its built-in reading tools: no edits, no shell, no web fetch. `--strict-mcp-config` keeps the user's configured connectors (MCP servers, which can reach other services) out of the review; without it they would still be available. Together these are tool restrictions, not an operating-system sandbox: they do not limit which files the reading tools can open, and the folder does not confine it. `--no-session-persistence` keeps the review out of their Claude Code chat history. If they named an effort ("high effort"), add `--effort` with that level. Otherwise leave it out so their Claude Code default applies. Quote the real paths as in step 1. Example shape:
+Use this route from Codex when Claude is the reviewer, and from either app when the user names an Opus or Fable model or explicitly requests Claude with another model. From the resolved vault or active project folder, use the exact review folder from step 1. The packet goes in through standard input and the answer comes out on standard output. `--permission-mode plan` and `--tools "Read,Glob,Grep"` restrict Claude to its built-in reading tools: no edits, no shell, no web fetch. `--strict-mcp-config` keeps the user's configured connectors (MCP servers, which can reach other services) out of the review; without it they would still be available. Together these are tool restrictions, not an operating-system sandbox: they do not limit which files the reading tools can open, and the folder does not confine it. `--no-session-persistence` keeps the review out of their Claude Code chat history. If they named an effort ("high effort"), add `--effort` with that level. Otherwise leave it out so their Claude Code default applies. Quote the real paths as in step 1. Example shape:
 
 ```bash
 claude -p --permission-mode plan --tools "Read,Glob,Grep" --strict-mcp-config --no-session-persistence < '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-packet.md' > '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-claude.md'
@@ -82,15 +84,15 @@ claude -p --permission-mode plan --tools "Read,Glob,Grep" --strict-mcp-config --
 
 Because the packet is the whole prompt, put the paths of the files to read in it as absolute paths. If their Claude Code rejects a required flag, do not run the review with that flag missing: say their Claude Code is older than this skill expects and needs updating, and leave Claude out of this review. Only `--effort` may be dropped when rejected; say so.
 
-For an unversioned **Opus** or **Fable** request, use Claude Code’s `--model opus` or `--model fable` alias. Claude Code resolves it for the current account and provider. Gateways can map aliases differently. Start a fresh process even from Claude Code. For an explicit version, use that model ID. For these named requests, add `--output-format json` and redirect stdout to `-claude.json` beside the packet. Example for Opus:
+For an unversioned **Opus** or **Fable** request, use Claude Code’s `--model opus` or `--model fable` alias. Claude Code resolves it for the current account and provider. Gateways can map aliases differently. Start a fresh process even from Claude Code. For any other model explicitly named for Claude, pass its model ID or alias to `--model` as requested (for example, `--model sonnet` for “send to Claude, use Sonnet”). For all named-model requests, add `--output-format json` and redirect stdout to `-claude.json` beside the packet. Example for Opus:
 
 ```bash
 claude -p --permission-mode plan --tools "Read,Glob,Grep" --strict-mcp-config --no-session-persistence --model opus --output-format json < '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-packet.md' > '/Users/Ada/My Vault/projects/shop/reviews/YYYY-MM-DD-short-name-claude.json'
 ```
 
-Read the CLI’s structured result as data. Check exit status, `type: result`, `subtype: success`, `is_error: false`, and the actual model ID in the `modelUsage` keys. Use a sole model ID to verify the family or version. Different or missing model evidence is a verification failure. If the result confirms the requested model or family and contains the answer, save its `result` string as the readable `-claude.md` answer and record the actual model ID in the synthesis. Keep the JSON beside it. Check answer completeness as usual.
+Read the CLI’s structured result as data. Check exit status, `type: result`, `subtype: success`, `is_error: false`, and the actual model ID in the `modelUsage` keys. Use a sole model ID to verify the requested family or version, matching an alias to its documented model family or mapping. If the model differs, is missing, or the alias mapping cannot be verified, report the CLI evidence and leave it out of the synthesis. If the result confirms the requested model or family and contains the answer, save its `result` string as the readable `-claude.md` answer and record the actual model ID in the synthesis. Keep the JSON beside it. Check answer completeness as usual.
 
-If a family alias fails or the CLI reports a different family, report that and leave Claude out. Do not retry with the default. For an explicitly versioned model that Claude says is unavailable on the account, keep the prior behavior: say which requested model was unavailable and retry once with no `--model`, keeping the other restrictions and JSON output. Use `-claude-2.json` and `-claude-2.md` for this fallback or a normal retry; keep the first files. If the fallback completes, report its actual model as the default fallback, separate from the requested version.
+For an unversioned Opus or Fable request, report an unavailable alias or a different reported family and leave Claude out. For an explicit Claude model ID, version or another named alias that Claude explicitly says is unavailable on the account, keep the prior behavior: say which requested model was unavailable and retry once with no `--model`, keeping the other restrictions and JSON output. Use `-claude-2.json` and `-claude-2.md` for this fallback or a normal retry; keep the first files. If the fallback completes, report its actual model as the default fallback, separate from the requested model.
 
 ### Grok
 
@@ -113,7 +115,7 @@ Before you use a reviewer's answer, check: it finished normally (for Codex, Clau
 ### When a reviewer fails
 
 - Not signed in: tell them to run `codex` once (choose Sign in with ChatGPT), or `claude` once and type `/login`, or `grok login`, in their own Terminal. Never handle their password.
-- Named model unavailable: report which model or family was requested. Use the Claude default retry only for an explicit version the account cannot use, as described above.
+- Named model unavailable: report which model or family was requested. Use the Claude default retry only for an explicit model the account cannot use, as described above. Opus and Fable family requests have no default fallback.
 - Out of usage: say so. That is their plan's limit, not a fault.
 - Do not swap in a different reviewer without saying so.
 

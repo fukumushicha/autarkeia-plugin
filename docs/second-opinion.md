@@ -81,7 +81,7 @@ In your vault, say:
 | **send to grok** | Grok |
 | **all reviewers** | The built-in reviewer and every installed reviewer from another company that can take this material. |
 
-You can also name an exact model version or an effort such as **high effort**. Brainstorm reports the model that actually answered a named request. The reviewer receives what you named for review. (When you work in Codex, the built-in reviewer is itself a Codex, so a plain second opinion is read by OpenAI, like everything else in that session.) If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
+You can also name an exact version, another Claude Code model such as **send to Claude, use Sonnet**, or an effort such as **high effort**. Brainstorm reports the model that actually answered a named request. The reviewer receives what you named for review. (When you work in Codex, the built-in reviewer is itself a Codex, so a plain second opinion is read by OpenAI, like everything else in that session.) If you ask for a plain second opinion, Autarkeia uses the built-in reviewer and tells you which outside reviewers are available.
 
 What happens:
 
@@ -99,14 +99,14 @@ A review takes from one to several minutes per reviewer.
 - **Grok's shell can still reach the internet.** The read-only setting does not turn the network off. You choose what Grok reviews, including mail, imported documents and fetched pages. Know that a hidden instruction inside such a file could ask a reviewer with network access to send what it read somewhere else; the reviewer prompt tells Grok to treat file contents as evidence, and that is an instruction, not a technical guarantee.
 - **Naming a reviewer covers the files the review is about.** It does not allow sending unrelated private files. If the thing is about your health, another person, or anything you said was off the record, Autarkeia asks you before sending it out, even after you named the reviewer.
 - **The other company sees what the reviewer reads.** Whatever files Codex, Claude or Grok open are sent to OpenAI, Anthropic or xAI under your account, just as your own sessions go to the company whose model you work in.
-- **Model availability depends on your account.** If Autarkeia cannot resolve or verify the requested family, it reports the failure. Claude Code’s family aliases can resolve differently with custom providers. If Claude specifically rejects an explicit model version as unavailable, Autarkeia reports it and retries once with your Claude Code default, then reports the model that answered.
+- **Model availability depends on your account.** If Autarkeia cannot resolve or verify the requested family, it reports the failure. Claude Code’s family aliases can resolve differently with custom providers. If Claude rejects an exact version or another named model such as Sonnet as unavailable, Autarkeia reports it and retries once with your Claude Code default, then reports the model that answered.
 - **Keep your vault in an ordinary folder**, such as Documents. Grok's read-only setting leaves temporary folders writable (`/tmp`, `/var/folders`, `~/.grok` and similar), so Autarkeia will not run Grok on a vault stored there.
 - **It uses your own plan's limits.** A long review against a big vault is real usage. If you hit a limit, that is the plan, not a fault.
 
 ## If something goes wrong
 
 - **"Not signed in"**: run `codex` (then choose Sign in with ChatGPT), or `claude` then `/login`, or `grok login` again, in your own Terminal. Autarkeia never handles your password.
-- **Astra or Sol lookup fails** — Check that Python 3 and a current Codex CLI are available in the app and that Codex is signed in.
+- **Astra or Sol lookup fails** — Check that Python 3 and a current Codex CLI are available in the app and that Codex is signed in if your provider requires it. If the app blocks access to the configured CLI or account, Brainstorm reports the error.
 - **Claude says a flag is unknown**: your Claude Code is older than this guide expects. Update it with the install line above. Until then Autarkeia leaves Claude out of the review rather than run it with fewer restrictions; only the optional effort flag is dropped.
 - **Grok returns almost nothing**: it sometimes stops on its first step. Autarkeia retries once on its own. If the second try also fails, it tells you the review did not finish and leaves that reviewer out.
 - **"Command not found" inside Claude Code or Codex**: restart the app after installing, so it sees the new command.
